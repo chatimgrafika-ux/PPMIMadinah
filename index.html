@@ -147,15 +147,18 @@
         </div>
 
         <!-- Custom Tab Navigation -->
-        <div class="flex bg-white shadow-sm border border-gray-100 p-1.5 rounded-xl mb-6 sticky top-20 z-20 backdrop-blur-md bg-white/90">
-            <button id="tab-btn-diri" onclick="switchTab('diri')" class="flex-1 py-2.5 text-[11px] sm:text-xs font-bold rounded-lg bg-green-600 text-white shadow-md transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
-                <i class="fas fa-address-card"></i> Data Diri
+        <div class="grid grid-cols-4 bg-white shadow-sm border border-gray-100 p-1.5 rounded-xl mb-6 sticky top-20 z-20 backdrop-blur-md bg-white/90 gap-1">
+            <button id="tab-btn-diri" onclick="switchTab('diri')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg bg-green-600 text-white shadow-md transition-all">
+                <i class="fas fa-address-card mb-1 text-sm"></i> Diri
             </button>
-            <button id="tab-btn-akademik" onclick="switchTab('akademik')" class="flex-1 py-2.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
-                <i class="fas fa-graduation-cap"></i> Akademik
+            <button id="tab-btn-akademik" onclick="switchTab('akademik')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all">
+                <i class="fas fa-graduation-cap mb-1 text-sm"></i> Akademik
             </button>
-            <button id="tab-btn-perjalanan" onclick="switchTab('perjalanan')" class="flex-1 py-2.5 text-[11px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
-                <i class="fas fa-plane-departure"></i> Perjalanan
+            <button id="tab-btn-perjalanan" onclick="switchTab('perjalanan')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all">
+                <i class="fas fa-passport mb-1 text-sm"></i> Dokumen
+            </button>
+            <button id="tab-btn-info" onclick="switchTab('info')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all">
+                <i class="fas fa-info-circle mb-1 text-sm"></i> Info
             </button>
         </div>
 
@@ -260,7 +263,9 @@
                     </div>
                 </div>
 
-                <h3 class="text-sm font-bold text-gray-800 mt-6 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-heart text-red-500"></i> Kontak Darurat (Kerabat)</h3>
+                <h3 class="text-sm font-bold text-gray-800 mt-6 mb-4 border-b pb-2 flex items-center gap-2">
+                    <i class="fas fa-heart text-red-500"></i> Informasi Kerabat / Darurat <span class="text-red-500 text-xs ml-1">*Wajib</span>
+                </h3>
                 <div class="w-full">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Nama Kerabat</label>
                     <input type="text" id="f-kerabat-nama" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
@@ -278,7 +283,7 @@
             </div>
 
             <!-- ======================= TAB 2: DATA AKADEMIK ======================= -->
-            <div id="tab-akademik" class="tab-content hidden space-y-4">
+            <div id="tab-akademik" class="tab-content hidden space-y-4 animate-fade-in">
                 <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-university text-green-600"></i> Informasi Akademik</h3>
                 
                 <div class="w-full">
@@ -389,7 +394,7 @@
             </div>
 
             <!-- ======================= TAB 3: DATA PERJALANAN ======================= -->
-            <div id="tab-perjalanan" class="tab-content hidden space-y-4">
+            <div id="tab-perjalanan" class="tab-content hidden space-y-4 animate-fade-in">
                 <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-passport text-green-600"></i> Identitas & Dokumen Perjalanan</h3>
                 
                 <div class="w-full" id="visa-container">
@@ -418,6 +423,283 @@
                     <input type="text" id="f-iqamah" inputmode="numeric" pattern="[0-9]*" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 font-bold tracking-widest text-center" placeholder="XXXXXXXXXX (10 digit)">
                 </div>
             </div>
+
+            <!-- ======================= TAB 4: PUSAT INFO & BANTUAN ======================= -->
+            <div id="tab-info" class="tab-content hidden space-y-7 animate-fade-in">
+                
+                <!-- Section: Kontak Darurat -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
+                        <i class="fas fa-phone-alt text-red-500"></i> Hotline & Kontak Darurat
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center p-3.5 bg-white border border-red-100 shadow-sm rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
+                            <div class="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center mr-3 text-lg">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-bold text-gray-800">Polisi (Saudi)</h4>
+                                <p class="text-[10px] text-gray-500">Keamanan / Tindak Kriminal</p>
+                            </div>
+                            <a href="tel:999" class="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition-colors">999</a>
+                        </div>
+                        
+                        <div class="flex items-center p-3.5 bg-white border border-red-100 shadow-sm rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
+                            <div class="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center mr-3 text-lg">
+                                <i class="fas fa-ambulance"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-bold text-gray-800">Ambulan (Saudi)</h4>
+                                <p class="text-[10px] text-gray-500">Medis / Kecelakaan</p>
+                            </div>
+                            <a href="tel:997" class="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition-colors">997</a>
+                        </div>
+
+                        <div class="flex items-center p-3.5 bg-white border border-red-100 shadow-sm rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
+                            <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center mr-3 text-lg">
+                                <i class="fas fa-hands-helping"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-xs font-bold text-gray-800">Darurat KJRI Jeddah</h4>
+                                <p class="text-[10px] text-gray-500">Konsulat Jenderal RI</p>
+                            </div>
+                            <a href="https://wa.me/+966503609667" target="_blank" class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition-colors"><i class="fab fa-whatsapp text-sm"></i> Chat</a>
+                        </div>
+
+                        <div class="flex items-center p-3.5 bg-white border border-red-100 shadow-sm rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
+                            <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center mr-3 text-lg">
+                                <i class="fas fa-hands-helping"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-xs font-bold text-gray-800">Darurat KBRI Riyadh</h4>
+                                <p class="text-[10px] text-gray-500">Kedutaan Besar RI</p>
+                            </div>
+                            <a href="https://wa.me/+966569173990" target="_blank" class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition-colors"><i class="fab fa-whatsapp text-sm"></i> Chat</a>
+                        </div>
+
+                        <div class="flex items-center p-3.5 bg-white border border-green-100 shadow-sm rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-green-500"></div>
+                            <div class="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center mr-3 text-lg">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-bold text-gray-800">Humas PPMI Madinah</h4>
+                                <p class="text-[10px] text-gray-500">Pelayanan & Bantuan Mahasiswa</p>
+                            </div>
+                            <a href="https://wa.me/6281313777542" target="_blank" class="px-4 py-2 bg-green-50 hover:bg-green-100 text-green-600 text-xs font-bold rounded-xl transition-colors"><i class="fab fa-whatsapp text-sm"></i> Chat</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Pemerintah Republik Indonesia -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
+                        <i class="fas fa-flag text-red-600"></i> Pemerintah Republik Indonesia
+                    </h3>
+                    <div class="flex flex-col gap-3">
+                        <div class="flex items-center justify-between p-3.5 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-lg"><i class="fas fa-landmark"></i></div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-gray-800">Kementerian Luar Negeri</h4>
+                                    <p class="text-[10px] text-gray-500">Republik Indonesia</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="https://instagram.com/kemlu_ri" target="_blank" class="w-8 h-8 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center hover:bg-pink-100 transition-colors"><i class="fab fa-instagram"></i></a>
+                                <a href="https://x.com/Kemlu_RI" target="_blank" class="w-8 h-8 rounded-full bg-gray-100 text-black flex items-center justify-center hover:bg-gray-200 transition-colors"><i class="fab fa-twitter"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3.5 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-lg"><i class="fas fa-building"></i></div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-gray-800">KBRI Riyadh</h4>
+                                    <p class="text-[10px] text-gray-500">Kedutaan Besar RI</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="https://instagram.com/indonesiainriyadh" target="_blank" class="w-8 h-8 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center hover:bg-pink-100 transition-colors"><i class="fab fa-instagram"></i></a>
+                                <a href="https://x.com/IndonesiaInRYD" target="_blank" class="w-8 h-8 rounded-full bg-gray-100 text-black flex items-center justify-center hover:bg-gray-200 transition-colors"><i class="fab fa-twitter"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3.5 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-lg"><i class="fas fa-city"></i></div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-gray-800">KJRI Jeddah</h4>
+                                    <p class="text-[10px] text-gray-500">Konsulat Jenderal RI</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="https://instagram.com/indonesiainjeddah" target="_blank" class="w-8 h-8 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center hover:bg-pink-100 transition-colors"><i class="fab fa-instagram"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Saluran WhatsApp UIM -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
+                        <i class="fab fa-whatsapp text-green-500"></i> Saluran WhatsApp UIM
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <a href="https://whatsapp.com/channel/0029VaDoYTo9mrGWBWIoo43f" target="_blank" class="flex items-center gap-3 p-2.5 bg-white rounded-xl hover:bg-green-50 border border-gray-100 transition-all shadow-sm">
+                            <div class="w-8 h-8 shrink-0 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm"><i class="fab fa-whatsapp"></i></div>
+                            <span class="text-xs font-semibold text-gray-700 leading-tight">Univ Islam Madinah</span>
+                        </a>
+                        <a href="https://whatsapp.com/channel/0029VaCA5fI8fewpLbLy4r1o" target="_blank" class="flex items-center gap-3 p-2.5 bg-white rounded-xl hover:bg-green-50 border border-gray-100 transition-all shadow-sm">
+                            <div class="w-8 h-8 shrink-0 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm"><i class="fab fa-whatsapp"></i></div>
+                            <span class="text-xs font-semibold text-gray-700 leading-tight">Imadah Syu'un Thullab</span>
+                        </a>
+                        <a href="https://whatsapp.com/channel/0029VaHnihtId7nSpuvli70D" target="_blank" class="flex items-center gap-3 p-2.5 bg-white rounded-xl hover:bg-green-50 border border-gray-100 transition-all shadow-sm">
+                            <div class="w-8 h-8 shrink-0 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm"><i class="fab fa-whatsapp"></i></div>
+                            <span class="text-xs font-semibold text-gray-700 leading-tight">I'laanat wa Ansyithah</span>
+                        </a>
+                        <a href="https://whatsapp.com/channel/0029VarTXRbEAKWDdXGwvj1e" target="_blank" class="flex items-center gap-3 p-2.5 bg-white rounded-xl hover:bg-green-50 border border-gray-100 transition-all shadow-sm">
+                            <div class="w-8 h-8 shrink-0 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm"><i class="fab fa-whatsapp"></i></div>
+                            <span class="text-xs font-semibold text-gray-700 leading-tight">Idarah Safar</span>
+                        </a>
+                        <a href="https://whatsapp.com/channel/0029VaCqhMh90x2xWaiTrQ2I" target="_blank" class="flex items-center gap-3 p-2.5 bg-white rounded-xl hover:bg-green-50 border border-gray-100 transition-all shadow-sm">
+                            <div class="w-8 h-8 shrink-0 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm"><i class="fab fa-whatsapp"></i></div>
+                            <span class="text-xs font-semibold text-gray-700 leading-tight">Math'am Jami'ah</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Section: Akun Twitter/X UIM -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
+                        <i class="fab fa-twitter text-black"></i> Informasi Akademik (X / Twitter)
+                    </h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="https://x.com/iu_edu" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Univ. Islam Madinah</span>
+                        </a>
+                        <a href="https://x.com/dsa_iu_edu" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Syu'un Thullab</span>
+                        </a>
+                        <a href="https://x.com/AdmissDeanship" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Qabul wat Tasjil</span>
+                        </a>
+                        <a href="https://x.com/iu_Society" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Mujtama' Jami'ah</span>
+                        </a>
+                        <a href="https://x.com/highstudies_iu" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Dirasat Ulya</span>
+                        </a>
+                        <a href="https://x.com/iu_m3had" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Ma'had Ta'lim Lughah</span>
+                        </a>
+                        <a href="https://x.com/ShariaFaculty" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Syari'ah</span>
+                        </a>
+                        <a href="https://x.com/FLE_iu" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Qanun</span>
+                        </a>
+                        <a href="https://x.com/DaawaFaculty" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Dakwah</span>
+                        </a>
+                        <a href="https://x.com/HadithFaculty" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Hadist</span>
+                        </a>
+                        <a href="https://x.com/qurancollege" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Al Qur'an</span>
+                        </a>
+                        <a href="https://x.com/arabic_iu" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Bahasa Arab</span>
+                        </a>
+                        <a href="https://x.com/SciFaculty" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Ulum</span>
+                        </a>
+                        <a href="https://x.com/fcis_iu" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Komputer</span>
+                        </a>
+                        <a href="https://x.com/EngFaculty_IU" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Handasah</span>
+                        </a>
+                        <a href="https://x.com/fcf_iu_edu" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Ats Tsaqaafaat</span>
+                        </a>
+                        <a href="https://x.com/MedC_IU" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">RS Jami'ah</span>
+                        </a>
+                        <a href="https://x.com/Riyadah_IU" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Markaz Riyadah</span>
+                        </a>
+                        <a href="https://x.com/asaqefah" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors col-span-2 sm:col-span-1">
+                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
+                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Asaqefah</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Section: Grup Komunikasi PPMI -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
+                        <i class="fas fa-users text-blue-500"></i> Komunikasi & Grup PPMI
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <a href="#" target="_blank" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-2xl hover:shadow-md transition-all hover:-translate-y-1">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-green-400 to-green-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-green-500/30 mb-2">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <span class="text-xs font-bold text-gray-700 text-center">Saluran Whatsapp PPMI</span>
+                        </a>
+                        <a href="#" target="_blank" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-2xl hover:shadow-md transition-all hover:-translate-y-1">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-400 to-blue-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-blue-500/30 mb-2">
+                                <i class="fab fa-telegram-plane"></i>
+                            </div>
+                            <span class="text-xs font-bold text-gray-700 text-center">Info Resmi PPMI</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Section: Sosial Media PPMI -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
+                        <i class="fas fa-hashtag text-purple-500"></i> Sosial Media PPMI
+                    </h3>
+                    <div class="flex flex-wrap gap-4 justify-center">
+                        <a href="#" target="_blank" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white flex items-center justify-center text-xl shadow-lg shadow-pink-500/30 hover:-translate-y-1 hover:shadow-xl transition-all">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" target="_blank" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-500 to-red-600 text-white flex items-center justify-center text-xl shadow-lg shadow-red-500/30 hover:-translate-y-1 hover:shadow-xl transition-all">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="#" target="_blank" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-500 to-blue-700 text-white flex items-center justify-center text-xl shadow-lg shadow-blue-500/30 hover:-translate-y-1 hover:shadow-xl transition-all">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" target="_blank" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-gray-700 to-gray-900 text-white flex items-center justify-center text-xl shadow-lg shadow-gray-500/30 hover:-translate-y-1 hover:shadow-xl transition-all">
+                            <i class="fas fa-globe"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
             
             <!-- Bottom Navigation Buttons -->
             <div class="flex gap-3 mt-8 w-full border-t border-gray-100 pt-5">
@@ -436,7 +718,7 @@
                 <i class="fas fa-exclamation-triangle"></i>
             </div>
             <h3 class="text-lg font-bold text-center text-gray-800 mb-2">Konfirmasi Simpan</h3>
-            <p class="text-sm text-center text-gray-600 mb-6">Apakah Anda yakin seluruh data di 3 Menu yang dimasukkan sudah benar? Data Anda akan diperbarui ke sistem.</p>
+            <p class="text-sm text-center text-gray-600 mb-6">Apakah Anda yakin seluruh data di form yang dimasukkan sudah benar? Data Anda akan diperbarui ke sistem.</p>
             <div class="flex gap-3 w-full">
                 <button onclick="closeConfirm()" class="flex-1 py-3.5 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm active:scale-95 transition-transform hover:bg-gray-200">Batal / Cek Lagi</button>
                 <button onclick="executeSave()" class="flex-1 py-3.5 rounded-xl bg-green-600 text-white font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-green-600/30 hover:bg-green-700">Ya, Simpan!</button>
@@ -479,7 +761,7 @@
         let currentThalib = '';
 
         // TABS LOGIC
-        const tabs = ['diri', 'akademik', 'perjalanan'];
+        const tabs = ['diri', 'akademik', 'perjalanan', 'info'];
         let currentTabIndex = 0;
 
         function switchTab(tabId) {
@@ -515,7 +797,9 @@
 
             document.getElementById('btn-prev').classList.toggle('hidden', currentTabIndex === 0);
             document.getElementById('btn-next').classList.toggle('hidden', currentTabIndex === tabs.length - 1);
-            document.getElementById('btn-save').classList.toggle('hidden', currentTabIndex !== tabs.length - 1);
+            
+            // Tombol "Simpan Data" akan muncul di Tab ke-3 (Dokumen) dan Tab ke-4 (Info)
+            document.getElementById('btn-save').classList.toggle('hidden', currentTabIndex < 2);
         }
 
         // KONEKSI API
@@ -699,7 +983,7 @@
         }
 
         function clearForm() {
-            const inputs = document.querySelectorAll('#screen-form input[type="text"]');
+            const inputs = document.querySelectorAll('#screen-form input[type="text"]:not(#f-thalib)');
             inputs.forEach(input => input.value = '');
             const selects = document.querySelectorAll('#screen-form select');
             selects.forEach(select => select.selectedIndex = 0);
@@ -853,7 +1137,8 @@
         }
         function applyDate() {
             const input = document.getElementById('f-expired'); const monthIndex = months.indexOf(activeDate.m) + 1;
-            input.value = `${activeDate.d}/${String(monthIndex).padStart(2, '0')}/${activeDate.y}`; closeDatePicker();
+            const monthFormatted = String(monthIndex).padStart(2, '0');
+            input.value = `${activeDate.d}/${monthFormatted}/${activeDate.y}`; closeDatePicker();
         }
     </script>
 </body>
