@@ -52,11 +52,7 @@
                 </div>
 
                 <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">URL API AppScript</label>
-                        <input type="text" id="apiUrl" value="https://script.google.com/macros/s/AKfycbz-aOvPpPWs6k9q9Uw-KNNU8lb9TFWyZ7qi7gtpPX8O9RqE9wkXB69OS8dtNcdnHLC56g/exec" placeholder="https://script.google.com/macros/s/.../exec" 
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
-                    </div>
+                    <!-- URL API Disembunyikan dari UI -->
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Password</label>
                         <input type="password" id="password" placeholder="Masukkan password" 
@@ -166,12 +162,15 @@
 
         // FUNGSI LOGIN & AMBIL DATA
         async function handleLogin() {
-            const apiUrl = document.getElementById('apiUrl').value.trim();
+            // API disembunyikan menggunakan Base64 Encoding
+            const encodedApi = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6LWFPdlBwUFdzNms5cTlVdy1LTk5VOGxiOVRGV3laN3FpN2d0cFBYOE85UnFFOXdrWEI2OU9TOGR0TmNkbkhMQzU2Zy9leGVj";
+            const apiUrl = atob(encodedApi); // Decode Base64 ke URL asli saat runtime
+            
             const password = document.getElementById('password').value;
             const btn = document.getElementById('btnLogin');
 
-            if (!apiUrl || !password) {
-                showMessage("Peringatan", "URL API dan Password harus diisi!", "warning");
+            if (!password) {
+                showMessage("Peringatan", "Password harus diisi!", "warning");
                 return;
             }
 
