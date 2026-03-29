@@ -79,8 +79,8 @@
                 <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-25 h-25 object-contain" alt="Logo" onerror="this.style.display='none'">
             </div>
             
-            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Portal Broadcast Darurat</h2>
-            <p class="text-xs text-center text-gray-500 mb-8 leading-relaxed">Masukkan kode sandi akses untuk menggunakan fitur penyebaran pesan humas,</p>
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Portal Broadcast</h2>
+            <p class="text-xs text-center text-gray-500 mb-8 leading-relaxed">Masukkan kode sandi akses untuk menggunakan fitur penyebaran pesan darurat</p>
             
             <div class="space-y-4 mb-8">
                 <!-- URL API Disembunyikan dari UI, hanya Input Password -->
@@ -109,7 +109,7 @@
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sticky top-[72px] z-20 mb-4">
                 <div class="relative">
                     <i class="fas fa-search absolute left-4 top-3.5 text-gray-400 text-sm"></i>
-                    <input type="text" id="searchInput" onkeyup="renderContacts()" placeholder="Cari nama atau wihdah..." 
+                    <input type="text" id="searchInput" onkeyup="renderContacts()" placeholder="Cari nama, angkatan, atau visa..." 
                         class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 text-sm font-medium transition-all">
                 </div>
                 <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100 text-xs font-semibold text-gray-600">
@@ -143,7 +143,7 @@
             <button onclick="goToSelect()" class="text-gray-600 hover:text-green-600 flex items-center justify-center w-10 h-10 rounded-full bg-gray-50 hover:bg-green-50 transition-colors">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <h2 class="font-bold text-gray-800 text-lg">Buat Pesan formal</h2>
+            <h2 class="font-bold text-gray-800 text-lg">Buat Pesan darurat</h2>
         </div>
         
         <div class="p-5 flex-1 flex flex-col">
@@ -154,9 +154,14 @@
 
             <label class="text-sm font-semibold text-gray-700 mb-2 flex justify-between items-center">
                 <span>Isi Pesan Spesifik</span>
-                <span class="text-blue-600 cursor-pointer text-xs bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors font-bold shadow-sm" onclick="insertVariable('{nama}')">+ {nama}</span>
+                <div class="flex gap-1.5 flex-wrap justify-end">
+                    <span class="text-blue-600 cursor-pointer text-[10px] bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors font-bold shadow-sm" onclick="insertVariable('{nama}')">+ {nama}</span>
+                    <span class="text-blue-600 cursor-pointer text-[10px] bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors font-bold shadow-sm" onclick="insertVariable('{jen_k}')">+ {jen_k}</span>
+                    <span class="text-blue-600 cursor-pointer text-[10px] bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors font-bold shadow-sm" onclick="insertVariable('{angkatan}')">+ {angkatan}</span>
+                    <span class="text-blue-600 cursor-pointer text-[10px] bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors font-bold shadow-sm" onclick="insertVariable('{visa}')">+ {visa}</span>
+                </div>
             </label>
-            <textarea id="messageText" rows="8" placeholder="Tulis pesan Anda di sini...&#10;&#10;Contoh:&#10;Assalamualaikum, Ahlan ustadz {nama}, wihdah kamu di {wihdah} kamar {kamar} ya." 
+            <textarea id="messageText" rows="8" placeholder="Tulis pesan Anda di sini...&#10;&#10;Contoh:&#10;Ahlan {nama}, wihdah kamu di {wihdah} kamar {kamar} ya." 
                 class="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white text-sm mb-6 flex-1 resize-none font-medium transition-all"></textarea>
             
             <button onclick="sendMessages()" id="btnSend"
@@ -173,6 +178,14 @@
             contacts: [],
             selectedIds: new Set()
         };
+
+        // FUNGSI CEK NOMOR INDONESIA
+        function isIndoNumber(phone) {
+            if (!phone) return false;
+            let num = phone.toString().replace(/[^0-9]/g, '');
+            // Nomor Indonesia umumnya diawali dengan 08 atau 628
+            return num.startsWith('08') || num.startsWith('628');
+        }
 
         // UI NOTIFICATION (DYNAMIC ISLAND)
         function showDynamicIsland(text, type = 'process') {
@@ -249,8 +262,9 @@
                     appState.token = result.token;
                     appState.contacts = result.data.map(c => ({
                         ...c,
-                        sendWa1: !!c.wa1,
-                        sendWa2: !!c.wa2
+                        // Secara bawaan hanya dicentang jika itu nomor Indonesia
+                        sendWa1: !!c.wa1 && isIndoNumber(c.wa1),
+                        sendWa2: !!c.wa2 && isIndoNumber(c.wa2)
                     }));
                     
                     document.getElementById('loginView').classList.add('hidden');
@@ -280,10 +294,14 @@
             const searchStr = document.getElementById('searchInput').value.toLowerCase();
             
             container.innerHTML = "";
-            let filtered = appState.contacts.filter(c => 
-                c.nama.toLowerCase().includes(searchStr) || 
-                c.wihdah.toLowerCase().includes(searchStr)
-            );
+            let filtered = appState.contacts.filter(c => {
+                const s = searchStr;
+                return (c.nama && c.nama.toLowerCase().includes(s)) || 
+                       (c.wihdah && c.wihdah.toLowerCase().includes(s)) ||
+                       (c.jen_k && c.jen_k.toLowerCase().includes(s)) ||
+                       (c.angkatan && String(c.angkatan).toLowerCase().includes(s)) ||
+                       (c.visa && c.visa.toLowerCase().includes(s));
+            });
 
             if (filtered.length === 0) {
                 container.innerHTML = `
@@ -310,9 +328,12 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <h3 class="font-bold text-gray-800 text-sm truncate">${c.nama}</h3>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded-md font-medium"><i class="fas fa-building mr-1"></i> W. ${c.wihdah}</span>
-                                <span class="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded-md font-medium"><i class="fas fa-door-closed mr-1"></i> K. ${c.kamar}</span>
+                            <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                                ${c.jen_k ? `<span class="${c.jen_k.toLowerCase() === 'akhwat' ? 'bg-pink-50 text-pink-600 border-pink-200' : 'bg-blue-50 text-blue-600 border-blue-200'} border text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-wider">${c.jen_k}</span>` : ''}
+                                ${c.angkatan ? `<span class="bg-purple-50 text-purple-600 border border-purple-200 text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-wider">${c.angkatan}</span>` : ''}
+                                ${c.visa ? `<span class="bg-yellow-50 text-yellow-600 border border-yellow-200 text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-wider">${c.visa}</span>` : ''}
+                                <span class="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded-md font-medium border border-gray-200"><i class="fas fa-building mr-1"></i> W. ${c.wihdah || '-'}</span>
+                                <span class="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded-md font-medium border border-gray-200"><i class="fas fa-door-closed mr-1"></i> K. ${c.kamar || '-'}</span>
                             </div>
                         </div>
                         <i class="fas fa-chevron-${isSelected ? 'up text-green-500' : 'down text-gray-300'} text-xs transition-colors"></i>
@@ -324,17 +345,19 @@
                         <p class="text-xs text-green-800 mb-2 font-semibold">Tentukan nomor tujuan:</p>
                         <div class="space-y-2">
                             ${c.wa1 ? `
-                            <label class="flex items-center gap-3 text-sm bg-white p-2.5 rounded-xl border border-green-200 shadow-sm cursor-pointer hover:bg-green-50/50 transition-colors">
-                                <input type="checkbox" ${c.sendWa1 ? "checked" : ""} onchange="updateSubTarget(${c.id}, 'wa1', this.checked)" class="rounded text-green-600 focus:ring-green-500 w-4 h-4">
-                                <span class="flex-1 font-medium text-gray-700">WA 1</span>
-                                <span class="text-green-600 font-semibold bg-green-100 px-2 py-0.5 rounded-md text-xs tracking-wide">${c.wa1}</span>
+                            <label class="flex items-center gap-3 text-sm p-2.5 rounded-xl border ${isIndoNumber(c.wa1) ? 'bg-white border-green-200 shadow-sm cursor-pointer hover:bg-green-50/50' : 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'} transition-colors">
+                                <input type="checkbox" ${c.sendWa1 ? "checked" : ""} ${!isIndoNumber(c.wa1) ? "disabled" : ""} onchange="updateSubTarget(${c.id}, 'wa1', this.checked)" class="rounded ${isIndoNumber(c.wa1) ? 'text-green-600 focus:ring-green-500' : 'text-gray-400'} w-4 h-4 disabled:opacity-50">
+                                <span class="flex-1 font-medium ${isIndoNumber(c.wa1) ? 'text-gray-700' : 'text-gray-500'}">WA 1</span>
+                                <span class="${isIndoNumber(c.wa1) ? 'text-green-600 bg-green-100' : 'text-gray-500 bg-gray-200'} font-semibold px-2 py-0.5 rounded-md text-xs tracking-wide">${c.wa1}</span>
+                                ${!isIndoNumber(c.wa1) ? '<i class="fas fa-ban text-red-400 text-xs" title="Bukan nomor Indonesia"></i>' : ''}
                             </label>` : `<div class="text-xs text-gray-400 italic px-2 bg-gray-50 p-2 rounded-xl">WA 1 tidak tersedia</div>`}
                             
                             ${c.wa2 ? `
-                            <label class="flex items-center gap-3 text-sm bg-white p-2.5 rounded-xl border border-green-200 shadow-sm cursor-pointer hover:bg-green-50/50 transition-colors">
-                                <input type="checkbox" ${c.sendWa2 ? "checked" : ""} onchange="updateSubTarget(${c.id}, 'wa2', this.checked)" class="rounded text-green-600 focus:ring-green-500 w-4 h-4">
-                                <span class="flex-1 font-medium text-gray-700">WA 2</span>
-                                <span class="text-green-600 font-semibold bg-green-100 px-2 py-0.5 rounded-md text-xs tracking-wide">${c.wa2}</span>
+                            <label class="flex items-center gap-3 text-sm p-2.5 rounded-xl border ${isIndoNumber(c.wa2) ? 'bg-white border-green-200 shadow-sm cursor-pointer hover:bg-green-50/50' : 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'} transition-colors">
+                                <input type="checkbox" ${c.sendWa2 ? "checked" : ""} ${!isIndoNumber(c.wa2) ? "disabled" : ""} onchange="updateSubTarget(${c.id}, 'wa2', this.checked)" class="rounded ${isIndoNumber(c.wa2) ? 'text-green-600 focus:ring-green-500' : 'text-gray-400'} w-4 h-4 disabled:opacity-50">
+                                <span class="flex-1 font-medium ${isIndoNumber(c.wa2) ? 'text-gray-700' : 'text-gray-500'}">WA 2</span>
+                                <span class="${isIndoNumber(c.wa2) ? 'text-green-600 bg-green-100' : 'text-gray-500 bg-gray-200'} font-semibold px-2 py-0.5 rounded-md text-xs tracking-wide">${c.wa2}</span>
+                                ${!isIndoNumber(c.wa2) ? '<i class="fas fa-ban text-red-400 text-xs" title="Bukan nomor Indonesia"></i>' : ''}
                             </label>` : `<div class="text-xs text-gray-400 italic px-2 bg-gray-50 p-2 rounded-xl border border-gray-100">WA 2 tidak tersedia</div>`}
                         </div>
                     </div>
@@ -362,7 +385,12 @@
             const searchStr = document.getElementById('searchInput').value.toLowerCase();
             
             appState.contacts.forEach(c => {
-                const match = c.nama.toLowerCase().includes(searchStr) || c.wihdah.toLowerCase().includes(searchStr);
+                const s = searchStr;
+                const match = (c.nama && c.nama.toLowerCase().includes(s)) || 
+                              (c.wihdah && c.wihdah.toLowerCase().includes(s)) ||
+                              (c.jen_k && c.jen_k.toLowerCase().includes(s)) ||
+                              (c.angkatan && String(c.angkatan).toLowerCase().includes(s)) ||
+                              (c.visa && c.visa.toLowerCase().includes(s));
                 if (match) {
                     if (isChecked) appState.selectedIds.add(c.id);
                     else appState.selectedIds.delete(c.id);
@@ -445,16 +473,20 @@
                 showDynamicIsland(`Mengirim ${i + 1} dari ${selectedContacts.length}...`, "process");
                 
                 let targets = [];
-                if (contact.sendWa1 && contact.wa1) targets.push(contact.wa1);
-                if (contact.sendWa2 && contact.wa2) targets.push(contact.wa2);
+                // Pastikan target hanya masuk jika itu juga nomor Indonesia
+                if (contact.sendWa1 && contact.wa1 && isIndoNumber(contact.wa1)) targets.push(contact.wa1);
+                if (contact.sendWa2 && contact.wa2 && isIndoNumber(contact.wa2)) targets.push(contact.wa2);
 
                 if (targets.length === 0) continue; 
 
                 // Replace variabel
                 let personalMessage = baseMessage
-                    .replace(/{nama}/g, contact.nama)
-                    .replace(/{wihdah}/g, contact.wihdah)
-                    .replace(/{kamar}/g, contact.kamar);
+                    .replace(/{nama}/g, contact.nama || '')
+                    .replace(/{wihdah}/g, contact.wihdah || '')
+                    .replace(/{kamar}/g, contact.kamar || '')
+                    .replace(/{jen_k}/g, contact.jen_k || '')
+                    .replace(/{angkatan}/g, contact.angkatan || '')
+                    .replace(/{visa}/g, contact.visa || '');
 
                 let targetString = targets.join(',');
 
