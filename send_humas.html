@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Broadcast WA</title>
+    <!-- Menggunakan Tailwind CSS untuk tampilan HP yang responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Loading Spinner */
+        .loader {
+            border: 3px solid #f3f3f3; border-top: 3px solid #22c55e;
+            border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+
+    <!-- Kontainer Utama (Responsif HP) -->
+    <div class="max-w-md mx-auto min-h-screen bg-white shadow-xl relative overflow-hidden flex flex-col">
+        
+        <!-- Header -->
+        <header class="bg-green-600 text-white p-4 shadow-md z-10">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <i class="fab fa-whatsapp"></i> Broadcast Apps
+            </h1>
+            <p class="text-xs text-green-100 mt-1" id="headerSubtitle">Silakan login untuk mengakses data.</p>
+        </header>
+
+        <!-- AREA LOGIN -->
+        <div id="loginView" class="p-6 flex-1 flex flex-col justify-center fade-in">
+            <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-sm">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h2 class="text-lg font-semibold">Otentikasi Aman</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">URL API AppScript</label>
+                        <input type="text" id="apiUrl" value="https://script.google.com/macros/s/AKfycbz-aOvPpPWs6k9q9Uw-KNNU8lb9TFWyZ7qi7gtpPX8O9RqE9wkXB69OS8dtNcdnHLC56g/exec" placeholder="https://script.google.com/macros/s/.../exec" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Password</label>
+                        <input type="password" id="password" placeholder="Masukkan password" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                    </div>
+                    <button onclick="handleLogin()" id="btnLogin"
+                        class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2 mt-2">
+                        <span>Masuk</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AREA PILIH KONTAK -->
+        <div id="selectContactsView" class="hidden flex-1 flex flex-col bg-gray-50 fade-in h-full">
+            
+            <!-- Pencarian & Info -->
+            <div class="p-4 bg-white border-b border-gray-200 sticky top-0 z-10">
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    <input type="text" id="searchInput" onkeyup="renderContacts()" placeholder="Cari nama atau wihdah..." 
+                        class="w-full pl-9 pr-3 py-2 bg-gray-100 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                </div>
+                <div class="flex justify-between items-center mt-3 text-xs font-medium text-gray-600">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="rounded text-green-600 focus:ring-green-500 w-4 h-4">
+                        Pilih Semua
+                    </label>
+                    <span id="selectedCount">0 dipilih</span>
+                </div>
+            </div>
+
+            <!-- List Kontak -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-3" id="contactList">
+                <!-- Kontak di-render via JavaScript -->
+            </div>
+
+            <!-- Tombol Lanjut (Sticky Bottom) -->
+            <div class="bg-white p-4 border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
+                <button onclick="goToCompose()" id="btnNext" disabled
+                    class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:text-gray-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg flex justify-center items-center gap-2">
+                    <span>Lanjut Buat Pesan (<span id="btnNextCount">0</span>)</span> <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- AREA BUAT PESAN -->
+        <div id="composeMessageView" class="hidden flex-1 flex flex-col bg-gray-50 fade-in h-full">
+            <div class="p-4 bg-white border-b border-gray-200 flex items-center gap-3 sticky top-0 z-10 shadow-sm">
+                <button onclick="goToSelect()" class="text-gray-600 hover:text-gray-900 flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 class="font-bold text-gray-800 text-lg">Buat Pesan</h2>
+            </div>
+            
+            <div class="p-5 flex-1 flex flex-col">
+                <div class="bg-blue-50 text-blue-700 p-4 rounded-xl text-sm mb-6 border border-blue-100 flex items-start gap-3">
+                    <i class="fas fa-info-circle mt-0.5 text-lg"></i> 
+                    <p>Pesan Anda akan dikirim ke <strong id="composeTargetCount" class="text-blue-800 text-base">0</strong> kontak yang telah dipilih.</p>
+                </div>
+
+                <label class="block text-sm font-semibold text-gray-700 mb-2 flex justify-between items-center">
+                    <span>Isi Pesan</span>
+                    <span class="text-blue-500 cursor-pointer text-xs bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 transition-colors" onclick="insertVariable('{nama}')">+ {nama}</span>
+                </label>
+                <textarea id="messageText" rows="6" placeholder="Tulis pesan Anda di sini... Gunakan {nama}, {wihdah}, {kamar} untuk pesan otomatis." 
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 text-sm mb-6 flex-1 resize-none"></textarea>
+                
+                <button onclick="sendMessages()" id="btnSend"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg flex justify-center items-center gap-2 mt-auto">
+                    <i class="fas fa-paper-plane"></i> <span>Kirim Pesan Sekarang</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- KOTAK PESAN (MODAL CUSTOM) -->
+        <div id="messageBox" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform transition-all scale-95 opacity-0" id="messageBoxContent">
+                <div class="text-center">
+                    <div id="messageIcon" class="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl mb-4"></div>
+                    <h3 id="messageTitle" class="text-lg font-bold text-gray-900 mb-2"></h3>
+                    <p id="messageTextModal" class="text-sm text-gray-600 mb-6"></p>
+                    <button onclick="closeMessageBox()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2.5 rounded-lg transition-colors">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // STATE APLIKASI
+        let appState = {
+            token: "",
+            contacts: [],
+            selectedIds: new Set()
+        };
+
+        // ENKRIPSI SHA-256 (Web Crypto API)
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // FUNGSI LOGIN & AMBIL DATA
+        async function handleLogin() {
+            const apiUrl = document.getElementById('apiUrl').value.trim();
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('btnLogin');
+
+            if (!apiUrl || !password) {
+                showMessage("Peringatan", "URL API dan Password harus diisi!", "warning");
+                return;
+            }
+
+            // UI Loading
+            btn.innerHTML = '<div class="loader border-white border-top-transparent"></div> <span>Memverifikasi...</span>';
+            btn.disabled = true;
+
+            try {
+                // Enkripsi password di browser sebelum dikirim
+                const hashedPassword = await sha256(password);
+                
+                // Fetch ke AppScript
+                const response = await fetch(`${apiUrl}?p=${hashedPassword}`);
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    appState.token = result.token;
+                    appState.contacts = result.data.map(c => ({
+                        ...c,
+                        sendWa1: !!c.wa1, // Default centang jika ada nomor
+                        sendWa2: !!c.wa2
+                    }));
+                    
+                    document.getElementById('loginView').classList.add('hidden');
+                    document.getElementById('selectContactsView').classList.remove('hidden');
+                    document.getElementById('headerSubtitle').innerText = `${appState.contacts.length} Kontak Ditemukan`;
+                    
+                    renderContacts();
+                    showMessage("Berhasil", "Data berhasil diambil dengan aman.", "success");
+                } else {
+                    showMessage("Akses Ditolak", result.message, "error");
+                }
+            } catch (error) {
+                showMessage("Kesalahan Sistem", "Gagal menghubungi server. Pastikan URL API benar.", "error");
+            } finally {
+                btn.innerHTML = '<span>Masuk</span>';
+                btn.disabled = false;
+            }
+        }
+
+        // FUNGSI RENDER DAFTAR KONTAK
+        function renderContacts() {
+            const container = document.getElementById('contactList');
+            const searchStr = document.getElementById('searchInput').value.toLowerCase();
+            
+            container.innerHTML = "";
+            let filtered = appState.contacts.filter(c => 
+                c.nama.toLowerCase().includes(searchStr) || 
+                c.wihdah.toLowerCase().includes(searchStr)
+            );
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-400 py-8 text-sm"><i class="fas fa-box-open text-3xl mb-2"></i><br>Tidak ada kontak ditemukan</div>`;
+                return;
+            }
+
+            filtered.forEach(c => {
+                const isSelected = appState.selectedIds.has(c.id);
+                const borderClass = isSelected ? "border-green-500 bg-green-50" : "border-gray-200 bg-white";
+                
+                let html = `
+                <div class="rounded-xl border ${borderClass} shadow-sm transition-all overflow-hidden">
+                    <!-- Header Card -->
+                    <div class="p-3 flex items-center gap-3 cursor-pointer" onclick="toggleContact(${c.id})">
+                        <div class="flex-shrink-0">
+                            <input type="checkbox" ${isSelected ? "checked" : ""} class="rounded text-green-600 focus:ring-green-500 w-5 h-5" onclick="event.stopPropagation(); toggleContact(${c.id})">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold text-gray-800 text-sm truncate">${c.nama}</h3>
+                            <p class="text-xs text-gray-500 truncate">Wihdah: <span class="font-semibold">${c.wihdah}</span> | Kamar: <span class="font-semibold">${c.kamar}</span></p>
+                        </div>
+                        <i class="fas fa-chevron-${isSelected ? 'up' : 'down'} text-gray-400 text-xs"></i>
+                    </div>
+                    
+                    <!-- Detail (Expandable) -->
+                    ${isSelected ? `
+                    <div class="px-3 pb-3 pt-1 border-t border-green-100 bg-green-50/50">
+                        <p class="text-xs text-gray-600 mb-2 font-medium">Pilih nomor tujuan:</p>
+                        <div class="space-y-2">
+                            ${c.wa1 ? `
+                            <label class="flex items-center gap-2 text-sm bg-white p-2 rounded border border-gray-200">
+                                <input type="checkbox" ${c.sendWa1 ? "checked" : ""} onchange="updateSubTarget(${c.id}, 'wa1', this.checked)" class="rounded text-green-600">
+                                <i class="fab fa-whatsapp text-green-500"></i> WA 1: ${c.wa1}
+                            </label>` : `<div class="text-xs text-gray-400 italic px-2">WA 1 Tidak tersedia</div>`}
+                            
+                            ${c.wa2 ? `
+                            <label class="flex items-center gap-2 text-sm bg-white p-2 rounded border border-gray-200">
+                                <input type="checkbox" ${c.sendWa2 ? "checked" : ""} onchange="updateSubTarget(${c.id}, 'wa2', this.checked)" class="rounded text-green-600">
+                                <i class="fab fa-whatsapp text-green-500"></i> WA 2: ${c.wa2}
+                            </label>` : `<div class="text-xs text-gray-400 italic px-2">WA 2 Tidak tersedia</div>`}
+                        </div>
+                    </div>
+                    ` : ""}
+                </div>`;
+                
+                container.insertAdjacentHTML('beforeend', html);
+            });
+            
+            updateCounter();
+        }
+
+        // INTERAKSI UI KONTAK
+        function toggleContact(id) {
+            if (appState.selectedIds.has(id)) {
+                appState.selectedIds.delete(id);
+            } else {
+                appState.selectedIds.add(id);
+            }
+            renderContacts();
+        }
+
+        function toggleSelectAll() {
+            const isChecked = document.getElementById('selectAll').checked;
+            const searchStr = document.getElementById('searchInput').value.toLowerCase();
+            
+            appState.contacts.forEach(c => {
+                const match = c.nama.toLowerCase().includes(searchStr) || c.wihdah.toLowerCase().includes(searchStr);
+                if (match) {
+                    if (isChecked) appState.selectedIds.add(c.id);
+                    else appState.selectedIds.delete(c.id);
+                }
+            });
+            renderContacts();
+        }
+
+        function updateSubTarget(id, type, isChecked) {
+            const contact = appState.contacts.find(c => c.id === id);
+            if(contact) {
+                if(type === 'wa1') contact.sendWa1 = isChecked;
+                if(type === 'wa2') contact.sendWa2 = isChecked;
+            }
+        }
+
+        function updateCounter() {
+            const size = appState.selectedIds.size;
+            document.getElementById('selectedCount').innerText = `${size} dipilih`;
+            document.getElementById('selectAll').checked = size > 0 && size === appState.contacts.length;
+            
+            const btnNext = document.getElementById('btnNext');
+            document.getElementById('btnNextCount').innerText = size;
+            btnNext.disabled = size === 0;
+        }
+
+        // NAVIGASI ANTAR HALAMAN
+        function goToCompose() {
+            if (appState.selectedIds.size === 0) return;
+            document.getElementById('selectContactsView').classList.add('hidden');
+            document.getElementById('composeMessageView').classList.remove('hidden');
+            document.getElementById('composeTargetCount').innerText = appState.selectedIds.size;
+        }
+
+        function goToSelect() {
+            document.getElementById('composeMessageView').classList.add('hidden');
+            document.getElementById('selectContactsView').classList.remove('hidden');
+        }
+
+        function insertVariable(variable) {
+            const txt = document.getElementById('messageText');
+            txt.value += variable + " ";
+            txt.focus();
+        }
+
+        // PENGIRIMAN PESAN KE FONNTE
+        async function sendMessages() {
+            const baseMessage = document.getElementById('messageText').value.trim();
+            if (appState.selectedIds.size === 0) {
+                showMessage("Peringatan", "Pilih minimal satu kontak untuk dikirimi pesan.", "warning");
+                return;
+            }
+            if (!baseMessage) {
+                showMessage("Peringatan", "Isi pesan tidak boleh kosong.", "warning");
+                return;
+            }
+
+            const btn = document.getElementById('btnSend');
+            btn.innerHTML = '<div class="loader"></div> <span>Mengirim...</span>';
+            btn.disabled = true;
+
+            let successCount = 0;
+            let failCount = 0;
+            const selectedContacts = appState.contacts.filter(c => appState.selectedIds.has(c.id));
+
+            for (const contact of selectedContacts) {
+                // Kumpulkan nomor target (WA1 dan WA2 jika dicentang)
+                let targets = [];
+                if (contact.sendWa1 && contact.wa1) targets.push(contact.wa1);
+                if (contact.sendWa2 && contact.wa2) targets.push(contact.wa2);
+
+                if (targets.length === 0) continue; // Skip jika tidak ada target
+
+                // Format Pesan Dinamis (Replace {nama}, {wihdah}, {kamar})
+                let personalMessage = baseMessage
+                    .replace(/{nama}/g, contact.nama)
+                    .replace(/{wihdah}/g, contact.wihdah)
+                    .replace(/{kamar}/g, contact.kamar);
+
+                // Gabungkan target jadi string "081xx,082xx"
+                let targetString = targets.join(',');
+
+                try {
+                    const formData = new FormData();
+                    formData.append('target', targetString);
+                    formData.append('message', personalMessage);
+
+                    const res = await fetch('https://api.fonnte.com/send', {
+                        method: 'POST',
+                        headers: { 'Authorization': appState.token },
+                        body: formData
+                    });
+                    
+                    const result = await res.json();
+                    if (result.status) {
+                        successCount += targets.length;
+                    } else {
+                        failCount += targets.length;
+                    }
+                } catch (error) {
+                    failCount += targets.length;
+                }
+                
+                // Jeda 1 detik agar tidak terkena limit API/Banned
+                await new Promise(r => setTimeout(r, 1000));
+            }
+
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Kirim Pesan Sekarang</span>';
+            btn.disabled = false;
+
+            showMessage("Selesai", `Berhasil dikirim ke ${successCount} nomor. Gagal: ${failCount} nomor.`, "success");
+        }
+
+        // SISTEM KOTAK PESAN (MODAL)
+        function showMessage(title, text, type) {
+            const modal = document.getElementById('messageBox');
+            const content = document.getElementById('messageBoxContent');
+            const icon = document.getElementById('messageIcon');
+            
+            document.getElementById('messageTitle').innerText = title;
+            document.getElementById('messageTextModal').innerText = text;
+
+            if (type === 'success') {
+                icon.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl mb-4 bg-green-100 text-green-600";
+                icon.innerHTML = '<i class="fas fa-check"></i>';
+            } else if (type === 'error') {
+                icon.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl mb-4 bg-red-100 text-red-600";
+                icon.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                icon.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl mb-4 bg-yellow-100 text-yellow-600";
+                icon.innerHTML = '<i class="fas fa-exclamation"></i>';
+            }
+
+            modal.classList.remove('hidden');
+            // Sedikit delay agar transisi animasi berjalan
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeMessageBox() {
+            const modal = document.getElementById('messageBox');
+            const content = document.getElementById('messageBoxContent');
+            
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => { modal.classList.add('hidden'); }, 200);
+        }
+    </script>
+</body>
+</html>
