@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Header PPMI Madinah</title>
+    <!-- Mengimpor font dari Google Fonts untuk teks Arab dan Latin -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Pengaturan dasar agar pas di Google Sites */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden; /* Mencegah munculnya scrollbar di dalam iframe Google Sites */
+        }
+
+        /* Wrapper baru untuk menyatukan banner dan teks bergerak */
+        .header-wrapper {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background-color: transparent;
+        }
+
+        /* Desain utama banner header - Dibuat sangat fleksibel */
+        .header-banner {
+            position: relative;
+            width: 100%;
+            /* Tinggi akan menyesuaikan isi, namun tetap proporsional */
+            background: linear-gradient(135deg, #0f7b40 0%, #159c52 50%, #0a572c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Menjaga jarak teks dan logo */
+            flex-wrap: nowrap; /* Mencegah elemen turun ke bawah di layar kecil */
+            padding: 15px 5%;
+            box-sizing: border-box;
+            overflow: hidden;
+            gap: 15px; /* Jarak aman antara teks dan logo */
+        }
+
+        /* Efek cahaya/motif abstrak tipis di background */
+        .header-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                radial-gradient(circle at 10% 150%, rgba(255, 255, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% -30%, rgba(255, 255, 255, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        /* Wadah untuk teks */
+        .text-container {
+            z-index: 1;
+            text-align: right;
+            color: #ffffff;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Styling font Arab dengan ukuran responsif (clamp) */
+        .text-container h1 {
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            /* Ukuran minimal 1.5rem, optimal 5vw, maksimal 2.8rem */
+            font-size: clamp(1.5rem, 5vw, 2.8rem); 
+            font-weight: 700;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            line-height: 1.2;
+        }
+
+        /* Styling subtitle dengan ukuran responsif */
+        .text-container p {
+            margin: 5px 0 0 0;
+            font-size: clamp(0.8rem, 2.5vw, 1.3rem);
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: #d1f2df;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* Wadah untuk logo */
+        .logo-container {
+            z-index: 1;
+            flex-shrink: 0; /* Mencegah logo mengecil terlalu ekstrem */
+        }
+
+        /* Desain bentuk logo (Dibuat bulat dengan border dan ukuran responsif) */
+        .logo-container img {
+            /* Ukuran logo akan menyesuaikan layar otomatis (60px hingga 110px) */
+            height: clamp(60px, 15vw, 110px);
+            width: clamp(60px, 15vw, 110px);
+            object-fit: contain;
+            background-color: #ffffff;
+            border-radius: 50%;
+            padding: 6px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+            border: 3px solid #b3e6c9;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container img:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- Desain Tulisan Bergerak (Ticker) --- */
+        .ticker-container {
+            width: 100%;
+            background-color: #084c25; /* Hijau lebih gelap untuk kontras */
+            padding: 8px 0;
+            overflow: hidden;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .ticker-text {
+            display: inline-block;
+            white-space: nowrap;
+            color: #d1f2df;
+            font-size: 0.95rem;
+            font-family: 'Cairo', 'Poppins', sans-serif;
+            padding-left: 100%; /* Memulai teks dari luar layar sebelah kanan */
+            animation: scroll 20s linear infinite; /* Kecepatan animasi, ubah angka 20s jika ingin lebih cepat/lambat */
+        }
+
+        .ticker-text:hover {
+            animation-play-state: paused; /* Berhenti saat disentuh/hover */
+            cursor: default;
+        }
+
+        .ticker-text span {
+            margin-right: 10px;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); } /* Bergerak ke kiri penuh */
+        }
+
+        /* --- Desain Tombol Aksi (Action Buttons) --- */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; /* Tombol akan turun ke baris baru jika ruang sempit */
+            gap: 12px;
+            margin-top: 15px;
+            padding: 0 5px;
+            direction: ltr; /* Memastikan baris tombol dibaca dari kiri ke kanan */
+        }
+
+        .action-btn {
+            text-decoration: none;
+            color: #ffffff;
+            background: linear-gradient(135deg, #159c52, #0f7b40);
+            padding: 10px 20px;
+            border-radius: 50px; /* Bentuk kapsul melingkar */
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(15, 123, 64, 0.2);
+            transition: all 0.3s ease;
+            text-align: center;
+            flex-grow: 1; /* Membuat tombol menyebar merata */
+            max-width: 180px; /* Lebar maksimal tombol */
+            min-width: 120px; /* Lebar minimal tombol */
+            border: 2px solid transparent;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px); /* Efek melayang ke atas */
+            box-shadow: 0 6px 15px rgba(15, 123, 64, 0.4);
+            background: linear-gradient(135deg, #1aa85b, #128f4d);
+            border-color: #b3e6c9; /* Border tipis bercahaya saat disentuh */
+        }
+
+        /* --- Desain Form Login Internal --- */
+        .login-section {
+            margin: 25px auto 10px auto;
+            max-width: 400px; /* Lebar maksimal agar tidak terlalu memanjang di PC */
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid #159c52;
+            text-align: center;
+            direction: rtl; /* Untuk header bahasa Arab */
+        }
+
+        .login-header {
+            margin-bottom: 20px;
+        }
+
+        .login-header h2 {
+            font-family: 'Cairo', sans-serif;
+            color: #0a572c;
+            margin: 0;
+            font-size: 1.6rem;
+            line-height: 1.2;
+        }
+
+        .login-header h3 {
+            font-family: 'Poppins', sans-serif;
+            color: #159c52;
+            margin: 5px 0 0 0;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .login-form {
+            direction: ltr; /* Input dibaca dari kiri ke kanan */
+            text-align: left;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            color: #333;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            background-color: #f9fdfa;
+        }
+
+        .input-group input:focus {
+            border-color: #159c52;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(21, 156, 82, 0.15);
+            background-color: #ffffff;
+        }
+
+        .login-submit-btn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            background: linear-gradient(135deg, #159c52, #0f7b40);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(15, 123, 64, 0.2);
+        }
+
+        .login-submit-btn:hover {
+            background: linear-gradient(135deg, #1aa85b, #128f4d);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(15, 123, 64, 0.3);
+        }
+
+        /* Desain Tombol Sukses untuk Pengalihan Manual */
+        .success-redirect-btn {
+            display: block;
+            width: 100%;
+            margin-top: 15px;
+            padding: 15px 12px;
+            background: linear-gradient(135deg, #0a572c, #159c52);
+            color: white;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-decoration: none;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(15, 123, 64, 0.3);
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            animation: pulse 2s infinite;
+        }
+
+        .success-redirect-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #128f4d, #1aa85b);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(21, 156, 82, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(21, 156, 82, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(21, 156, 82, 0); }
+        }
+
+        /* --- Style Pesan Login --- */
+        .login-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: 'Poppins', sans-serif;
+            display: none;
+            font-weight: 600;
+            text-align: center;
+        }
+        .msg-error { background-color: #fde8e8; color: #c81e1e; border: 1px solid #fbd5d5; }
+        .msg-success { background-color: #def7ec; color: #03543f; border: 1px solid #bcdecb; }
+        .login-submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        /* --- Optimalisasi Layar HP agar tidak memakan banyak ruang vertikal --- */
+        @media (max-width: 600px) {
+            .header-banner {
+                padding: 10px 15px; /* Mengurangi padding atas/bawah secara signifikan */
+                gap: 10px; /* Mengurangi jarak teks dan logo */
+            }
+            .ticker-container {
+                padding: 4px 0; /* Mengurangi tinggi area teks berjalan */
+            }
+            .ticker-text {
+                font-size: 0.85rem; /* Menyesuaikan ukuran teks bergerak */
+            }
+            .text-container h1 {
+                line-height: 1.1; /* Merapatkan jarak antar baris teks Arab */
+            }
+            .text-container p {
+                margin-top: 0px; /* Merapatkan jarak dengan teks Arab */
+                font-size: 0.9rem;
+            }
+            .button-container {
+                margin-top: 12px;
+                gap: 8px;
+            }
+            .action-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+                flex-basis: calc(50% - 8px); /* Membuat 2 tombol sejajar pada baris di HP */
+                max-width: 100%;
+            }
+            .login-section {
+                padding: 20px;
+                margin-top: 20px;
+                margin-left: 5px;
+                margin-right: 5px;
+            }
+            .login-header h2 {
+                font-size: 1.4rem;
+            }
+            .input-group input {
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-wrapper">
+        <div class="header-banner">
+            <!-- Bagian Teks -->
+            <div class="text-container">
+                <h1>المندوبية الإندونيسية</h1>
+                <p>PPMI MADINAH</p>
+            </div>
+            <!-- Bagian Logo -->
+            <div class="logo-container">
+                <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" alt="Logo PPMI Madinah" onerror="this.src='https://via.placeholder.com/110/ffffff/0f7b40?text=Logo'">
+            </div>
+        </div>
+        
+        <!-- Bagian Tulisan Bergerak (Ticker) -->
+        <div class="ticker-container" dir="ltr">
+            <div class="ticker-text">
+                <span>أهلاً بكم في الموقع المصغر الداخلي للمندوبية الإندونيسية • Selamat datang di microsite internal PPMI Madinah •</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kotak Login Internal -->
+    <div class="login-section">
+        <div class="login-header">
+            <h2>تسجيل الدخول</h2>
+            <h3>AKSES INTERNAL PPMI</h3>
+        </div>
+        <form class="login-form" id="ppmiLoginForm">
+            <div id="formInputs">
+                <div class="input-group">
+                    <label for="username">Username / NIM</label>
+                    <input type="text" id="username" placeholder="Masukkan Username atau NIM" required>
+                </div>
+                <div class="input-group">
+                    <label for="pin">PIN Akses</label>
+                    <input type="password" id="pin" placeholder="Masukkan 6 Digit PIN" inputmode="numeric" pattern="[0-9]*" maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                </div>
+            </div>
+            <button type="submit" class="login-submit-btn" id="loginBtn">Masuk 🔐</button>
+            <div id="loginMessage" class="login-message"></div>
+            <!-- Area ini akan diisi oleh tombol lanjutkan jika login berhasil -->
+            <div id="successActionArea"></div>
+        </form>
+    </div>
+
+    <!-- Script Logika Login -->
+    <script>
+        const loginForm = document.getElementById('ppmiLoginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginMessage = document.getElementById('loginMessage');
+        const formInputs = document.getElementById('formInputs');
+        const successActionArea = document.getElementById('successActionArea');
+
+        // URL WEB APP DARI GOOGLE APPS SCRIPT ANDA
+        const APPSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqWhL-P5Bc5s8V5VK0-eq3gbiE_j1dtJWoV9Urm5EVNzWoyGi0CGrXVKxlaEKA9UgxBA/exec'; 
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Mencegah halaman refresh
+            
+            const username = document.getElementById('username').value.trim();
+            const pin = document.getElementById('pin').value.trim();
+
+            if(APPSCRIPT_URL === 'URL_WEB_APP_APPSCRIPT_ANDA_DISINI') {
+                showMessage('Harap masukkan URL AppScript pada kode HTML.', 'error');
+                return;
+            }
+
+            // Ubah tampilan tombol saat memproses
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = 'Memproses... ⏳';
+            loginMessage.style.display = 'none';
+
+            // Mengirim request GET ke Google App Script
+            fetch(`${APPSCRIPT_URL}?username=${encodeURIComponent(username)}&pin=${encodeURIComponent(pin)}`, {
+                method: 'GET',
+                redirect: 'follow'
+            })
+                .then(response => response.text()) 
+                .then(text => {
+                    let data;
+                    
+                    // Langkah 1: Membaca format JSON
+                    try {
+                        data = JSON.parse(text);
+                    } catch (err) {
+                        console.error("Respon bukan JSON:", text);
+                        showMessage('Gagal membaca format data dari server.', 'error');
+                        resetButton();
+                        return; // Berhenti di sini jika gagal
+                    }
+                        
+                    // Langkah 2: Memproses hasil login jika format JSON benar
+                    if (data.success) {
+                        showMessage('Data Terverifikasi!', 'success');
+                        
+                        // MENANGANI PEMBLOKIRAN GOOGLE SITES
+                        formInputs.style.display = 'none';
+                        loginBtn.style.display = 'none';
+                        
+                        // MENGUBAH TARGET MENJADI _blank (BUKA DI TAB BARU)
+                        // Ini adalah cara paling mutlak untuk lepas dari sandbox Google Sites
+                        successActionArea.innerHTML = `
+                            <a href="${data.redirectUrl}" target="_blank" class="success-redirect-btn">
+                                Buka Halaman Tujuan ➔
+                            </a>
+                        `;
+                        
+                    } else {
+                        showMessage(data.message || 'Username atau PIN salah!', 'error');
+                        resetButton();
+                    }
+                })
+                .catch(error => {
+                    console.error("Error Koneksi Fetch:", error);
+                    showMessage('Koneksi diblokir atau gagal menyambung ke server.', 'error');
+                    resetButton();
+                });
+        });
+
+        function showMessage(text, type) {
+            loginMessage.textContent = text;
+            loginMessage.className = `login-message msg-${type}`;
+            loginMessage.style.display = 'block';
+        }
+
+        function resetButton() {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = 'Masuk 🔐';
+        }
+    </script>
+</body>
+</html>
