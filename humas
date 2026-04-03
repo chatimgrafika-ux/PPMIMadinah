@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 0; background-color: transparent; font-family: 'Poppins', sans-serif; overflow: hidden; }
+        .header-wrapper { width: 100%; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
+        .header-banner {
+            position: relative; width: 100%;
+            background: linear-gradient(135deg, #0f7b40 0%, #159c52 50%, #0a572c 100%);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 5%; box-sizing: border-box; gap: 15px;
+        }
+        .header-banner::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(circle at 10% 150%, rgba(255, 255, 255, 0.15) 0%, transparent 40%),
+                              radial-gradient(circle at 90% -30%, rgba(255, 255, 255, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+        }
+        .text-container { z-index: 1; text-align: right; color: #ffffff; flex-grow: 1; display: flex; flex-direction: column; }
+        .text-container h1 { font-family: 'Cairo', sans-serif; margin: 0; font-size: clamp(1.5rem, 5vw, 2.8rem); font-weight: 700; text-shadow: 2px 2px 5px rgba(0,0,0,0.3); line-height: 1.2; }
+        .text-container p { margin: 5px 0 0 0; font-size: clamp(0.8rem, 2.5vw, 1.3rem); letter-spacing: 1px; font-weight: 700; color: #d1f2df; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+        .logo-container img { height: clamp(60px, 15vw, 110px); width: clamp(60px, 15vw, 110px); object-fit: contain; background-color: #ffffff; border-radius: 50%; padding: 6px; box-shadow: 0 5px 15px rgba(0,0,0,0.25); border: 3px solid #b3e6c9; }
+        .ticker-container { width: 100%; background-color: #084c25; padding: 8px 0; overflow: hidden; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .ticker-text { display: inline-block; white-space: nowrap; color: #d1f2df; font-size: 0.95rem; font-family: 'Cairo', sans-serif; padding-left: 100%; animation: scroll 20s linear infinite; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+        @media (max-width: 600px) { .header-banner { padding: 10px 15px; } .text-container h1 { line-height: 1.1; } .text-container p { font-size: 0.9rem; } }
+    </style>
+</head>
+<body>
+    <div class="header-wrapper">
+        <div class="header-banner">
+            <div class="text-container">
+                <h1>المندوبية الإندونيسية</h1>
+                <p>PPMI MADINAH</p>
+            </div>
+            <div class="logo-container">
+                <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" alt="Logo" onerror="this.src='https://via.placeholder.com/110/ffffff/0f7b40?text=Logo'">
+            </div>
+        </div>
+        <div class="ticker-container" dir="ltr">
+            <div class="ticker-text">
+                أهلاً بكم في الموقع المصغر الداخلي للمندوبية الإندونيسية • Selamat datang di microsite internal PPMI Madinah •
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Pengaturan dasar agar pas di Google Sites */
+        body { 
+            margin: 0; 
+            padding: 10px; 
+            background-color: transparent; 
+            font-family: 'Poppins', sans-serif; 
+        }
+
+        .humas-section {
+            background: #ffffff; 
+            border-radius: 12px; 
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-top: 5px solid #159c52; 
+            text-align: center;
+            position: relative; 
+            overflow: hidden;
+        }
+
+        /* Dekorasi latar belakang */
+        .humas-section::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(#159c52 1px, transparent 1px);
+            background-size: 25px 25px;
+            opacity: 0.03;
+            pointer-events: none;
+        }
+
+        .humas-header h2 { 
+            font-family: 'Cairo', sans-serif; 
+            color: #0a572c; 
+            margin: 0; 
+            font-size: 1.8rem; 
+        }
+
+        .humas-header h3 { 
+            color: #159c52; 
+            margin: 5px 0 15px 0; 
+            font-size: 1.05rem; 
+            font-weight: 700; 
+            letter-spacing: 0.5px;
+        }
+
+        .humas-content p { 
+            color: #555; 
+            font-size: 0.9rem; 
+            line-height: 1.6; 
+            margin-bottom: 25px; 
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Wadah tombol yang sejajar */
+        .humas-links { 
+            display: flex; 
+            justify-content: center; 
+            gap: 10px; 
+            flex-wrap: wrap; 
+            direction: ltr; /* Tombol mengalir dari kiri ke kanan */
+            position: relative;
+            z-index: 1;
+        }
+
+        .humas-btn {
+            padding: 10px 18px; 
+            border-radius: 8px; 
+            background: #f0fdf4;
+            color: #0f7b40; 
+            text-decoration: none; 
+            font-size: 0.85rem; 
+            font-weight: 600;
+            border: 1px solid #bceacb; 
+            transition: all 0.3s ease;
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px;
+            flex-grow: 1;
+            max-width: 200px;
+            justify-content: center;
+        }
+
+        /* Tombol aksi utama dengan sedikit penekanan warna */
+        .humas-btn.primary {
+            background: #159c52;
+            color: #ffffff;
+            border-color: #159c52;
+        }
+
+        .humas-btn:hover { 
+            background: #159c52; 
+            color: #ffffff; 
+            transform: translateY(-3px); 
+            box-shadow: 0 4px 12px rgba(21, 156, 82, 0.2);
+            border-color: #159c52;
+        }
+
+        .humas-btn.primary:hover {
+            background: #0a572c;
+            border-color: #0a572c;
+        }
+
+        /* Optimalisasi layar HP */
+        @media (max-width: 600px) { 
+            .humas-header h2 { font-size: 1.5rem; } 
+            .humas-header h3 { font-size: 0.95rem; }
+            .humas-links { gap: 8px; }
+            .humas-btn { 
+                flex-basis: calc(50% - 8px); 
+                font-size: 0.8rem; 
+                padding: 10px 12px;
+                max-width: 100%;
+            } 
+        }
+
+        @media (max-width: 400px) {
+            .humas-btn {
+                flex-basis: 100%; /* Menjadi satu baris per tombol di layar sangat kecil */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="humas-section">
+        <div class="humas-header">
+            <h2>قسم العلاقات العامة</h2>
+            <h3>DIVISI HUBUNGAN MASYARAKAT</h3>
+        </div>
+        <div class="humas-content">
+            <p>Pusat informasi, komunikasi, dan pelayanan aspirasi bagi seluruh pelajar dan mahasiswa Indonesia di Madinah.</p>
+            
+            <div class="humas-links">
+                <!-- Tombol Pendataan & Statistik (Sejajar) -->
+                <a href="https://script.google.com/macros/s/AKfycbz3Rl7cHZPijFcAM-zSmO3J624j_Q7LLb-eUgkwN1TkwPBteNPqIhGGq72QqzKP97dv/exec" target="_blank" class="humas-btn primary">📝 Pendataan KJRI 2026</a>
+                <a href="https://sites.google.com/view/ppmi-madinah/statistik" target="_blank" class="humas-btn primary">📊 Statistik</a>
+                
+                <!-- Tombol Media Sosial & Informasi -->
+                <a href="https://instagram.com/ppmimadinah" target="_blank" class="humas-btn">📸 Instagram</a>
+                <a href="https://wa.me/6281313777542" target="_blank" class="humas-btn">💬 Informasi</a>
+                <a href="#" target="_blank" class="humas-btn">🌐 Microsite</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
