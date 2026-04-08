@@ -7,7 +7,6 @@
     <title> PPMI Madinah </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Menggunakan Font Poppins untuk tampilan yang lebih modern -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         html, body { 
@@ -20,22 +19,19 @@
             padding: 0; 
             touch-action: manipulation; 
             -webkit-text-size-adjust: 100%; 
-            background-color: #f0fdf4; /* Warna hijau sangat lembut untuk background */
+            background-color: #f0fdf4;
             font-family: 'Poppins', sans-serif;
         }
         * { box-sizing: border-box !important; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-in-out;
-        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Date Picker specific styles */
         .picker-col { scroll-snap-type: y mandatory; overscroll-behavior-y: contain; }
         .picker-item { scroll-snap-align: center; height: 40px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; color: #9ca3af; font-size: 16px; }
         .picker-item.active { font-weight: bold; font-size: 20px; color: #111827; }
@@ -60,7 +56,7 @@
         <p class="text-sm text-gray-500 mt-2 font-medium">الجامعة الإسلامية</p>
     </div>
 
-    <!-- Header (Hidden on auth/email check, visible on form) -->
+    <!-- Header -->
     <header id="main-header" class="hidden sticky top-0 z-30 bg-green-600/95 backdrop-blur-md px-4 py-4 flex items-center justify-between w-full max-w-md mx-auto shadow-md">
         <div class="flex items-center gap-3">
             <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-9 h-9 object-contain bg-white rounded-full p-1 shadow" alt="Logo" onerror="this.style.display='none'">
@@ -98,32 +94,23 @@
     <div id="screen-email" class="min-h-screen flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto">
         <div class="w-full bg-white/90 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50 relative overflow-hidden mt-10">
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-green-600"></div>
-            
             <div class="bg-white-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-25 h-25 object-contain" alt="Logo" onerror="this.style.display='none'">
-            </div>
-            
-            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Portal Pendataan</h2>
-            <p class="text-xs text-center text-gray-500 mb-8 leading-relaxed">Masukkan Email dan Raqm Thalib Anda untuk masuk ke sistem Terpadu Mandub Indonesia.</p>
-            
-            <div class="space-y-4 mb-8">
-                <div class="w-full relative">
-                    <label class="text-xs font-semibold text-gray-700 mb-1.5 block">Alamat Email</label>
-                    <div class="relative">
-                        <i class="fas fa-envelope absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="email" id="login-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="contoh@gmail.com">
-                    </div>
-                </div>
-                <div class="w-full relative">
-                    <label class="text-xs font-semibold text-gray-700 mb-1.5 block">Raqm Thalib</label>
-                    <div class="relative">
-                        <i class="fas fa-id-card absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="text" id="login-thalib" inputmode="numeric" pattern="[0-9]*" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="9 Digit Angka">
-                    </div>
+            <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-25 h-25 object-contain" alt="Logo" onerror="this.style.display='none'">
+        </div>
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Portal Pendataan</h2>
+        <p class="text-xs text-center text-gray-500 mb-8 leading-relaxed">Masukkan No Tasjil Minhatee2 Anda untuk masuk ke sistem Terpadu Mandub Indonesia.</p>
+        
+        <div class="space-y-4 mb-8">
+            <div class="w-full relative">
+                <label class="text-xs font-semibold text-gray-700 mb-1.5 block">No Tasjil Minhatee2</label>
+                <div class="relative">
+                    <i class="fas fa-id-badge absolute left-4 top-3.5 text-gray-400"></i>
+                    <input type="text" id="login-tasjil" inputmode="numeric" pattern="[0-9]*" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="Masukkan angka tasjil...">
                 </div>
             </div>
+        </div>
 
-            <button onclick="loginApp()" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-xl py-4 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2">
+        <button onclick="loginApp()" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-xl py-4 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2">
                 <span>Masuk / Cek Data</span>
                 <i class="fas fa-arrow-right"></i>
             </button>
@@ -140,8 +127,11 @@
                 <i id="profile-icon" class="fas fa-user text-lg"></i>
             </div>
             <div class="flex-1 overflow-hidden">
-                <h2 class="text-sm font-bold text-gray-800 truncate" id="display-thalib">441234567</h2>
-                <p class="text-xs text-gray-500 truncate" id="display-email">email@gmail.com</p>
+                <h2 class="text-sm font-bold text-gray-800 truncate flex items-center gap-2" id="display-nama">
+                    PPMI Madinah 2026 
+                    <span id="badge-blokir" class="hidden bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase">Blokir</span>
+                </h2>
+                <p class="text-xs text-gray-500 truncate" id="display-tasjil">Tasjil: -</p>
                 <p class="text-[10px] text-green-600 font-medium mt-1 italic" id="last-updated-text">Memuat status...</p>
             </div>
         </div>
@@ -169,6 +159,11 @@
                 <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-user-circle text-green-600"></i> Informasi Pribadi</h3>
                 
                 <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Alamat Email</label>
+                    <input type="email" id="f-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="contoh@gmail.com">
+                </div>
+
+                <div class="w-full">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Nama Lengkap (Indonesia) sesuai Paspor</label>
                     <input type="text" id="f-nama-id" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
                 </div>
@@ -177,7 +172,13 @@
                     <input type="text" id="f-nama-ar" lang="ar" dir="rtl" oninput="this.value = this.value.replace(/[^\u0600-\u06FF\s]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 font-medium" placeholder="الاسم الكامل">
                 </div>
                 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="w-full relative mt-1">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Tanggal Lahir</label>
+                    <input type="text" id="f-tanggal-lahir" readonly onclick="openDatePicker('f-tanggal-lahir')" placeholder="Pilih Tanggal (dd/mm/yyyy)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 cursor-pointer text-gray-600 font-medium">
+                    <i class="fas fa-calendar-alt absolute right-4 top-9 text-green-600 pointer-events-none"></i>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mt-1">
                     <div class="w-full">
                         <label class="text-xs font-semibold text-gray-700 mb-1 block">Gender</label>
                         <select id="f-jen-k" onchange="updateProfileIcon(this.value)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
@@ -264,6 +265,18 @@
                 </div>
 
                 <h3 class="text-sm font-bold text-gray-800 mt-6 mb-4 border-b pb-2 flex items-center gap-2">
+                    <i class="fas fa-stethoscope text-green-600"></i> Kesehatan & Bakat
+                </h3>
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Riwayat Penyakit (Opsional)</label>
+                    <input type="text" id="f-riwayat-penyakit" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="Contoh: Asma, Alergi (Kosongkan jika tidak ada)">
+                </div>
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Minat & Bakat (Opsional)</label>
+                    <input type="text" id="f-minat-bakat" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="Contoh: Desain Grafis, Menulis, Olahraga">
+                </div>
+
+                <h3 class="text-sm font-bold text-gray-800 mt-6 mb-4 border-b pb-2 flex items-center gap-2">
                     <i class="fas fa-heart text-red-500"></i> Informasi Kerabat / Darurat <span class="text-red-500 text-xs ml-1">*Wajib</span>
                 </h3>
                 <div class="w-full">
@@ -287,8 +300,8 @@
                 <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-university text-green-600"></i> Informasi Akademik</h3>
                 
                 <div class="w-full">
-                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Raqm Thalib (Otomatis dari Login)</label>
-                    <input type="text" id="f-thalib" readonly class="w-full bg-gray-200 border border-gray-300 rounded-xl px-4 py-3 text-sm outline-none font-bold text-gray-600 cursor-not-allowed">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Raqm Thalib</label>
+                    <input type="text" id="f-thalib" inputmode="numeric" pattern="[0-9]*" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="9 Digit Angka">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -303,21 +316,12 @@
                     </div>
                     <div class="w-full">
                         <label class="text-xs font-semibold text-gray-700 mb-1 block">Angkatan</label>
-                        <select id="f-angkatan-select" onchange="toggleAngkatanLainnya()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
+                        <select id="f-angkatan-select" onchange="toggleLainnya('f-angkatan')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
                             <option value="" disabled selected>Pilih</option>
-                            <option value="Dirosat">Dirosat</option>
-                            <option value="441">441</option>
-                            <option value="442">442</option>
-                            <option value="443">443</option>
-                            <option value="451">451</option>
-                            <option value="452">452</option>
-                            <option value="461">461</option>
-                            <option value="462">462</option>
-                            <option value="471">471</option>
-                            <option value="472">472</option>
+                            <option value="481">481</option>
                             <option value="Lainnya">Lainnya...</option>
                         </select>
-                        <input type="text" id="f-angkatan-lainnya" inputmode="numeric" pattern="[0-9]*" maxlength="3" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="3 digit" class="hidden mt-2 w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                        <input type="text" id="f-angkatan-lainnya" inputmode="numeric" pattern="[0-9]*" maxlength="3" oninput="document.getElementById('f-angkatan').value = this.value" placeholder="3 digit" class="hidden mt-2 w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
                         <input type="hidden" id="f-angkatan" name="angkatan">
                     </div>
                 </div>
@@ -328,62 +332,17 @@
                       <option value="" disabled selected>Pilih Jenjang</option>
                       <option value="Diplom Mutawasith">Ma'had</option>
                       <option value="Sarjana">Sarjana</option>
-                      <option value="Diplom Aly">Diploma Ali</option>
-                      <option value="Magister">Magister</option>
-                      <option value="Doktoral">Doktoral</option>
                   </select>
                 </div>
 
                 <div class="w-full">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Fakultas / Jurusan</label>
-                    <select id="f-jurusan-select" onchange="toggleJurusanLainnya()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
+                    <select id="f-jurusan-select" onchange="toggleLainnya('f-jurusan')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
                         <option value="" disabled selected>Pilih Jurusan</option>
-                        <option value="Syariah">Syariah</option>
-                        <option value="Dakwah">Dakwah</option>
-                        <option value="Hadits">Hadits</option>
-                        <option value="Al Quran">Al Quran</option>
-                        <option value="Lughah">Lughah</option>
-                        <option value="Andzimah">Andzimah</option>
-                        <option value="A'mal">A'mal</option>
-                        <option value="Teknik (Handasah)">Teknik (Handasah)</option>
-                        <option value="Informatika">Informatika</option>
-                        <option value="MIPA ('Ulum)">MIPA ('Ulum)</option>
                         <option value="Mahad Lughoh">Mahad Lughoh</option>
-                        <option value="Al-Fiqh">Al-Fiqh</option>
-                        <option value="Ushulul Fiqh">Ushulul Fiqh</option>
-                        <option value="Ad-Dirasat Al-Qadhaiyyah">Ad-Dirasat Al-Qadhaiyyah</option>
-                        <option value="Al-Anzhimal">Al-Anzhimal</option>
-                        <option value="Al-Iqtishad">Al-Iqtishad</option>
-                        <option value="Ad-Da'wah">Ad-Da'wah</option>
-                        <option value="Al-Aqidah">Al-Aqidah</option>
-                        <option value="Ad-Da'wah wat-Tsaqafah">Ad-Da'wah wat-Tsaqafah</option>
-                        <option value="Al-Firaq wal Maqalat">Al-Firaq wal Maqalat</option>
-                        <option value="Al-Adyan">Al-Adyan</option>
-                        <option value="Al-Qira'at">Al-Qira'at</option>
-                        <option value="At-Tafsir">At-Tafsir</option>
-                        <option value="Fiqhus Sunnah">Fiqhus Sunnah</option>
-                        <option value="Ulumul Hadits">Ulumul Hadits</option>
-                        <option value="Al-Adab wal Balaghah">Al-Adab wal Balaghah</option>
-                        <option value="Al-Lughawiyyat">Al-Lughawiyyat</option>
-                        <option value="Maharat fil Lughah Al-Arabiyyah (Diploma)">Maharat fil Lughah Al-Arabiyyah (Diploma)</option>
-                        <option value="Al-I'lam wal Ittishal">Al-I'lam wal Ittishal</option>
-                        <option value="Ushulut Tarbiyah Al-Islamiyyah">Ushulut Tarbiyah Al-Islamiyyah</option>
-                        <option value="Al-Idaratut Tarbawiyyah">Al-Idaratut Tarbawiyyah</option>
-                        <option value="Al-Manahij wa Thuruqut Tadris">Al-Manahij wa Thuruqut Tadris</option>
-                        <option value="Ilmun Nafsi">Ilmun Nafsi</option>
-                        <option value="At-Tarbiyatul Muqaranah">At-Tarbiyatul Muqaranah</option>
-                        <option value="At-Tsaqafatul Islamiyyah">At-Tsaqafatul Islamiyyah</option>
-                        <option value="At-Taujih wal Irsyad (Diploma)">At-Taujih wal Irsyad (Diploma)</option>
-                        <option value="At-Tarikh wal (Al-Hadharah)">At-Tarikh wal (Al-Hadharah)</option>
-                        <option value="Ar-Riyadhiyyat">Ar-Riyadhiyyat</option>
-                        <option value="Kimia">Kimia</option>
-                        <option value="Al-Fizya">Al-Fizya</option>
-                        <option value="Al-Hasibul Ali">Al-Hasibul Ali</option>
-                        <option value="Al-Handasah">Al-Handasah</option>
-                        <option value="Ta'limul Lughah Al-Arabiyyah">Ta'limul Lughah Al-Arabiyyah</option>
                         <option value="Lainnya">Lainnya (Isi Sendiri)...</option>
                     </select>
-                    <input type="text" id="f-jurusan-lainnya" placeholder="Tuliskan jurusan Anda di sini..." class="hidden mt-2 w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                    <input type="text" id="f-jurusan-lainnya" placeholder="Tuliskan jurusan Anda di sini..." oninput="document.getElementById('f-jurusan').value = this.value" class="hidden mt-2 w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
                     <input type="hidden" id="f-jurusan" name="jurusan">
                 </div>
                 
@@ -391,36 +350,120 @@
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Asal Sekolah / Pondok Pesantren</label>
                     <input type="text" id="f-alumni" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
                 </div>
+
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Asal Universitas (Opsional - Jika transfer/S2/S3)</label>
+                    <input type="text" id="f-asal-universitas" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                </div>
+
+                <h3 class="text-sm font-bold text-gray-800 mt-6 mb-4 border-b pb-2 flex items-center gap-2">
+                    <i class="fas fa-desktop text-green-600"></i> Data Tasjil & Sistem (Opsional)
+                </h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">No Tasjil SIS</label>
+                        <input type="text" id="f-no-tasjil-sis" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                    </div>
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Status SIS</label>
+                        <select id="f-status-sis-select" onchange="toggleLainnya('f-status-sis')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
+                            <option value="" disabled selected>Pilih Status</option>
+                            <option value="Murosyah">Murosyah</option>
+                            <option value="Maqbul">Maqbul</option>
+                            <option value="Tahta Ijro">Tahta Ijro</option>
+                            <option value="Marfudh">Mulgho</option>
+                            <option value="Lainnya">Lainnya...</option>
+                        </select>
+                        <input type="text" id="f-status-sis-lainnya" oninput="document.getElementById('f-status-sis').value = this.value" placeholder="Ketik status..." class="hidden mt-2 w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                        <input type="hidden" id="f-status-sis">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mt-3">
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">No Tasjil Minhatee2 (Login)</label>
+                        <input type="text" id="f-no-tasjil-minhatee2" readonly class="w-full bg-gray-200 border border-gray-300 rounded-xl px-4 py-3 text-sm outline-none font-bold text-gray-600 cursor-not-allowed">
+                    </div>
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Status Minhatee2</label>
+                        <select id="f-status-minhatee2-select" onchange="toggleLainnya('f-status-minhatee2')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
+                            <option value="" disabled selected>Pilih Status</option>
+                            <option value="Murosyah">Murosyah</option>
+                            <option value="Maqbul Mabdai">Maqbul Mabdai</option>
+                            <option value="Maqbul Nihai">Maqbul Niha'i</option>
+                            <option value="Tahta Dirosah">Tahta Dirosah</option>
+                            <option value="Marfudh">Marfudh</option>
+                            <option value="Lainnya">Lainnya...</option>
+                        </select>
+                        <input type="text" id="f-status-minhatee2-lainnya" oninput="document.getElementById('f-status-minhatee2').value = this.value" placeholder="Ketik status..." class="hidden mt-2 w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                        <input type="hidden" id="f-status-minhatee2">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mt-3">
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Tahun Daftar</label>
+                        <input type="text" id="f-tahun-daftar" inputmode="numeric" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="YYYY" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                    </div>
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Tauiyah</label>
+                        <input type="text" id="f-tauiyah" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                    </div>
+                </div>
             </div>
 
             <!-- ======================= TAB 3: DATA PERJALANAN ======================= -->
             <div id="tab-perjalanan" class="tab-content hidden space-y-4 animate-fade-in">
                 <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-passport text-green-600"></i> Identitas & Dokumen Perjalanan</h3>
                 
-                <div class="w-full" id="visa-container">
-                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Status Visa <span class="text-red-500">*</span></label>
-                    <select id="f-visa" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
-                        <option value="" disabled selected>Pilih Status Visa</option>
-                        <option value="Sudah terbit">Sudah terbit</option>
-                        <option value="Belum terbit">Belum terbit</option>
-                        <option value="Visa Ta'limiyah">Visa Ta'limiyah</option>
-                    </select>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="w-full" id="visa-container">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Status Visa <span class="text-red-500">*</span></label>
+                        <select id="f-visa" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
+                            <option value="" disabled selected>Pilih Status</option>
+                            <option value="Program Online">Program Online</option>
+                            <option value="Sudah terbit">Sudah terbit</option>
+                            <option value="Belum terbit">Belum terbit</option>
+                            <option value="Visa Ta'limiyah">Visa Ta'limiyah</option>
+                        </select>
+                    </div>
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">No Visa (Opsional)</label>
+                        <input type="text" id="f-no-visa" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                    </div>
                 </div>
 
                 <div class="w-full">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Nomor Paspor</label>
-                    <input type="text" id="f-paspor" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 uppercase font-bold tracking-wider" placeholder="CXXXXXXX">
+                    <input type="text" id="f-paspor" maxlength="9" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 uppercase font-bold tracking-wider" placeholder="CXXXXXXX">
                 </div>
                 
                 <div class="w-full relative">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Tanggal Expired Paspor</label>
-                    <input type="text" id="f-expired" readonly onclick="openDatePicker()" placeholder="Pilih Tanggal (dd/mm/yyyy)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 cursor-pointer text-gray-600 font-medium">
+                    <input type="text" id="f-expired" readonly onclick="openDatePicker('f-expired')" placeholder="Pilih Tanggal (dd/mm/yyyy)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 cursor-pointer text-gray-600 font-medium">
                     <i class="fas fa-calendar-alt absolute right-4 top-9 text-green-600 pointer-events-none"></i>
                 </div>
                 
                 <div class="w-full mt-4">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Raqm Iqamah</label>
                     <input type="text" id="f-iqamah" inputmode="numeric" pattern="[0-9]*" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 font-bold tracking-widest text-center" placeholder="XXXXXXXXXX (10 digit)">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mt-4">
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Informasi Tiket</label>
+                        <select id="f-tiket-select" onchange="toggleLainnya('f-tiket')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
+                            <option value="" disabled selected>Pilih Status</option>
+                            <option value="Belum Ada">Belum Ada</option>
+                            <option value="Sudah (Beli Mandiri)">Sudah (Beli Mandiri)</option>
+                            <option value="Difasilitasi Kampus">Difasilitasi Kampus</option>
+                            <option value="Lainnya">Lainnya...</option>
+                        </select>
+                        <input type="text" id="f-tiket-lainnya" oninput="document.getElementById('f-tiket').value = this.value" placeholder="Ketik info tiket..." class="hidden mt-2 w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                        <input type="hidden" id="f-tiket">
+                    </div>
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Informasi Akun</label>
+                        <input type="text" id="f-akun" readonly placeholder="Status Akun" class="w-full bg-gray-200 border border-gray-300 rounded-xl px-4 py-3 text-sm outline-none font-bold text-gray-600 cursor-not-allowed">
+                    </div>
                 </div>
             </div>
 
@@ -658,31 +701,11 @@
                     </div>
                 </div>
 
-                <!-- Section: Grup Komunikasi PPMI -->
-                <div>
-                    <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
-                        <i class="fas fa-users text-blue-500"></i> Komunikasi & Grup PPMI
-                    </h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <a href="https://chat.whatsapp.com/HS2Zt5aKRFd2UXR2EzSe6j" target="_blank" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-2xl hover:shadow-md transition-all hover:-translate-y-1">
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-green-400 to-green-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-green-500/30 mb-2">
-                                <i class="fab fa-whatsapp"></i>
-                            </div>
-                            <span class="text-xs font-bold text-gray-700 text-center">PPMI Madinah</span>
-                        </a>
-                        <a href="https://chat.whatsapp.com/HN3c65WGO866lj177JFzyn" target="_blank" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-2xl hover:shadow-md transition-all hover:-translate-y-1">
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-green-400 to-green-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-green-500/30 mb-2">
-                                <i class="fab fa-whatsapp"></i>
-                            </div>
-                            <span class="text-xs font-bold text-gray-700 text-center">Kajian PPMI</span>
-                        </a>
-                    </div>
-                </div>
-
                 <!-- Section: Sosial Media PPMI -->
                 <div>
                     <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
                         <i class="fas fa-hashtag text-purple-500"></i> Sosial Media PPMI Madinah
+                    </h3>
                     <div class="flex flex-wrap gap-4 justify-center">
                         <a href="https://www.instagram.com/ppmimadinah" target="_blank" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white flex items-center justify-center text-xl shadow-lg shadow-pink-500/30 hover:-translate-y-1 hover:shadow-xl transition-all">
                             <i class="fab fa-instagram"></i>
@@ -748,10 +771,9 @@
         // =========================================================
         // PENTING: ISI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
         // =========================================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbxrF7WlYVWiBrj7veJOulVBsacUDexVGWTUfG_DVBnxCG7mufdfWDEXuo5NcPUbynzxtA/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwkfji_Ye4gx6LVCy_-VpBu_Ua8ud67AqEJeyDw_EBswN76rwpybCCqj7rqlsh4MSZNwA/exec"; 
 
-        let currentUserEmail = '';
-        let currentThalib = '';
+        let currentTasjil = '';
 
         // TABS LOGIC
         const tabs = ['diri', 'akademik', 'perjalanan', 'info'];
@@ -771,7 +793,7 @@
         }
 
         function updateTabUI() {
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Naik ke atas saat ganti tab
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             tabs.forEach((tab, index) => {
                 const content = document.getElementById(`tab-${tab}`);
@@ -790,8 +812,6 @@
 
             document.getElementById('btn-prev').classList.toggle('hidden', currentTabIndex === 0);
             document.getElementById('btn-next').classList.toggle('hidden', currentTabIndex === tabs.length - 1);
-            
-            // Tombol "Simpan Data" akan muncul di Tab ke-3 (Dokumen) dan Tab ke-4 (Info)
             document.getElementById('btn-save').classList.toggle('hidden', currentTabIndex < 2);
         }
 
@@ -823,7 +843,7 @@
                 const result = await response.json();
                 if (result.status === 'success') {
                     setConnectionStatus(true);
-                    return result.data ? JSON.stringify(result.data) : null;
+                    return result.data ? result.data : null;
                 } else {
                     setConnectionStatus(false); throw new Error(result.message);
                 }
@@ -873,42 +893,35 @@
                 document.getElementById('splash-screen').style.opacity = '0';
                 setTimeout(() => document.getElementById('splash-screen').classList.add('hidden'), 500);
             }, 1500);
-            initDatePicker();
         };
 
         function showScreen(id) {
             document.getElementById('screen-email').classList.add('hidden');
             document.getElementById('screen-form').classList.add('hidden');
             document.getElementById('main-header').classList.add('hidden');
-            document.body.classList.replace('bg-green-600', 'bg-white'); // Fix background color transition
+            document.body.classList.replace('bg-green-600', 'bg-white');
 
             document.getElementById(id).classList.remove('hidden');
             if(id === 'screen-form') {
                 document.getElementById('main-header').classList.remove('hidden');
-                switchTab('diri'); // Selalu mulai dari tab Data Diri
+                switchTab('diri'); 
             }
         }
 
         // LOGIN SYSTEM
         async function loginApp() {
-            const emailInput = document.getElementById('login-email').value.trim();
-            const thalibInput = document.getElementById('login-thalib').value.trim();
+            const tasjilInput = document.getElementById('login-tasjil').value.trim();
 
-            if (!emailInput || !emailInput.includes('@')) {
-                showDynamicIsland('Masukkan email yang valid', 'error'); return;
-            }
-            if (!thalibInput || thalibInput.length !== 9) {
-                showDynamicIsland('Raqm Thalib harus 9 digit', 'error'); return;
+            if (!tasjilInput) {
+                showDynamicIsland('Masukkan No Tasjil Minhatee2', 'error'); return;
             }
 
-            currentUserEmail = emailInput.toLowerCase();
-            currentThalib = thalibInput;
+            currentTasjil = tasjilInput;
             
             showDynamicIsland('Verifikasi & Mengambil data...', 'process');
 
             try {
-                // Mengirim Email dan Thalib ke backend GAS
-                const res = await serverCall('getData', { email: currentUserEmail, thalib: currentThalib });
+                const res = await serverCall('getData', { tasjil: currentTasjil });
                 if (res) {
                     const data = JSON.parse(res);
                     populateForm(data);
@@ -917,11 +930,10 @@
                     clearForm();
                     document.getElementById('last-updated-text').textContent = "Status: Pengguna Baru";
                     document.getElementById('last-updated-text').className = "text-[10px] text-blue-600 font-medium mt-1 italic";
-                    document.getElementById('f-thalib').value = currentThalib; // Set Thalib Input otomatis
+                    document.getElementById('f-no-tasjil-minhatee2').value = currentTasjil;
                     showDynamicIsland('Akun Baru. Silakan lengkapi formulir', 'success');
                 }
-                document.getElementById('display-email').textContent = currentUserEmail;
-                document.getElementById('display-thalib').textContent = "ID: " + currentThalib;
+                document.getElementById('display-tasjil').textContent = "Tasjil: " + currentTasjil;
                 showScreen('screen-form');
             } catch (err) {
                 showDynamicIsland(err.message || 'Gagal koneksi ke server', 'error');
@@ -941,33 +953,89 @@
                 else { select.value = 'Lainnya'; if(inputLainnya) { inputLainnya.classList.remove('hidden'); inputLainnya.value = val; } }
             };
 
+            // LOGIKA BLOKIR
+            const isBlocked = data.akun && data.akun.toLowerCase() === 'blokir';
+            const formElements = document.querySelectorAll('#screen-form input, #screen-form select');
+            const saveBtn = document.getElementById('btn-save');
+            const badgeBlokir = document.getElementById('badge-blokir');
+
+            if (isBlocked) {
+                badgeBlokir.classList.remove('hidden');
+                formElements.forEach(el => {
+                    el.disabled = true;
+                    el.classList.add('opacity-70', 'cursor-not-allowed', 'bg-gray-100');
+                });
+                saveBtn.disabled = true;
+                saveBtn.classList.add('opacity-50', 'cursor-not-allowed', 'hidden');
+                showDynamicIsland('Akun diblokir! Data tidak bisa dirubah.', 'error');
+            } else {
+                badgeBlokir.classList.add('hidden');
+                formElements.forEach(el => {
+                    el.disabled = false;
+                    el.classList.remove('opacity-70', 'cursor-not-allowed', 'bg-gray-100');
+                });
+                saveBtn.disabled = false;
+                saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                // Set field yang selalu readonly
+                document.getElementById('f-thalib').readOnly = true;
+                document.getElementById('f-no-tasjil-minhatee2').readOnly = true;
+                document.getElementById('f-akun').readOnly = true;
+                document.getElementById('f-tanggal-lahir').readOnly = true;
+                document.getElementById('f-expired').readOnly = true;
+            }
+
+            // POPULATE DATA
             setDropdownAndLainnya('f-angkatan', data.angkatan);
+            setDropdownAndLainnya('f-jurusan', data.jurusan);
+            setDropdownAndLainnya('f-tiket', data.tiket);
+            setDropdownAndLainnya('f-status-sis', data.status_sis);
+            setDropdownAndLainnya('f-status-minhatee2', data.status_minhatee2);
+
             document.getElementById('f-visa').value = data.visa || '';
             document.getElementById('f-nama-id').value = data.nama_id || '';
             document.getElementById('f-nama-ar').value = data.nama_ar || '';
+            document.getElementById('f-email').value = data.email || '';
             document.getElementById('stts').value = data.stts || ''; 
             document.getElementById('f-jen-k').value = data.jen_k || ''; 
             document.getElementById('f-paspor').value = data.paspor || '';
             
+            // Format Tanggal (Expired)
             let cleanExpired = data.expired || '';
             if (cleanExpired && typeof cleanExpired === 'string') cleanExpired = cleanExpired.split(/[\sT]+/)[0]; 
             document.getElementById('f-expired').value = cleanExpired;
+
+            // Format Tanggal (Tanggal Lahir)
+            let cleanLahir = data.tanggal_lahir || '';
+            if (cleanLahir && typeof cleanLahir === 'string') cleanLahir = cleanLahir.split(/[\sT]+/)[0]; 
+            document.getElementById('f-tanggal-lahir').value = cleanLahir;
 
             document.getElementById('f-iqamah').value = data.iqamah || '';
             document.getElementById('f-wa').value = data.wa || '';
             document.getElementById('f-saudi').value = data.saudi || '';
             document.getElementById('f-jenjang').value = data.jenjang || '';
-            setDropdownAndLainnya('f-jurusan', data.jurusan);
             document.getElementById('f-dom-indo').value = data.dom_indo || '';
             document.getElementById('f-dom-madinah').value = data.dom_madinah || '';
             document.getElementById('f-wihdah').value = data.wihdah || '';
             document.getElementById('f-kamar').value = data.kamar || '';
-            document.getElementById('f-thalib').value = data.thalib || currentThalib; // Prefer current
+            document.getElementById('f-thalib').value = data.thalib || '';
             document.getElementById('f-alumni').value = data.alumni || '';
             document.getElementById('f-kerabat-nama').value = data.kerabat_nama || '';
             document.getElementById('f-kerabat-nomor').value = data.kerabat_nomor || '';
             document.getElementById('f-kerabat-hub').value = data.kerabat_hub || '';
             
+            document.getElementById('f-akun').value = data.akun || '';
+            document.getElementById('f-asal-universitas').value = data.asal_universitas || '';
+            document.getElementById('f-no-visa').value = data.no_visa || '';
+            document.getElementById('f-riwayat-penyakit').value = data.riwayat_penyakit || '';
+            document.getElementById('f-minat-bakat').value = data.minat_bakat || '';
+            document.getElementById('f-no-tasjil-sis').value = data.no_tasjil_sis || '';
+            document.getElementById('f-no-tasjil-minhatee2').value = data.no_tasjil_minhatee2 || currentTasjil;
+            document.getElementById('f-tahun-daftar').value = data.tahun_daftar || '';
+            document.getElementById('f-tauiyah').value = data.tauiyah || '';
+
+            document.getElementById('display-nama').childNodes[0].textContent = data.nama_id || "Data Profil ";
+
             updateProfileIcon(data.jen_k);
             if(data.last_updated) {
                 document.getElementById('last-updated-text').textContent = `Diperbarui: ${data.last_updated}`;
@@ -976,52 +1044,92 @@
         }
 
         function clearForm() {
-            const inputs = document.querySelectorAll('#screen-form input[type="text"]:not(#f-thalib)');
-            inputs.forEach(input => input.value = '');
+            const inputs = document.querySelectorAll('#screen-form input[type="text"], #screen-form input[type="email"]');
+            inputs.forEach(input => {
+                if(input.id !== 'f-no-tasjil-minhatee2') input.value = '';
+            });
             const selects = document.querySelectorAll('#screen-form select');
             selects.forEach(select => select.selectedIndex = 0);
             updateProfileIcon('');
+            document.getElementById('display-nama').childNodes[0].textContent = "Data Baru ";
+            document.getElementById('badge-blokir').classList.add('hidden');
         }
 
         function getFormData() {
+            const getText = (id) => {
+                const el = document.getElementById(id);
+                return el ? el.value.trim() : "";
+            };
+
+            const getNum = (id) => {
+                const el = document.getElementById(id);
+                const val = el ? el.value.trim() : "";
+                return val === "" ? 0 : val;
+            };
+
             return {
-                email: currentUserEmail,
-                angkatan: document.getElementById('f-angkatan').value,
-                visa: document.getElementById('f-visa').value,
-                nama_id: document.getElementById('f-nama-id').value,
-                nama_ar: document.getElementById('f-nama-ar').value,
-                paspor: document.getElementById('f-paspor').value,
-                stts: document.getElementById('stts').value, 
-                jen_k: document.getElementById('f-jen-k').value,
-                expired: document.getElementById('f-expired').value,
-                iqamah: document.getElementById('f-iqamah').value,
-                wa: document.getElementById('f-wa').value,
-                saudi: document.getElementById('f-saudi').value,
-                jenjang: document.getElementById('f-jenjang').value,
-                jurusan: document.getElementById('f-jurusan').value,
-                dom_indo: document.getElementById('f-dom-indo').value,
-                dom_madinah: document.getElementById('f-dom-madinah').value,
-                wihdah: document.getElementById('f-wihdah').value,
-                kamar: document.getElementById('f-kamar').value,
-                thalib: document.getElementById('f-thalib').value,
-                alumni: document.getElementById('f-alumni').value,
-                kerabat_nama: document.getElementById('f-kerabat-nama').value,
-                kerabat_nomor: document.getElementById('f-kerabat-nomor').value,
-                kerabat_hub: document.getElementById('f-kerabat-hub').value
+                email: getText('f-email'),
+                angkatan: getText('f-angkatan'),
+                visa: getText('f-visa'),
+                nama_id: getText('f-nama-id'),
+                nama_ar: getText('f-nama-ar'),
+                tanggal_lahir: getText('f-tanggal-lahir'),
+                paspor: getText('f-paspor'),
+                stts: getText('stts'), 
+                jen_k: getText('f-jen-k'),
+                expired: getText('f-expired'),
+                iqamah: getNum('f-iqamah'),
+                wa: getNum('f-wa'),
+                saudi: getNum('f-saudi'),
+                jenjang: getText('f-jenjang'),
+                jurusan: getText('f-jurusan'),
+                dom_indo: getText('f-dom-indo'),
+                dom_madinah: getText('f-dom-madinah'),
+                wihdah: getNum('f-wihdah'),
+                kamar: getNum('f-kamar'),
+                thalib: getNum('f-thalib'),
+                alumni: getText('f-alumni'),
+                kerabat_nama: getText('f-kerabat-nama'),
+                kerabat_nomor: getNum('f-kerabat-nomor'),
+                kerabat_hub: getText('f-kerabat-hub'),
+                
+                akun: getText('f-akun'),
+                asal_universitas: getText('f-asal-universitas'),
+                no_visa: getText('f-no-visa'),
+                riwayat_penyakit: getText('f-riwayat-penyakit'),
+                minat_bakat: getText('f-minat-bakat'),
+                no_tasjil_sis: getNum('f-no-tasjil-sis'),
+                no_tasjil_minhatee2: getNum('f-no-tasjil-minhatee2'),
+                tahun_daftar: getNum('f-tahun-daftar'),
+                tauiyah: getText('f-tauiyah'),
+                tiket: getText('f-tiket'),
+                status_sis: getText('f-status-sis'),
+                status_minhatee2: getText('f-status-minhatee2')
             };
         }
 
         function confirmSave() {
             const data = getFormData();
+            
+            const optionalFields = [
+                'riwayat_penyakit', 'minat_bakat', 'asal_universitas', 'no_visa', 
+                'no_tasjil_sis', 'no_tasjil_minhatee2', 'tahun_daftar', 'tauiyah', 
+                'tiket', 'status_sis', 'status_minhatee2', 'akun'
+            ];
+
             for (const key in data) {
+                if (optionalFields.includes(key)) continue; 
                 if (key === 'visa' && data.angkatan !== 'Dirosat') continue;
-                if (!data[key] || data[key].trim() === '') {
-                    showDynamicIsland('Terdapat kolom kosong yang wajib diisi!', 'error'); return;
+                
+                if (data[key] === "" || data[key] === 0 || !data[key] || String(data[key]).trim() === '') {
+                    showDynamicIsland('Terdapat kolom wajib yang kosong!', 'error'); 
+                    return;
                 }
             }
-            if (data.iqamah.length !== 10) { showDynamicIsland('Raqm Iqamah wajib 10 digit!', 'error'); switchTab('perjalanan'); return; }
-            if (data.thalib.length !== 9) { showDynamicIsland('Raqm Thalib wajib 9 digit!', 'error'); switchTab('akademik'); return; }
-            if (!data.kerabat_nomor.startsWith('628')) { showDynamicIsland('Nomor Kerabat harus diawali 628', 'error'); switchTab('diri'); return; }
+            
+            if (String(data.iqamah).length !== 10) { showDynamicIsland('Raqm Iqamah wajib 10 digit!', 'error'); switchTab('perjalanan'); return; }
+            if (String(data.thalib).length !== 9) { showDynamicIsland('Raqm Thalib wajib 9 digit!', 'error'); switchTab('akademik'); return; }
+            if (!String(data.kerabat_nomor).startsWith('628')) { showDynamicIsland('Nomor Kerabat harus diawali 628', 'error'); switchTab('diri'); return; }
 
             const m = document.getElementById('confirm-modal');
             const b = document.getElementById('confirm-box');
@@ -1040,7 +1148,6 @@
             closeConfirm(); showDynamicIsland('Menyimpan Data...', 'process');
             const data = getFormData();
             try {
-                // Gunakan save data endpoint yang dimodifikasi untuk menampung satu objek 'data' utuh
                 await serverCall('saveData', data);
                 const now = new Date().toLocaleString('id-ID');
                 document.getElementById('last-updated-text').textContent = `Diperbarui: ${now}`;
@@ -1060,60 +1167,84 @@
 
         function logout() { 
             toggleMenu(); 
-            currentUserEmail = ''; 
-            currentThalib = '';
-            document.getElementById('login-email').value = ''; 
-            document.getElementById('login-thalib').value = ''; 
+            currentTasjil = '';
+            document.getElementById('login-tasjil').value = ''; 
             showScreen('screen-email'); 
         }
 
-        function toggleAngkatanLainnya() {
-            const select = document.getElementById('f-angkatan-select'); const inputLainnya = document.getElementById('f-angkatan-lainnya'); const finalInput = document.getElementById('f-angkatan');
-            if (select.value === 'Lainnya') { inputLainnya.classList.remove('hidden'); inputLainnya.focus(); finalInput.value = inputLainnya.value; } 
-            else { inputLainnya.classList.add('hidden'); inputLainnya.value = ''; finalInput.value = select.value; }
+        function toggleLainnya(baseId) {
+            const select = document.getElementById(`${baseId}-select`); 
+            const inputLainnya = document.getElementById(`${baseId}-lainnya`); 
+            const finalInput = document.getElementById(baseId);
+            if (select.value === 'Lainnya') { 
+                inputLainnya.classList.remove('hidden'); 
+                inputLainnya.focus(); 
+                finalInput.value = inputLainnya.value; 
+            } else { 
+                inputLainnya.classList.add('hidden'); 
+                inputLainnya.value = ''; 
+                finalInput.value = select.value; 
+            }
         }
-        document.getElementById('f-angkatan-lainnya').addEventListener('input', function() { document.getElementById('f-angkatan').value = this.value; });
-        function toggleJurusanLainnya() {
-            const select = document.getElementById('f-jurusan-select'); const inputLainnya = document.getElementById('f-jurusan-lainnya'); const finalInput = document.getElementById('f-jurusan');
-            if (select.value === 'Lainnya') { inputLainnya.classList.remove('hidden'); inputLainnya.focus(); finalInput.value = inputLainnya.value; } 
-            else { inputLainnya.classList.add('hidden'); inputLainnya.value = ''; finalInput.value = select.value; }
-        }
-        document.getElementById('f-jurusan-lainnya').addEventListener('input', function() { document.getElementById('f-jurusan').value = this.value; });
 
-        // Date Picker UI Logic
+        // Date Picker UI Logic - Diperbarui agar bisa digunakan di banyak form & dinamis
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
         let activeDate = { d: '01', m: 'Jan', y: '2026' };
-        function initDatePicker() {
+        let currentDateTarget = ''; // Penyimpan ID target
+
+        function openDatePicker(targetId) {
+            const input = document.getElementById(targetId);
+            if (input.disabled) return; // Cegah membuka kalender jika form diblokir
+            
+            currentDateTarget = targetId;
+            const modal = document.getElementById('date-picker-modal'); 
+            const container = document.getElementById('dp-container'); 
+            
+            // Build Years Dynamically (Tahun lahir jauh kebelakang, Paspor ke depan)
+            const currentYear = new Date().getFullYear();
+            let years = [];
+            if (targetId === 'f-tanggal-lahir') {
+                for(let i = 1980; i <= currentYear; i++) years.push(String(i));
+            } else {
+                for(let i = currentYear - 5; i <= currentYear + 20; i++) years.push(String(i));
+            }
+
             const createItems = (id, arr, loopCount) => {
-                const container = document.getElementById(id); let html = '';
+                const containerEl = document.getElementById(id); let html = '';
                 for(let i=0; i<loopCount; i++) arr.forEach(val => html += `<div class="picker-item" data-val="${val}">${val}</div>`);
-                container.innerHTML = html;
+                containerEl.innerHTML = html;
             };
-            createItems('wheel-date-content', Array.from({length: 31}, (_, i) => String(i+1).padStart(2, '0')), 10);
-            createItems('wheel-month-content', months, 10);
-            createItems('wheel-year-content', Array.from({length: 30}, (_, i) => String(2020 + i)), 5);
-        }
-        function openDatePicker() {
-            const modal = document.getElementById('date-picker-modal'); const container = document.getElementById('dp-container'); const input = document.getElementById('f-expired');
+            
+            createItems('wheel-date-content', Array.from({length: 31}, (_, i) => String(i+1).padStart(2, '0')), 5);
+            createItems('wheel-month-content', months, 5);
+            createItems('wheel-year-content', years, 3);
+
             let d, m, y;
             if (input.value && input.value.includes('/')) {
                 const parts = input.value.split('/'); d = parts[0]; const mIndex = parseInt(parts[1], 10) - 1;
                 m = (mIndex >= 0 && mIndex < 12) ? months[mIndex] : months[0]; y = parts[2];
-            } else { const today = new Date(); d = String(today.getDate()).padStart(2, '0'); m = months[today.getMonth()]; y = String(today.getFullYear()); }
+            } else { 
+                const today = new Date(); d = String(today.getDate()).padStart(2, '0'); m = months[today.getMonth()]; y = String(today.getFullYear()); 
+            }
+            
             modal.classList.remove('hidden'); void modal.offsetWidth; container.classList.remove('translate-y-full');
             setTimeout(() => { scrollToVal('date', d); scrollToVal('month', m); scrollToVal('year', y); }, 10);
         }
+
         function closeDatePicker() {
             const modal = document.getElementById('date-picker-modal'); const container = document.getElementById('dp-container');
             container.classList.add('translate-y-full'); setTimeout(() => modal.classList.add('hidden'), 300);
         }
+
         function scrollToVal(type, val) {
             const col = document.getElementById(`wheel-${type}`); const items = col.querySelectorAll('.picker-item'); const total = items.length; const middleIndex = Math.floor(total / 2); let targetIndex = -1;
             for(let i = middleIndex; i < total; i++) { if(items[i].getAttribute('data-val') === val) { targetIndex = i; break; } }
             if(targetIndex === -1) { for(let i = 0; i < total; i++) { if(items[i].getAttribute('data-val') === val) { targetIndex = i; break; } } }
             if(targetIndex !== -1) { const item = items[targetIndex]; col.scrollTop = item.offsetTop - (col.clientHeight / 2) + (item.clientHeight / 2); updateActiveState(type); }
         }
+
         function handleWheelScroll(type) { clearTimeout(window[`scrollTimeout_${type}`]); window[`scrollTimeout_${type}`] = setTimeout(() => updateActiveState(type), 100); }
+        
         function updateActiveState(type) {
             const col = document.getElementById(`wheel-${type}`); const items = col.querySelectorAll('.picker-item'); const centerPos = col.scrollTop + (col.clientHeight / 2);
             let closest = null; let closestDist = Infinity;
@@ -1128,8 +1259,10 @@
                 if(type === 'year') activeDate.y = closest.getAttribute('data-val');
             }
         }
+
         function applyDate() {
-            const input = document.getElementById('f-expired'); const monthIndex = months.indexOf(activeDate.m) + 1;
+            const input = document.getElementById(currentDateTarget); 
+            const monthIndex = months.indexOf(activeDate.m) + 1;
             const monthFormatted = String(monthIndex).padStart(2, '0');
             input.value = `${activeDate.d}/${monthFormatted}/${activeDate.y}`; closeDatePicker();
         }
