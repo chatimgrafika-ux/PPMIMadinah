@@ -193,7 +193,7 @@
                     </div>
                 </div>
 
-                <div class="w-full">
+                <div class="w-full" id="wrapper-saudi">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Nomor Saudi Aktif</label>
                     <input type="text" id="f-saudi" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="966..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
                 </div>
@@ -253,7 +253,7 @@
                       <option value="Apartemen Sendiri">Apartemen Sendiri</option>
                   </select>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-3" id="wrapper-wihdah-kamar">
                     <div class="w-full">
                         <label class="text-xs font-semibold text-gray-700 mb-1 block">Wihdah</label>
                         <input type="text" id="f-wihdah" inputmode="numeric" pattern="[0-9]*" maxlength="2" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="Maks. 2 digit">
@@ -417,7 +417,7 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div class="w-full" id="visa-container">
                         <label class="text-xs font-semibold text-gray-700 mb-1 block">Status Visa <span class="text-red-500">*</span></label>
-                        <select id="f-visa" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
+                        <select id="f-visa" onchange="toggleOnlineFields()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
                             <option value="" disabled selected>Pilih Status</option>
                             <option value="Program Online">Program Online</option>
                             <option value="Sudah terbit">Sudah terbit</option>
@@ -442,7 +442,7 @@
                     <i class="fas fa-calendar-alt absolute right-4 top-9 text-green-600 pointer-events-none"></i>
                 </div>
                 
-                <div class="w-full mt-4">
+                <div class="w-full mt-4" id="wrapper-iqamah">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Raqm Iqamah</label>
                     <input type="text" id="f-iqamah" inputmode="numeric" pattern="[0-9]*" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 font-bold tracking-widest text-center" placeholder="XXXXXXXXXX (10 digit)">
                 </div>
@@ -530,10 +530,10 @@
                                 <i class="fas fa-headset"></i>
                             </div>
                             <div class="flex-1">
-                                <h4 class="text-sm font-bold text-gray-800">Humas PPMI Madinah</h4>
-                                <p class="text-[10px] text-gray-500">Pelayanan & Bantuan Mahasiswa</p>
+                                <h4 class="text-sm font-bold text-gray-800">Lajnah Istiqbal</h4>
+                                <p class="text-[10px] text-gray-500">Pelayanan & Bantuan Maba 2026</p>
                             </div>
-                            <a href="https://wa.me/6281313777542" target="_blank" class="px-4 py-2 bg-green-50 hover:bg-green-100 text-green-600 text-xs font-bold rounded-xl transition-colors"><i class="fab fa-whatsapp text-sm"></i> Chat</a>
+                            <a href="https://wa.me/6282173605759" target="_blank" class="px-4 py-2 bg-green-50 hover:bg-green-100 text-green-600 text-xs font-bold rounded-xl transition-colors"><i class="fab fa-whatsapp text-sm"></i> Chat</a>
                         </div>
                     </div>
                 </div>
@@ -940,6 +940,27 @@
             }
         }
 
+        // LOGIKA PROGRAM ONLINE
+        function toggleOnlineFields() {
+            const visaStatus = document.getElementById('f-visa').value;
+            const isOnline = (visaStatus === 'Program Online');
+            
+            const wrapperSaudi = document.getElementById('wrapper-saudi');
+            const wrapperIqamah = document.getElementById('wrapper-iqamah');
+            const wrapperWihdahKamar = document.getElementById('wrapper-wihdah-kamar');
+            
+            if (wrapperSaudi) wrapperSaudi.style.display = isOnline ? 'none' : '';
+            if (wrapperIqamah) wrapperIqamah.style.display = isOnline ? 'none' : '';
+            if (wrapperWihdahKamar) wrapperWihdahKamar.style.display = isOnline ? 'none' : '';
+            
+            if (isOnline) {
+                document.getElementById('f-saudi').value = '';
+                document.getElementById('f-iqamah').value = '';
+                document.getElementById('f-wihdah').value = '';
+                document.getElementById('f-kamar').value = '';
+            }
+        }
+
         function populateForm(data) {
             const setDropdownAndLainnya = (baseId, val) => {
                 const finalInput = document.getElementById(baseId);
@@ -993,6 +1014,10 @@
             setDropdownAndLainnya('f-status-minhatee2', data.status_minhatee2);
 
             document.getElementById('f-visa').value = data.visa || '';
+            
+            // Panggil fungsi sembunyikan fields jika 'Program Online'
+            toggleOnlineFields();
+
             document.getElementById('f-nama-id').value = data.nama_id || '';
             document.getElementById('f-nama-ar').value = data.nama_ar || '';
             document.getElementById('f-email').value = data.email || '';
@@ -1053,6 +1078,8 @@
             updateProfileIcon('');
             document.getElementById('display-nama').childNodes[0].textContent = "Data Baru ";
             document.getElementById('badge-blokir').classList.add('hidden');
+            
+            toggleOnlineFields(); // Reset toggle
         }
 
         function getFormData() {
@@ -1110,12 +1137,18 @@
 
         function confirmSave() {
             const data = getFormData();
+            const isOnline = data.visa === 'Program Online';
             
             const optionalFields = [
                 'riwayat_penyakit', 'minat_bakat', 'asal_universitas', 'no_visa', 
                 'no_tasjil_sis', 'no_tasjil_minhatee2', 'tahun_daftar', 'tauiyah', 
                 'tiket', 'status_sis', 'status_minhatee2', 'akun'
             ];
+
+            // Abaikan validasi tempat tinggal & iqomah jika status Program Online
+            if (isOnline) {
+                optionalFields.push('saudi', 'iqamah', 'wihdah', 'kamar');
+            }
 
             for (const key in data) {
                 if (optionalFields.includes(key)) continue; 
@@ -1127,7 +1160,7 @@
                 }
             }
             
-            if (String(data.iqamah).length !== 10) { showDynamicIsland('Raqm Iqamah wajib 10 digit!', 'error'); switchTab('perjalanan'); return; }
+            if (!isOnline && String(data.iqamah).length !== 10) { showDynamicIsland('Raqm Iqamah wajib 10 digit!', 'error'); switchTab('perjalanan'); return; }
             if (String(data.thalib).length !== 9) { showDynamicIsland('Raqm Thalib wajib 9 digit!', 'error'); switchTab('akademik'); return; }
             if (!String(data.kerabat_nomor).startsWith('628')) { showDynamicIsland('Nomor Kerabat harus diawali 628', 'error'); switchTab('diri'); return; }
 
