@@ -52,7 +52,7 @@
     <!-- Splash Screen -->
     <div id="splash-screen" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center transition-opacity duration-500 w-full max-w-md mx-auto">
         <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" alt="Logo" class="w-32 h-32 object-contain mb-6 animate-pulse drop-shadow-xl" onerror="this.style.display='none'">
-        <h1 class="text-xl font-bold text-gray-800 tracking-wide">المندبية الإندونبيسية ٢٠٢٦</h1>
+        <h1 class="text-xl font-bold text-gray-800 tracking-wide">المندوبية الإندونبيسية ٢٠٢٦</h1>
         <p class="text-sm text-gray-500 mt-2 font-medium">الجامعة الإسلامية</p>
     </div>
 
@@ -244,7 +244,7 @@
                         <option value="Papua Barat Daya">Papua Barat Daya</option>
                     </select>
                 </div>
-                <div class="w-full">
+                <div class="w-full" id="wrapper-dom-madinah">
                   <label class="text-xs font-semibold text-gray-700 mb-1 block">Domisili Madinah</label>
                   <select id="f-dom-madinah" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
                       <option value="" disabled selected>Pilih Domisili</option>
@@ -386,7 +386,6 @@
                     <div class="w-full">
                         <label class="text-xs font-semibold text-gray-700 mb-1 block">Status Minhatee2</label>
                         <select id="f-status-minhatee2-select" onchange="toggleLainnya('f-status-minhatee2')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
-                            <option value="" disabled selected>Pilih Status</option>
                             <option value="Murosyah">Murosyah</option>
                             <option value="Maqbul Mabdai">Maqbul Mabdai</option>
                             <option value="Maqbul Nihai">Maqbul Niha'i</option>
@@ -420,7 +419,7 @@
                     <div class="w-full" id="visa-container">
                         <label class="text-xs font-semibold text-gray-700 mb-1 block">Status Visa <span class="text-red-500">*</span></label>
                         <select id="f-visa" onchange="toggleOnlineFields()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
-                            <option value="" disabled selected>Pilih Status</option>
+                            <option value="" disabled>Pilih Status</option>
                             <option value="Program Online">Program Online</option>
                             <option value="Sudah terbit">Sudah terbit</option>
                             <option value="Belum terbit">Belum terbit</option>
@@ -950,16 +949,19 @@
             const wrapperSaudi = document.getElementById('wrapper-saudi');
             const wrapperIqamah = document.getElementById('wrapper-iqamah');
             const wrapperWihdahKamar = document.getElementById('wrapper-wihdah-kamar');
+            const wrapperDomMadinah = document.getElementById('wrapper-dom-madinah');
             
             if (wrapperSaudi) wrapperSaudi.style.display = isOnline ? 'none' : '';
             if (wrapperIqamah) wrapperIqamah.style.display = isOnline ? 'none' : '';
             if (wrapperWihdahKamar) wrapperWihdahKamar.style.display = isOnline ? 'none' : '';
+            if (wrapperDomMadinah) wrapperDomMadinah.style.display = isOnline ? 'none' : '';
             
             if (isOnline) {
                 document.getElementById('f-saudi').value = '';
                 document.getElementById('f-iqamah').value = '';
                 document.getElementById('f-wihdah').value = '';
                 document.getElementById('f-kamar').value = '';
+                document.getElementById('f-dom-madinah').value = '';
             }
         }
 
@@ -1001,7 +1003,6 @@
                 saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
 
                 // Set field yang selalu readonly
-                document.getElementById('f-thalib').readOnly = true;
                 document.getElementById('f-no-tasjil-minhatee2').readOnly = true;
                 document.getElementById('f-akun').readOnly = true;
                 document.getElementById('f-tanggal-lahir').readOnly = true;
@@ -1015,7 +1016,7 @@
             setDropdownAndLainnya('f-status-sis', data.status_sis);
             setDropdownAndLainnya('f-status-minhatee2', data.status_minhatee2);
 
-            document.getElementById('f-visa').value = data.visa || '';
+            document.getElementById('f-visa').value = data.visa || 'Program Online';
             
             // Panggil fungsi sembunyikan fields jika 'Program Online'
             toggleOnlineFields();
@@ -1076,7 +1077,13 @@
                 if(input.id !== 'f-no-tasjil-minhatee2') input.value = '';
             });
             const selects = document.querySelectorAll('#screen-form select');
-            selects.forEach(select => select.selectedIndex = 0);
+            selects.forEach(select => {
+                if (select.id === 'f-visa') {
+                    select.value = 'Program Online';
+                } else {
+                    select.selectedIndex = 0;
+                }
+            });
             updateProfileIcon('');
             document.getElementById('display-nama').childNodes[0].textContent = "Data Baru ";
             document.getElementById('badge-blokir').classList.add('hidden');
@@ -1149,7 +1156,7 @@
 
             // Abaikan validasi tempat tinggal & iqomah jika status Program Online
             if (isOnline) {
-                optionalFields.push('saudi', 'iqamah', 'wihdah', 'kamar');
+                optionalFields.push('saudi', 'iqamah', 'wihdah', 'kamar', 'dom_madinah');
             }
 
             for (const key in data) {
