@@ -51,16 +51,23 @@
 
     <!-- Splash Screen -->
     <div id="splash-screen" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center transition-opacity duration-500 w-full max-w-md mx-auto">
-        <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" alt="Logo" class="w-32 h-32 object-contain mb-6 animate-pulse drop-shadow-xl" onerror="this.style.display='none'">
+        <div class="flex items-center justify-center gap-4 mb-6 animate-pulse drop-shadow-xl">
+            <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" alt="Logo PPMI" class="w-24 h-24 object-contain rounded-full shadow-sm" onerror="this.style.display='none'">
+            <i class="fas fa-times text-gray-300 text-lg"></i>
+            <img src="https://drive.google.com/thumbnail?id=1DZdpeeVrQfzrc4U8bkNQZcuWDiiZ5UyV" alt="Logo PPMHI" class="w-24 h-24 object-contain rounded-full shadow-sm bg-white" onerror="this.style.display='none'">
+        </div>
         <h1 class="text-xl font-bold text-gray-800 tracking-wide">المندوبية الإندونيسية</h1>
-        <p class="text-sm text-gray-500 mt-2 font-medium">الجامعة الإسلامية</p>
+        <p class="text-sm text-gray-500 mt-2 font-medium">معهد وكلية المسجد النبوي</p>
     </div>
 
     <!-- Header -->
     <header id="main-header" class="hidden sticky top-0 z-30 bg-green-600/95 backdrop-blur-md px-4 py-4 flex items-center justify-between w-full max-w-md mx-auto shadow-md">
         <div class="flex items-center gap-3">
-            <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-9 h-9 object-contain bg-white rounded-full p-1 shadow" alt="Logo" onerror="this.style.display='none'">
-            <h1 class="text-sm font-bold text-white truncate"> PPMI Madinah </h1>
+            <div class="flex items-center -space-x-2">
+                <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-9 h-9 object-contain bg-white rounded-full p-1 shadow z-10" alt="Logo PPMI" onerror="this.style.display='none'">
+                <img src="https://drive.google.com/thumbnail?id=1DZdpeeVrQfzrc4U8bkNQZcuWDiiZ5UyV" class="w-9 h-9 object-contain bg-white rounded-full p-1 shadow z-0" alt="Logo PPMHI" onerror="this.style.display='none'">
+            </div>
+            <h1 class="text-sm font-bold text-white truncate"> PPMI Madinah x PPMHI Madinah</h1>
         </div>
         <button onclick="toggleMenu()" class="p-2 text-white hover:bg-white/20 rounded-lg transition-colors focus:outline-none">
             <i class="fas fa-bars text-lg"></i>
@@ -94,8 +101,14 @@
     <div id="screen-email" class="min-h-screen flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto">
         <div class="w-full bg-white/90 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50 relative overflow-hidden mt-10">
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-green-600"></div>
-            <div class="bg-white w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-20 h-20 object-contain" alt="Logo" onerror="this.style.display='none'">
+            <div class="flex items-center justify-center gap-3 mx-auto mb-6">
+                <div class="bg-white w-20 h-20 rounded-full flex items-center justify-center shadow-md p-1.5">
+                    <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-full h-full object-contain rounded-full" alt="Logo PPMI" onerror="this.style.display='none'">
+                </div>
+                <i class="fas fa-times text-gray-300 text-sm"></i>
+                <div class="bg-white w-20 h-20 rounded-full flex items-center justify-center shadow-md p-1.5">
+                    <img src="https://drive.google.com/thumbnail?id=1DZdpeeVrQfzrc4U8bkNQZcuWDiiZ5UyV" class="w-full h-full object-contain rounded-full bg-white" alt="Logo PPMHI" onerror="this.style.display='none'">
+                </div>
             </div>
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Portal Pendataan</h2>
             <p class="text-xs text-center text-gray-500 mb-8 leading-relaxed">Masukkan Email Address Anda untuk masuk ke sistem Terpadu Mandub Indonesia.</p>
