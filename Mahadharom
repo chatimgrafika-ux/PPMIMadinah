@@ -1,0 +1,1080 @@
+<!-- // Created with Musaid Mandub Indonesia - HUMAS -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+    <title>PPMI Madinah - Portal Pendataan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        html, body { 
+            overflow-x: hidden !important; 
+            position: relative; 
+            width: 100%; 
+            max-width: 100%; 
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
+            touch-action: manipulation; 
+            -webkit-text-size-adjust: 100%; 
+            background-color: #f0fdf4;
+            font-family: 'Poppins', sans-serif;
+        }
+        * { box-sizing: border-box !important; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .picker-col { scroll-snap-type: y mandatory; overscroll-behavior-y: contain; }
+        .picker-item { scroll-snap-align: center; height: 40px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; color: #9ca3af; font-size: 16px; }
+        .picker-item.active { font-weight: bold; font-size: 20px; color: #111827; }
+        .picker-mask { mask-image: linear-gradient(to bottom, transparent, black 40%, black 60%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent); }
+    </style>
+</head>
+<body class="w-full max-w-md mx-auto min-h-screen overflow-x-hidden m-0 p-0 shadow-2xl bg-white relative">
+
+    <!-- Background Pattern Decorative -->
+    <div class="fixed top-0 left-0 w-full h-64 bg-green-600 rounded-b-[40px] -z-10"></div>
+
+    <!-- Dynamic Island -->
+    <div id="dynamic-island" class="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-[9999] bg-black text-white px-5 py-3 rounded-full flex items-center justify-center gap-3 transition-all duration-300 opacity-0 scale-90 pointer-events-none shadow-2xl font-medium">
+        <i id="di-icon" class="fas fa-spinner fa-spin text-sm"></i>
+        <span id="di-text" class="text-sm truncate">Memproses...</span>
+    </div>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center transition-opacity duration-500 w-full max-w-md mx-auto">
+        <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" alt="Logo" class="w-32 h-32 object-contain mb-6 animate-pulse drop-shadow-xl" onerror="this.style.display='none'">
+        <h1 class="text-xl font-bold text-gray-800 tracking-wide">المندوبية الإندونيسية</h1>
+        <p class="text-sm text-gray-500 mt-2 font-medium">الجامعة الإسلامية</p>
+    </div>
+
+    <!-- Header -->
+    <header id="main-header" class="hidden sticky top-0 z-30 bg-green-600/95 backdrop-blur-md px-4 py-4 flex items-center justify-between w-full max-w-md mx-auto shadow-md">
+        <div class="flex items-center gap-3">
+            <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-9 h-9 object-contain bg-white rounded-full p-1 shadow" alt="Logo" onerror="this.style.display='none'">
+            <h1 class="text-sm font-bold text-white truncate"> PPMI Madinah </h1>
+        </div>
+        <button onclick="toggleMenu()" class="p-2 text-white hover:bg-white/20 rounded-lg transition-colors focus:outline-none">
+            <i class="fas fa-bars text-lg"></i>
+        </button>
+    </header>
+
+    <!-- Menu Overlay -->
+    <div id="menu-overlay" class="hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm w-full max-w-md mx-auto">
+        <div class="absolute right-0 top-0 bottom-0 w-64 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col" id="menu-panel">
+            <div class="p-5 border-b flex justify-between items-center bg-gray-50">
+                <span class="font-bold text-gray-800">Menu Pengaturan</span>
+                <button onclick="toggleMenu()" class="text-gray-500 hover:text-red-500 transition-colors"><i class="fas fa-times text-lg"></i></button>
+            </div>
+            <div class="p-4 flex-1 flex flex-col">
+                <div class="flex items-center justify-between bg-gray-100 p-3 rounded-xl mb-4">
+                    <span class="text-sm font-medium text-gray-700">Status Database</span>
+                    <div class="flex items-center gap-2" id="connection-status">
+                        <div class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" id="conn-indicator"></div>
+                        <span class="text-xs font-semibold text-gray-600" id="conn-text">Terputus</span>
+                    </div>
+                </div>
+                <button onclick="logout()" class="w-full flex items-center gap-3 p-4 text-red-600 hover:bg-red-600 hover:text-white transition-colors bg-red-50 rounded-xl mt-auto shadow-sm">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="text-sm font-semibold">Ganti Akun / Keluar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 1: Login Check -->
+    <div id="screen-email" class="min-h-screen flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto">
+        <div class="w-full bg-white/90 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50 relative overflow-hidden mt-10">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-green-600"></div>
+            <div class="bg-white w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-20 h-20 object-contain" alt="Logo" onerror="this.style.display='none'">
+            </div>
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Portal Pendataan</h2>
+            <p class="text-xs text-center text-gray-500 mb-8 leading-relaxed">Masukkan Email Address Anda untuk masuk ke sistem Terpadu Mandub Indonesia.</p>
+            
+            <div class="space-y-4 mb-8">
+                <div class="w-full relative">
+                    <label class="text-xs font-semibold text-gray-700 mb-1.5 block">Email Address</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-3.5 text-gray-400"></i>
+                        <input type="email" id="login-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="contoh@email.com">
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="loginApp()" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-xl py-4 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2">
+                <span>Masuk / Cek Data</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        <p class="text-white text-xs mt-8 opacity-80">© 2026 PPMI Madinah. All rights reserved.</p>
+    </div>
+
+    <!-- Screen 2: Main Form with Tabs -->
+    <div id="screen-form" class="hidden w-full max-w-md mx-auto pb-24 pt-6 px-4">
+        
+        <!-- Header Profil Singkat -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-5 flex items-center gap-4">
+            <div id="profile-icon-container" class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 shadow-sm transition-colors duration-300">
+                <i id="profile-icon" class="fas fa-user text-lg"></i>
+            </div>
+            <div class="flex-1 overflow-hidden">
+                <h2 class="text-sm font-bold text-gray-800 truncate flex items-center gap-2" id="display-nama">
+                    Memuat... 
+                    <span id="badge-blokir" class="hidden bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase">Blokir</span>
+                </h2>
+                <p class="text-xs text-gray-500 truncate" id="display-email">Email: -</p>
+                <p class="text-[10px] text-green-600 font-medium mt-1 italic" id="last-updated-text">Memuat status...</p>
+            </div>
+        </div>
+
+        <!-- Custom Tab Navigation -->
+        <div class="grid grid-cols-4 bg-white shadow-sm border border-gray-100 p-1.5 rounded-xl mb-6 sticky top-20 z-20 backdrop-blur-md gap-1">
+            <button id="tab-btn-diri" onclick="switchTab('diri')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg bg-green-600 text-white shadow-md transition-all">
+                <i class="fas fa-address-card mb-1 text-sm"></i> Diri
+            </button>
+            <button id="tab-btn-akademik" onclick="switchTab('akademik')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all">
+                <i class="fas fa-graduation-cap mb-1 text-sm"></i> Akademik
+            </button>
+            <button id="tab-btn-perjalanan" onclick="switchTab('perjalanan')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all">
+                <i class="fas fa-passport mb-1 text-sm"></i> Dokumen
+            </button>
+            <button id="tab-btn-info" onclick="switchTab('info')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all">
+                <i class="fas fa-info-circle mb-1 text-sm"></i> Info
+            </button>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-lg border border-gray-100 p-6">
+            
+            <!-- ======================= TAB 1: DATA DIRI ======================= -->
+            <div id="tab-diri" class="tab-content space-y-4 animate-fade-in">
+                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-user-circle text-green-600"></i> Informasi Pribadi</h3>
+                
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Email Address (Login)</label>
+                    <input type="email" id="f-email" readonly class="w-full bg-gray-200 border border-gray-300 rounded-xl px-4 py-3 text-sm outline-none font-bold text-gray-600 cursor-not-allowed">
+                </div>
+
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Nama Lengkap (Indonesia) sesuai Paspor</label>
+                    <input type="text" id="f-nama-id" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                </div>
+
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Nama Lengkap (Arab) sesuai Iqomah</label>
+                    <input type="text" id="f-nama-ar" lang="ar" dir="rtl" oninput="this.value = this.value.replace(/[^\u0600-\u06FF\s]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 font-medium" placeholder="الاسم الكامل">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mt-1">
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Jenis Kelamin</label>
+                        <select id="f-jen-k" onchange="updateProfileIcon(this.value); updateJurusanOptions()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
+                            <option value="" disabled selected>Pilih</option>
+                            <option value="Ikhwan">Ikhwan</option>
+                            <option value="Akhwat">Akhwat</option>
+                        </select>
+                    </div>
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Nomor Whatsapp</label>
+                        <input type="text" id="f-wa" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="628..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                    </div>
+                </div>
+
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Nomor Saudi Aktif</label>
+                    <input type="text" id="f-saudi" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="966..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                </div>
+
+                <h3 class="text-sm font-bold text-gray-800 mt-6 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-map-marker-alt text-green-600"></i> Domisili</h3>
+                
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Domisili Indo (Provinsi)</label>
+                    <select id="f-dom-indo" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
+                        <option value="" disabled selected>Pilih Provinsi</option>
+                        <option value="Aceh">Aceh</option>
+                        <option value="Sumatera Utara">Sumatera Utara</option>
+                        <option value="Sumatera Barat">Sumatera Barat</option>
+                        <option value="Riau">Riau</option>
+                        <option value="Kepulauan Riau">Kepulauan Riau</option>
+                        <option value="Jambi">Jambi</option>
+                        <option value="Bengkulu">Bengkulu</option>
+                        <option value="Sumatera Selatan">Sumatera Selatan</option>
+                        <option value="Kepulauan Bangka Belitung">Kepulauan Bangka Belitung</option>
+                        <option value="Lampung">Lampung</option>
+                        <option value="Banten">Banten</option>
+                        <option value="DKI Jakarta">DKI Jakarta</option>
+                        <option value="Jawa Barat">Jawa Barat</option>
+                        <option value="Jawa Tengah">Jawa Tengah</option>
+                        <option value="DI Yogyakarta">DI Yogyakarta</option>
+                        <option value="Jawa Timur">Jawa Timur</option>
+                        <option value="Bali">Bali</option>
+                        <option value="Nusa Tenggara Barat">Nusa Tenggara Barat</option>
+                        <option value="Nusa Tenggara Timur">Nusa Tenggara Timur</option>
+                        <option value="Kalimantan Barat">Kalimantan Barat</option>
+                        <option value="Kalimantan Tengah">Kalimantan Tengah</option>
+                        <option value="Kalimantan Selatan">Kalimantan Selatan</option>
+                        <option value="Kalimantan Timur">Kalimantan Timur</option>
+                        <option value="Kalimantan Utara">Kalimantan Utara</option>
+                        <option value="Sulawesi Utara">Sulawesi Utara</option>
+                        <option value="Gorontalo">Gorontalo</option>
+                        <option value="Sulawesi Tengah">Sulawesi Tengah</option>
+                        <option value="Sulawesi Barat">Sulawesi Barat</option>
+                        <option value="Sulawesi Selatan">Sulawesi Selatan</option>
+                        <option value="Sulawesi Tenggara">Sulawesi Tenggara</option>
+                        <option value="Maluku">Maluku</option>
+                        <option value="Maluku Utara">Maluku Utara</option>
+                        <option value="Papua">Papua</option>
+                        <option value="Papua Barat">Papua Barat</option>
+                        <option value="Papua Selatan">Papua Selatan</option>
+                        <option value="Papua Tengah">Papua Tengah</option>
+                        <option value="Papua Pegunungan">Papua Pegunungan</option>
+                        <option value="Papua Barat Daya">Papua Barat Daya</option>
+                    </select>
+                </div>
+                <div class="w-full">
+                  <label class="text-xs font-semibold text-gray-700 mb-1 block">Domisili Madinah</label>
+                  <input type="text" id="f-dom-madinah" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="Contoh: Sakan Jamiah, Robwah, dll">
+                </div>
+
+                <h3 class="text-sm font-bold text-gray-800 mt-6 mb-4 border-b pb-2 flex items-center gap-2">
+                    <i class="fas fa-stethoscope text-green-600"></i> Kesehatan & Bakat
+                </h3>
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Riwayat Penyakit (Opsional)</label>
+                    <input type="text" id="f-riwayat-penyakit" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="Contoh: Asma, Alergi (Kosongkan jika tidak ada)">
+                </div>
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Minat & Bakat (Opsional)</label>
+                    <input type="text" id="f-minat-bakat" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="Contoh: Desain Grafis, Menulis, Olahraga">
+                </div>
+
+                <h3 class="text-sm font-bold text-gray-800 mt-6 mb-4 border-b pb-2 flex items-center gap-2">
+                    <i class="fas fa-heart text-red-500"></i> Informasi Kerabat / Darurat <span class="text-red-500 text-xs ml-1">*Wajib</span>
+                </h3>
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Nama Kerabat</label>
+                    <input type="text" id="f-kerabat-nama" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Hubungan</label>
+                        <input type="text" id="f-kerabat-hub" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="Contoh: Ayah">
+                    </div>
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Nomor Kerabat</label>
+                        <input type="text" id="f-kerabat-nomor" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="628..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= TAB 2: DATA AKADEMIK ======================= -->
+            <div id="tab-akademik" class="tab-content hidden space-y-4 animate-fade-in">
+                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-university text-green-600"></i> Informasi Akademik</h3>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Raqm Thalib</label>
+                        <input type="text" id="f-thalib" inputmode="numeric" pattern="[0-9]*" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="9 Digit">
+                    </div>
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Status</label>
+                        <select id="stts" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
+                            <option value="" disabled selected>Pilih Status</option>
+                            <option value="Aktif">Aktif</option>
+                            <option value="Lulus">Alumni</option>
+                            <option value="Cuti">Cuti</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="w-full">
+                      <label class="text-xs font-semibold text-gray-700 mb-1 block">Jenjang Pendidikan</label>
+                      <select id="f-jenjang" onchange="updateJurusanOptions()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
+                          <option value="" disabled selected>Pilih Jenjang</option>
+                          <option value="SMP (Mutawassitah)">SMP (Mutawassitah)</option>
+                          <option value="SMA (Tsanawiyah)">SMA (Tsanawiyah)</option>
+                          <option value="Diplom Mutawasith">Ma'had (Diplom Mutawasith)</option>
+                          <option value="Sarjana">Sarjana</option>
+                          <option value="Magister">Magister (S2)</option>
+                          <option value="Doktoral">Doktoral (S3)</option>
+                      </select>
+                    </div>
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Mustawa (Tingkat)</label>
+                        <input type="text" id="f-mustawa" inputmode="numeric" pattern="[0-9]*" maxlength="2" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="Contoh: 1, 2, dst">
+                    </div>
+                </div>
+
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Fakultas / Jurusan</label>
+                    <select id="f-jurusan-select" onchange="toggleLainnya('f-jurusan')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
+                        <option value="" disabled selected>Pilih Jurusan</option>
+                    </select>
+                    <input type="text" id="f-jurusan-lainnya" placeholder="Tuliskan jurusan Anda di sini..." oninput="document.getElementById('f-jurusan').value = this.value" class="hidden mt-2 w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                    <input type="hidden" id="f-jurusan">
+                </div>
+                
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Alumni (Asal Sekolah / Pesantren)</label>
+                    <input type="text" id="f-alumni" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                </div>
+            </div>
+
+            <!-- ======================= TAB 3: DATA PERJALANAN ======================= -->
+            <div id="tab-perjalanan" class="tab-content hidden space-y-4 animate-fade-in">
+                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-passport text-green-600"></i> Identitas & Dokumen Perjalanan</h3>
+                
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Nomor Paspor</label>
+                    <input type="text" id="f-paspor" maxlength="9" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 uppercase font-bold tracking-wider" placeholder="CXXXXXXX">
+                </div>
+                
+                <div class="w-full relative">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Expired Paspor</label>
+                    <input type="text" id="f-expired" readonly onclick="openDatePicker('f-expired')" placeholder="Pilih Tanggal (dd/mm/yyyy)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 cursor-pointer text-gray-600 font-medium">
+                    <i class="fas fa-calendar-alt absolute right-4 top-9 text-green-600 pointer-events-none"></i>
+                </div>
+                
+                <div class="w-full mt-4">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Raqm Iqamah (Opsional jika belum ada)</label>
+                    <input type="text" id="f-iqamah" inputmode="numeric" pattern="[0-9]*" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 font-bold tracking-widest text-center" placeholder="XXXXXXXXXX (10 digit)">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Jenis Iqomah</label>
+                        <select id="f-jenis-iqomah-select" onchange="toggleLainnya('f-jenis-iqomah')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
+                            <option value="" disabled selected>Pilih Jenis</option>
+                            <option value="Thalib (Mahasiswa)">Thalib (Mahasiswa)</option>
+                            <option value="Amil (Pekerja)">Amil (Pekerja)</option>
+                            <option value="Ziyarah (Kunjungan)">Ziyarah (Kunjungan)</option>
+                            <option value="Lainnya">Lainnya...</option>
+                        </select>
+                        <input type="text" id="f-jenis-iqomah-lainnya" oninput="document.getElementById('f-jenis-iqomah').value = this.value" placeholder="Tuliskan jenis..." class="hidden mt-2 w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                        <input type="hidden" id="f-jenis-iqomah">
+                    </div>
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Nama Kafil (Opsional)</label>
+                        <input type="text" id="f-nama-kafil" placeholder="Nama Kafil/Sponsor" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                    </div>
+                </div>
+
+                <div class="w-full mt-4">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Status Akun</label>
+                    <input type="text" id="f-akun" readonly placeholder="Status Akun" class="w-full bg-gray-200 border border-gray-300 rounded-xl px-4 py-3 text-sm outline-none font-bold text-gray-600 cursor-not-allowed">
+                </div>
+            </div>
+
+            <!-- ======================= TAB 4: PUSAT INFO & BANTUAN ======================= -->
+            <div id="tab-info" class="tab-content hidden space-y-7 animate-fade-in">
+                
+                <!-- Section: Kontak Darurat -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
+                        <i class="fas fa-phone-alt text-red-500"></i> Hotline & Kontak Darurat
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center p-3.5 bg-white border border-red-100 shadow-sm rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
+                            <div class="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center mr-3 text-lg">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-bold text-gray-800">Polisi (Saudi)</h4>
+                                <p class="text-[10px] text-gray-500">Keamanan / Tindak Kriminal</p>
+                            </div>
+                            <a href="tel:999" class="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition-colors">999</a>
+                        </div>
+                        
+                        <div class="flex items-center p-3.5 bg-white border border-red-100 shadow-sm rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
+                            <div class="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center mr-3 text-lg">
+                                <i class="fas fa-ambulance"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-bold text-gray-800">Ambulan (Saudi)</h4>
+                                <p class="text-[10px] text-gray-500">Medis / Kecelakaan</p>
+                            </div>
+                            <a href="tel:997" class="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition-colors">997</a>
+                        </div>
+
+                        <div class="flex items-center p-3.5 bg-white border border-red-100 shadow-sm rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
+                            <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center mr-3 text-lg">
+                                <i class="fas fa-hands-helping"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-xs font-bold text-gray-800">Darurat KJRI Jeddah</h4>
+                                <p class="text-[10px] text-gray-500">Konsulat Jenderal RI</p>
+                            </div>
+                            <a href="https://wa.me/+966503609667" target="_blank" class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition-colors"><i class="fab fa-whatsapp text-sm"></i> Chat</a>
+                        </div>
+
+                        <div class="flex items-center p-3.5 bg-white border border-red-100 shadow-sm rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
+                            <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center mr-3 text-lg">
+                                <i class="fas fa-hands-helping"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-xs font-bold text-gray-800">Darurat KBRI Riyadh</h4>
+                                <p class="text-[10px] text-gray-500">Kedutaan Besar RI</p>
+                            </div>
+                            <a href="https://wa.me/+966569173990" target="_blank" class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition-colors"><i class="fab fa-whatsapp text-sm"></i> Chat</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Pemerintah Republik Indonesia -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
+                        <i class="fas fa-flag text-red-600"></i> Pemerintah Republik Indonesia
+                    </h3>
+                    <div class="flex flex-col gap-3">
+                        <div class="flex items-center justify-between p-3.5 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-lg"><i class="fas fa-landmark"></i></div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-gray-800">Kementerian Luar Negeri</h4>
+                                    <p class="text-[10px] text-gray-500">Republik Indonesia</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="https://instagram.com/kemlu_ri" target="_blank" class="w-8 h-8 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center hover:bg-pink-100 transition-colors"><i class="fab fa-instagram"></i></a>
+                                <a href="https://x.com/Kemlu_RI" target="_blank" class="w-8 h-8 rounded-full bg-gray-100 text-black flex items-center justify-center hover:bg-gray-200 transition-colors"><i class="fab fa-twitter"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3.5 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-lg"><i class="fas fa-building"></i></div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-gray-800">KBRI Riyadh</h4>
+                                    <p class="text-[10px] text-gray-500">Kedutaan Besar RI</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="https://instagram.com/indonesiainriyadh" target="_blank" class="w-8 h-8 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center hover:bg-pink-100 transition-colors"><i class="fab fa-instagram"></i></a>
+                                <a href="https://x.com/IndonesiaInRYD" target="_blank" class="w-8 h-8 rounded-full bg-gray-100 text-black flex items-center justify-center hover:bg-gray-200 transition-colors"><i class="fab fa-twitter"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3.5 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-lg"><i class="fas fa-city"></i></div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-gray-800">KJRI Jeddah</h4>
+                                    <p class="text-[10px] text-gray-500">Konsulat Jenderal RI</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="https://instagram.com/indonesiainjeddah" target="_blank" class="w-8 h-8 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center hover:bg-pink-100 transition-colors"><i class="fab fa-instagram"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Sosial Media PPMI -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
+                        <i class="fas fa-hashtag text-purple-500"></i> Sosial Media PPMI Madinah
+                    </h3>
+                    <div class="flex flex-wrap gap-4 justify-center">
+                        <a href="https://www.instagram.com/ppmimadinah" target="_blank" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white flex items-center justify-center text-xl shadow-lg shadow-pink-500/30 hover:-translate-y-1 hover:shadow-xl transition-all">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.facebook.com/ppmimadinah" target="_blank" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-500 to-blue-700 text-white flex items-center justify-center text-xl shadow-lg shadow-blue-500/30 hover:-translate-y-1 hover:shadow-xl transition-all">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Navigation Buttons -->
+            <div class="flex gap-3 mt-8 w-full border-t border-gray-100 pt-5">
+                <button id="btn-prev" onclick="prevTab()" class="hidden flex-[0.7] py-3.5 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm active:scale-95 transition-all hover:bg-gray-200 shadow-sm"><i class="fas fa-chevron-left mr-1"></i> Kembali</button>
+                <button id="btn-next" onclick="nextTab()" class="flex-1 py-3.5 rounded-xl bg-gray-800 text-white font-bold text-sm shadow-md active:scale-95 transition-all hover:bg-gray-900">Selanjutnya <i class="fas fa-chevron-right ml-1"></i></button>
+                <button id="btn-save" onclick="confirmSave()" class="hidden flex-1 py-3.5 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-sm shadow-lg shadow-green-600/30 active:scale-[0.98] transition-all"><i class="fas fa-check-circle mr-1"></i> Simpan Data</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm w-full max-w-md mx-auto flex items-center justify-center px-4">
+        <div class="bg-white rounded-3xl p-6 w-full shadow-2xl scale-95 opacity-0 transition-all duration-300" id="confirm-box">
+            <div class="w-16 h-16 rounded-full bg-yellow-100 text-yellow-500 flex items-center justify-center text-3xl mx-auto mb-4">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="text-lg font-bold text-center text-gray-800 mb-2">Konfirmasi Simpan</h3>
+            <p class="text-sm text-center text-gray-600 mb-6">Apakah Anda yakin seluruh data di form yang dimasukkan sudah benar? Data Anda akan diperbarui ke sistem.</p>
+            <div class="flex gap-3 w-full">
+                <button onclick="closeConfirm()" class="flex-1 py-3.5 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm active:scale-95 transition-transform hover:bg-gray-200">Batal / Cek Lagi</button>
+                <button onclick="executeSave()" class="flex-1 py-3.5 rounded-xl bg-green-600 text-white font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-green-600/30 hover:bg-green-700">Ya, Simpan!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date Picker Modal -->
+    <div id="date-picker-modal" class="hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm w-full max-w-md mx-auto flex items-end justify-center">
+        <div class="w-full bg-white rounded-t-3xl shadow-2xl transform translate-y-full transition-transform duration-300" id="dp-container">
+            <div class="flex justify-between items-center p-4 border-b border-gray-100">
+                <button onclick="closeDatePicker()" class="text-gray-500 font-semibold text-sm px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors">Batal</button>
+                <h3 class="font-bold text-gray-800 text-sm">Pilih Tanggal</h3>
+                <button onclick="applyDate()" class="text-green-600 font-bold text-sm px-4 py-2 hover:bg-green-50 rounded-lg transition-colors">Pilih</button>
+            </div>
+            <div class="relative h-56 bg-white overflow-hidden picker-mask my-4">
+                <div class="absolute top-1/2 left-4 right-4 h-10 -translate-y-1/2 bg-green-50/60 border-y-2 border-green-200 pointer-events-none rounded-lg z-0"></div>
+                <div class="flex h-full relative z-10 px-4">
+                    <div id="wheel-date" class="flex-1 overflow-y-scroll hide-scrollbar picker-col relative" onscroll="handleWheelScroll('date')">
+                        <div class="h-[92px]"></div><div id="wheel-date-content"></div><div class="h-[92px]"></div>
+                    </div>
+                    <div id="wheel-month" class="flex-1 overflow-y-scroll hide-scrollbar picker-col relative" onscroll="handleWheelScroll('month')">
+                        <div class="h-[92px]"></div><div id="wheel-month-content"></div><div class="h-[92px]"></div>
+                    </div>
+                    <div id="wheel-year" class="flex-1 overflow-y-scroll hide-scrollbar picker-col relative" onscroll="handleWheelScroll('year')">
+                        <div class="h-[92px]"></div><div id="wheel-year-content"></div><div class="h-[92px]"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================
+        // PENTING: ISI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+        // =========================================================
+        const API_URL = "https://script.google.com/macros/s/AKfycbwbJtcGyioaI2ZK3yM_xHgnTL4JhMEu219kU4z-DJzh0UdXloJoxVuE81xJ19CuEvNe/exec"; 
+
+        let currentEmail = '';
+
+        // TABS LOGIC
+        const tabs = ['diri', 'akademik', 'perjalanan', 'info'];
+        let currentTabIndex = 0;
+
+        function switchTab(tabId) {
+            currentTabIndex = tabs.indexOf(tabId);
+            updateTabUI();
+        }
+
+        function nextTab() {
+            if (currentTabIndex < tabs.length - 1) { currentTabIndex++; updateTabUI(); }
+        }
+
+        function prevTab() {
+            if (currentTabIndex > 0) { currentTabIndex--; updateTabUI(); }
+        }
+
+        function updateTabUI() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            tabs.forEach((tab, index) => {
+                const content = document.getElementById(`tab-${tab}`);
+                const btn = document.getElementById(`tab-btn-${tab}`);
+                
+                if (index === currentTabIndex) {
+                    content.classList.remove('hidden');
+                    btn.classList.add('bg-green-600', 'text-white', 'shadow-md');
+                    btn.classList.remove('text-gray-500', 'hover:text-green-600', 'hover:bg-green-50');
+                } else {
+                    content.classList.add('hidden');
+                    btn.classList.remove('bg-green-600', 'text-white', 'shadow-md');
+                    btn.classList.add('text-gray-500', 'hover:text-green-600', 'hover:bg-green-50');
+                }
+            });
+
+            document.getElementById('btn-prev').classList.toggle('hidden', currentTabIndex === 0);
+            document.getElementById('btn-next').classList.toggle('hidden', currentTabIndex === tabs.length - 1);
+            document.getElementById('btn-save').classList.toggle('hidden', currentTabIndex < 2);
+        }
+
+        // KONEKSI API
+        function setConnectionStatus(isConnected) {
+            const indicator = document.getElementById('conn-indicator');
+            const text = document.getElementById('conn-text');
+            if(isConnected) {
+                indicator.className = 'w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]';
+                text.textContent = 'Terhubung';
+                text.className = 'text-xs font-semibold text-green-600';
+            } else {
+                indicator.className = 'w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]';
+                text.textContent = 'Terputus';
+                text.className = 'text-xs font-semibold text-red-600';
+            }
+        }
+
+        async function serverCall(funcName, payloadData) {
+            if (API_URL === "URL_WEB_APP_GAS_ANDA_DISINI") {
+                showDynamicIsland("API URL belum di setting!", "error"); throw new Error("API URL missing");
+            }
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: funcName, data: payloadData })
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    setConnectionStatus(true);
+                    return result.data ? result.data : null;
+                } else {
+                    setConnectionStatus(false); throw new Error(result.message);
+                }
+            } catch (error) { setConnectionStatus(false); throw error; }
+        }
+
+        // UI NOTIFICATION
+        function showDynamicIsland(text, type = 'process') {
+            const di = document.getElementById('dynamic-island');
+            const icon = document.getElementById('di-icon');
+            const txt = document.getElementById('di-text');
+            txt.textContent = text;
+            di.className = 'fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-[9999] px-5 py-3 rounded-full flex items-center justify-center gap-3 transition-all duration-300 shadow-xl font-medium';
+            if (type === 'process') {
+                di.classList.add('bg-black', 'text-white', 'opacity-100', 'scale-100');
+                icon.className = 'fas fa-spinner fa-spin text-sm';
+            } else if (type === 'success') {
+                di.classList.add('bg-green-600', 'text-white', 'opacity-100', 'scale-100');
+                icon.className = 'fas fa-check-circle text-sm';
+            } else if (type === 'error') {
+                di.classList.add('bg-red-600', 'text-white', 'opacity-100', 'scale-100');
+                icon.className = 'fas fa-times-circle text-sm';
+            }
+            if (type !== 'process') {
+                setTimeout(() => {
+                    di.classList.replace('opacity-100', 'opacity-0');
+                    di.classList.replace('scale-100', 'scale-90');
+                }, 3500);
+            }
+        }
+
+        function updateProfileIcon(gender) {
+            const container = document.getElementById('profile-icon-container');
+            const icon = document.getElementById('profile-icon');
+            if (!container || !icon) return;
+            if (gender === 'Akhwat') {
+                container.className = 'w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 shadow-sm transition-colors duration-300';
+                icon.className = 'fas fa-female text-lg';
+            } else {
+                container.className = 'w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 shadow-sm transition-colors duration-300';
+                icon.className = 'fas fa-male text-lg';
+            }
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.opacity = '0';
+                setTimeout(() => document.getElementById('splash-screen').classList.add('hidden'), 500);
+            }, 1500);
+        };
+
+        function showScreen(id) {
+            document.getElementById('screen-email').classList.add('hidden');
+            document.getElementById('screen-form').classList.add('hidden');
+            document.getElementById('main-header').classList.add('hidden');
+            document.body.classList.replace('bg-green-600', 'bg-white');
+
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'screen-form') {
+                document.getElementById('main-header').classList.remove('hidden');
+                switchTab('diri'); 
+            }
+        }
+
+        // LOGIN SYSTEM
+        async function loginApp() {
+            const emailInput = document.getElementById('login-email').value.trim();
+
+            if (!emailInput) {
+                showDynamicIsland('Masukkan Email Address Anda', 'error'); return;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailInput)) {
+                showDynamicIsland('Format Email tidak valid', 'error'); return;
+            }
+
+            currentEmail = emailInput;
+            
+            showDynamicIsland('Verifikasi & Mengambil data...', 'process');
+
+            try {
+                const res = await serverCall('getData', { email: currentEmail });
+                if (res) {
+                    const data = JSON.parse(res);
+                    populateForm(data);
+                    showDynamicIsland('Data Ditemukan', 'success');
+                } else {
+                    clearForm();
+                    document.getElementById('last-updated-text').textContent = "Status: Pengguna Baru";
+                    document.getElementById('last-updated-text').className = "text-[10px] text-blue-600 font-medium mt-1 italic";
+                    document.getElementById('f-email').value = currentEmail;
+                    showDynamicIsland('Akun Baru. Silakan lengkapi formulir', 'success');
+                }
+                document.getElementById('display-email').textContent = "Email: " + currentEmail;
+                showScreen('screen-form');
+            } catch (err) {
+                showDynamicIsland(err.message || 'Gagal koneksi ke server', 'error');
+            }
+        }
+
+        function populateForm(data) {
+            const setDropdownAndLainnya = (baseId, val) => {
+                const finalInput = document.getElementById(baseId);
+                const select = document.getElementById(`${baseId}-select`);
+                const inputLainnya = document.getElementById(`${baseId}-lainnya`);
+                finalInput.value = val || '';
+                if (!select) return;
+                if (!val) { select.selectedIndex = 0; if(inputLainnya) inputLainnya.classList.add('hidden'); return; }
+                let found = Array.from(select.options).some(opt => opt.value === val);
+                if (found) { select.value = val; if(inputLainnya) { inputLainnya.classList.add('hidden'); inputLainnya.value = ''; } } 
+                else { select.value = 'Lainnya'; if(inputLainnya) { inputLainnya.classList.remove('hidden'); inputLainnya.value = val; } }
+            };
+
+            // LOGIKA BLOKIR
+            const isBlocked = data.akun && data.akun.toLowerCase() === 'blokir';
+            const formElements = document.querySelectorAll('#screen-form input, #screen-form select');
+            const saveBtn = document.getElementById('btn-save');
+            const badgeBlokir = document.getElementById('badge-blokir');
+
+            if (isBlocked) {
+                badgeBlokir.classList.remove('hidden');
+                formElements.forEach(el => {
+                    el.disabled = true;
+                    el.classList.add('opacity-70', 'cursor-not-allowed', 'bg-gray-100');
+                });
+                saveBtn.disabled = true;
+                saveBtn.classList.add('opacity-50', 'cursor-not-allowed', 'hidden');
+                showDynamicIsland('Akun diblokir! Data tidak bisa dirubah.', 'error');
+            } else {
+                badgeBlokir.classList.add('hidden');
+                formElements.forEach(el => {
+                    el.disabled = false;
+                    el.classList.remove('opacity-70', 'cursor-not-allowed', 'bg-gray-100');
+                });
+                saveBtn.disabled = false;
+                saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                // Set field yang selalu readonly
+                document.getElementById('f-email').readOnly = true;
+                document.getElementById('f-akun').readOnly = true;
+                document.getElementById('f-expired').readOnly = true;
+            }
+
+            // POPULATE DATA
+            document.getElementById('f-email').value = data.email || currentEmail;
+            document.getElementById('f-nama-id').value = data.nama_id || '';
+            document.getElementById('f-nama-ar').value = data.nama_ar || '';
+            document.getElementById('f-jen-k').value = data.jen_k || '';
+            document.getElementById('f-jenjang').value = data.jenjang || '';
+            document.getElementById('f-mustawa').value = data.mustawa || '';
+            
+            updateJurusanOptions(data.jurusan);
+            setDropdownAndLainnya('f-jenis-iqomah', data.jenis_iqomah);
+
+            document.getElementById('f-paspor').value = data.paspor || '';
+            
+            // Format Tanggal (Expired)
+            let cleanExpired = data.expired || '';
+            if (cleanExpired && typeof cleanExpired === 'string') cleanExpired = cleanExpired.split(/[\sT]+/)[0]; 
+            document.getElementById('f-expired').value = cleanExpired;
+
+            document.getElementById('f-iqamah').value = data.iqamah || '';
+            document.getElementById('f-nama-kafil').value = data.nama_kafil || '';
+            document.getElementById('f-wa').value = data.wa || '';
+            document.getElementById('f-saudi').value = data.saudi || '';
+            document.getElementById('f-dom-indo').value = data.dom_indo || '';
+            document.getElementById('f-dom-madinah').value = data.dom_madinah || '';
+            document.getElementById('f-thalib').value = data.thalib || '';
+            document.getElementById('f-alumni').value = data.alumni || '';
+            document.getElementById('f-kerabat-nama').value = data.kerabat_nama || '';
+            document.getElementById('f-kerabat-nomor').value = data.kerabat_nomor || '';
+            document.getElementById('f-kerabat-hub').value = data.kerabat_hub || '';
+            
+            document.getElementById('stts').value = data.stts || '';
+            document.getElementById('f-akun').value = data.akun || '';
+            document.getElementById('f-riwayat-penyakit').value = data.riwayat_penyakit || '';
+            document.getElementById('f-minat-bakat').value = data.minat_bakat || '';
+
+            document.getElementById('display-nama').childNodes[0].textContent = data.nama_id || "Data Profil ";
+
+            updateProfileIcon(data.jen_k);
+            if(data.last_updated) {
+                document.getElementById('last-updated-text').textContent = `Diperbarui: ${data.last_updated}`;
+                document.getElementById('last-updated-text').className = "text-[10px] text-green-600 font-medium mt-1 italic";
+            }
+        }
+
+        function clearForm() {
+            const inputs = document.querySelectorAll('#screen-form input[type="text"], #screen-form input[type="email"]');
+            inputs.forEach(input => {
+                if(input.id !== 'f-email') input.value = '';
+            });
+            const selects = document.querySelectorAll('#screen-form select');
+            selects.forEach(select => { select.selectedIndex = 0; });
+            
+            updateJurusanOptions('');
+            updateProfileIcon('');
+            document.getElementById('display-nama').childNodes[0].textContent = "Data Baru ";
+            document.getElementById('badge-blokir').classList.add('hidden');
+        }
+
+        function getFormData() {
+            const getText = (id) => {
+                const el = document.getElementById(id);
+                return el ? el.value.trim() : "";
+            };
+
+            const getNum = (id) => {
+                const el = document.getElementById(id);
+                const val = el ? el.value.trim() : "";
+                return val === "" ? 0 : val;
+            };
+
+            return {
+                email: currentEmail, // Menyesuaikan dengan Login Key (Email Address)
+                nama_id: getText('f-nama-id'),
+                jen_k: getText('f-jen-k'),
+                nama_ar: getText('f-nama-ar'),
+                paspor: getText('f-paspor'),
+                expired: getText('f-expired'),
+                iqamah: getNum('f-iqamah'),
+                jenis_iqomah: getText('f-jenis-iqomah'),
+                nama_kafil: getText('f-nama-kafil'),
+                wa: getNum('f-wa'),
+                saudi: getNum('f-saudi'),
+                jenjang: getText('f-jenjang'),
+                mustawa: getNum('f-mustawa'),
+                jurusan: getText('f-jurusan'),
+                dom_indo: getText('f-dom-indo'),
+                dom_madinah: getText('f-dom-madinah'),
+                thalib: getNum('f-thalib'),
+                alumni: getText('f-alumni'),
+                kerabat_nama: getText('f-kerabat-nama'),
+                kerabat_nomor: getNum('f-kerabat-nomor'),
+                kerabat_hub: getText('f-kerabat-hub'),
+                stts: getText('stts'),
+                akun: getText('f-akun'),
+                riwayat_penyakit: getText('f-riwayat-penyakit'),
+                minat_bakat: getText('f-minat-bakat')
+            };
+        }
+
+        function confirmSave() {
+            const data = getFormData();
+            
+            // Field yang opsional, tidak mencegah simpan data
+            const optionalFields = [
+                'riwayat_penyakit', 'minat_bakat', 'akun', 'nama_kafil', 'iqamah', 'saudi', 'jenis_iqomah'
+            ];
+
+            for (const key in data) {
+                if (optionalFields.includes(key)) continue; 
+                
+                if (data[key] === "" || data[key] === 0 || !data[key] || String(data[key]).trim() === '') {
+                    showDynamicIsland('Terdapat kolom wajib yang kosong!', 'error'); 
+                    return;
+                }
+            }
+            
+            if (data.iqamah && String(data.iqamah).length !== 10) { showDynamicIsland('Raqm Iqamah wajib 10 digit!', 'error'); switchTab('perjalanan'); return; }
+            if (String(data.thalib).length !== 9) { showDynamicIsland('Raqm Thalib wajib 9 digit!', 'error'); switchTab('akademik'); return; }
+            if (!String(data.kerabat_nomor).startsWith('628')) { showDynamicIsland('Nomor Kerabat harus diawali 628', 'error'); switchTab('diri'); return; }
+
+            const m = document.getElementById('confirm-modal');
+            const b = document.getElementById('confirm-box');
+            m.classList.remove('hidden'); void m.offsetWidth;
+            b.classList.remove('scale-95', 'opacity-0'); b.classList.add('scale-100', 'opacity-100');
+        }
+
+        function closeConfirm() {
+            const m = document.getElementById('confirm-modal');
+            const b = document.getElementById('confirm-box');
+            b.classList.remove('scale-100', 'opacity-100'); b.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 300);
+        }
+
+        async function executeSave() {
+            closeConfirm(); showDynamicIsland('Menyimpan Data...', 'process');
+            const data = getFormData();
+            try {
+                await serverCall('saveData', data);
+                const now = new Date().toLocaleString('id-ID');
+                document.getElementById('last-updated-text').textContent = `Diperbarui: ${now}`;
+                showDynamicIsland('Mantap! Data Berhasil Disimpan', 'success');
+            } catch (err) { showDynamicIsland('Gagal menyimpan ke server', 'error'); }
+        }
+
+        function toggleMenu() {
+            const overlay = document.getElementById('menu-overlay');
+            const panel = document.getElementById('menu-panel');
+            if (overlay.classList.contains('hidden')) {
+                overlay.classList.remove('hidden'); void overlay.offsetWidth; panel.classList.remove('translate-x-full');
+            } else {
+                panel.classList.add('translate-x-full'); setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        function logout() { 
+            toggleMenu(); 
+            currentEmail = '';
+            document.getElementById('login-email').value = ''; 
+            showScreen('screen-email'); 
+        }
+
+        function toggleLainnya(baseId) {
+            const select = document.getElementById(`${baseId}-select`); 
+            const inputLainnya = document.getElementById(`${baseId}-lainnya`); 
+            const finalInput = document.getElementById(baseId);
+            if (select.value === 'Lainnya') { 
+                inputLainnya.classList.remove('hidden'); 
+                inputLainnya.focus(); 
+                finalInput.value = inputLainnya.value; 
+            } else { 
+                inputLainnya.classList.add('hidden'); 
+                inputLainnya.value = ''; 
+                finalInput.value = select.value; 
+            }
+        }
+
+        function updateJurusanOptions(selectedValue = '') {
+            const jenjang = document.getElementById('f-jenjang').value;
+            const gender = document.getElementById('f-jen-k').value;
+            const select = document.getElementById('f-jurusan-select');
+            const inputLainnya = document.getElementById('f-jurusan-lainnya');
+            const finalInput = document.getElementById('f-jurusan');
+            
+            select.innerHTML = '<option value="" disabled selected>Pilih Jurusan</option>';
+            
+            const isSmpSma = (jenjang === 'SMP (Mutawassitah)' || jenjang === 'SMA (Tsanawiyah)');
+            let options = [];
+            
+            if (isSmpSma) {
+                options = ['Umum'];
+            } else if (gender === 'Ikhwan') {
+                options = ['Al Quran', 'Sunnah', 'Lughah', 'Syariah', 'Aqidah', 'Lainnya'];
+            } else if (gender === 'Akhwat') {
+                options = ['Syariah', 'Lainnya'];
+            } else {
+                const opt = document.createElement('option');
+                opt.value = "";
+                opt.disabled = true;
+                opt.selected = true;
+                opt.textContent = "Pilih Jenis Kelamin Dulu";
+                select.appendChild(opt);
+                finalInput.value = '';
+                inputLainnya.classList.add('hidden');
+                return;
+            }
+            
+            options.forEach(opt => {
+                const optionEl = document.createElement('option');
+                optionEl.value = opt;
+                optionEl.textContent = opt;
+                select.appendChild(optionEl);
+            });
+
+            if (selectedValue) {
+                let found = Array.from(select.options).some(opt => opt.value === selectedValue);
+                if (found) {
+                    select.value = selectedValue;
+                    inputLainnya.classList.add('hidden');
+                    finalInput.value = selectedValue;
+                } else if (options.includes('Lainnya')) {
+                    select.value = 'Lainnya';
+                    inputLainnya.classList.remove('hidden');
+                    inputLainnya.value = selectedValue;
+                    finalInput.value = selectedValue;
+                }
+            } else {
+                select.selectedIndex = 0;
+                inputLainnya.classList.add('hidden');
+                finalInput.value = '';
+            }
+        }
+
+        // Date Picker UI Logic
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+        let activeDate = { d: '01', m: 'Jan', y: '2026' };
+        let currentDateTarget = ''; 
+
+        function openDatePicker(targetId) {
+            const input = document.getElementById(targetId);
+            if (input.disabled) return; 
+            
+            currentDateTarget = targetId;
+            const modal = document.getElementById('date-picker-modal'); 
+            const container = document.getElementById('dp-container'); 
+            
+            const currentYear = new Date().getFullYear();
+            let years = [];
+            for(let i = currentYear - 5; i <= currentYear + 20; i++) years.push(String(i));
+
+            const createItems = (id, arr, loopCount) => {
+                const containerEl = document.getElementById(id); let html = '';
+                for(let i=0; i<loopCount; i++) arr.forEach(val => html += `<div class="picker-item" data-val="${val}">${val}</div>`);
+                containerEl.innerHTML = html;
+            };
+            
+            createItems('wheel-date-content', Array.from({length: 31}, (_, i) => String(i+1).padStart(2, '0')), 5);
+            createItems('wheel-month-content', months, 5);
+            createItems('wheel-year-content', years, 3);
+
+            let d, m, y;
+            if (input.value && input.value.includes('/')) {
+                const parts = input.value.split('/'); d = parts[0]; const mIndex = parseInt(parts[1], 10) - 1;
+                m = (mIndex >= 0 && mIndex < 12) ? months[mIndex] : months[0]; y = parts[2];
+            } else { 
+                const today = new Date(); d = String(today.getDate()).padStart(2, '0'); m = months[today.getMonth()]; y = String(today.getFullYear()); 
+            }
+            
+            modal.classList.remove('hidden'); void modal.offsetWidth; container.classList.remove('translate-y-full');
+            setTimeout(() => { scrollToVal('date', d); scrollToVal('month', m); scrollToVal('year', y); }, 10);
+        }
+
+        function closeDatePicker() {
+            const modal = document.getElementById('date-picker-modal'); const container = document.getElementById('dp-container');
+            container.classList.add('translate-y-full'); setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function scrollToVal(type, val) {
+            const col = document.getElementById(`wheel-${type}`); const items = col.querySelectorAll('.picker-item'); const total = items.length; const middleIndex = Math.floor(total / 2); let targetIndex = -1;
+            for(let i = middleIndex; i < total; i++) { if(items[i].getAttribute('data-val') === val) { targetIndex = i; break; } }
+            if(targetIndex === -1) { for(let i = 0; i < total; i++) { if(items[i].getAttribute('data-val') === val) { targetIndex = i; break; } } }
+            if(targetIndex !== -1) { const item = items[targetIndex]; col.scrollTop = item.offsetTop - (col.clientHeight / 2) + (item.clientHeight / 2); updateActiveState(type); }
+        }
+
+        function handleWheelScroll(type) { clearTimeout(window[`scrollTimeout_${type}`]); window[`scrollTimeout_${type}`] = setTimeout(() => updateActiveState(type), 100); }
+        
+        function updateActiveState(type) {
+            const col = document.getElementById(`wheel-${type}`); const items = col.querySelectorAll('.picker-item'); const centerPos = col.scrollTop + (col.clientHeight / 2);
+            let closest = null; let closestDist = Infinity;
+            items.forEach((item) => {
+                item.classList.remove('active'); const itemCenter = item.offsetTop + (item.clientHeight / 2); const dist = Math.abs(centerPos - itemCenter);
+                if(dist < closestDist) { closestDist = dist; closest = item; }
+            });
+            if(closest) {
+                closest.classList.add('active');
+                if(type === 'date') activeDate.d = closest.getAttribute('data-val');
+                if(type === 'month') activeDate.m = closest.getAttribute('data-val');
+                if(type === 'year') activeDate.y = closest.getAttribute('data-val');
+            }
+        }
+
+        function applyDate() {
+            const input = document.getElementById(currentDateTarget); 
+            const monthIndex = months.indexOf(activeDate.m) + 1;
+            const monthFormatted = String(monthIndex).padStart(2, '0');
+            input.value = `${activeDate.d}/${monthFormatted}/${activeDate.y}`; closeDatePicker();
+        }
+    </script>
+</body>
+</html>
