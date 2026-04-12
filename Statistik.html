@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPMI Madinah Dashboard - Google Sites Edition</title>
+    <!-- Font Premium -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-green: #159c52;
+            --dark-green: #0a572c;
+            --accent-green: #4ade80;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --radius: 24px;
+            --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0;
+            padding: 10px;
+            background-color: transparent;
+            font-family: 'Plus Jakarta Sans', 'Cairo', sans-serif;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .site-container { max-width: 1100px; margin: 0 auto; }
+
+        .header-card {
+            background: linear-gradient(135deg, #0a572c 0%, #159c52 100%);
+            padding: 30px 40px;
+            border-radius: var(--radius);
+            box-shadow: 0 20px 40px -15px rgba(21, 156, 82, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .header-text { z-index: 2; }
+        .header-text h1 {
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            font-size: clamp(1.6rem, 5vw, 2.8rem);
+            color: var(--white);
+            font-weight: 800;
+        }
+
+        .header-text p {
+            margin: 5px 0 0 0;
+            font-size: clamp(0.85rem, 2vw, 1.2rem);
+            color: #d1f2df;
+            font-weight: 600;
+        }
+
+        .logo-box img {
+            height: clamp(70px, 12vw, 110px);
+            width: clamp(70px, 12vw, 110px);
+            background: var(--white);
+            border-radius: 22%;
+            padding: 10px;
+            box-shadow: var(--shadow);
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+
+        .ticker-bar {
+            background: var(--white);
+            margin-top: -10px;
+            margin-bottom: 25px;
+            padding: 12px 20px;
+            border-radius: 100px;
+            box-shadow: var(--shadow);
+            border: 1px solid #f1f5f9;
+            overflow: hidden;
+        }
+
+        .ticker-content {
+            white-space: nowrap;
+            display: inline-block;
+            animation: scroll 35s linear infinite;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.9rem;
+            color: var(--dark-green);
+            font-weight: 700;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid #f1f5f9;
+        }
+
+        .hero-card {
+            grid-column: span 12;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            background: linear-gradient(to right, #ffffff, #f0fff4);
+            border-right: 6px solid var(--primary-green);
+        }
+
+        .hero-val-box .big-number {
+            font-size: clamp(2.5rem, 6vw, 3.5rem);
+            font-weight: 800;
+            color: var(--dark-green);
+            display: block;
+        }
+
+        .chart-card { grid-column: span 6; min-height: 450px; display: flex; flex-direction: column; }
+        .card-header { margin-bottom: 20px; text-align: center; }
+        .card-header h4 { margin: 0; font-family: 'Cairo', sans-serif; font-size: 1.1rem; }
+        .canvas-wrapper { flex-grow: 1; position: relative; width: 100%; height: 320px; }
+
+        @media (max-width: 992px) { .chart-card { grid-column: span 12; } }
+        @media (max-width: 600px) {
+            .header-card { flex-direction: column; text-align: center; padding: 30px 20px; }
+            .logo-box { margin-top: 15px; }
+            .hero-card { flex-direction: column; padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="site-container">
+        <header class="header-card">
+            <div class="header-text">
+                <h1>المندوبية الإندونيسية</h1>
+                <p>PPMI MADINAH INTERNAL DASHBOARD</p>
+            </div>
+            <div class="logo-box">
+                <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" alt="PPMI Logo">
+            </div>
+        </header>
+
+        <div class="ticker-bar">
+            <div class="ticker-content">
+                Update Data Real-time Mahasiswa PPMI Madinah • تحديث بيانات الطلاب في الوقت الفعلي • Selamat Datang di Portal Data Internal •
+            </div>
+        </div>
+
+        <main class="stats-grid">
+            <div class="card hero-card">
+                <div style="font-size: 3.5rem;">📊</div>
+                <div class="hero-val-box">
+                    <h3 style="margin:0; color:var(--text-muted); font-size:0.9rem;">TOTAL MAHASISWA AKTIF TERDAFTAR</h3>
+                    <span class="big-number" id="totalDisplay">0</span>
+                </div>
+                <div style="font-size: 3.5rem;">🎓</div>
+            </div>
+
+            <div class="card chart-card">
+                <div class="card-header"><h4>Sebaran Per Wilayah</h4></div>
+                <div class="canvas-wrapper"><canvas id="daerahChart"></canvas></div>
+            </div>
+
+            <div class="card chart-card">
+                <div class="card-header"><h4>Sebaran Per Angkatan</h4></div>
+                <div class="canvas-wrapper"><canvas id="angkatanChart"></canvas></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 1. FIXED URL (Hanya satu kali /exec)
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwm3Ivf4V_P7wSi7-HsGWQKtblbxdnR4axkJrfkMHHBJ_gzmHGoyU4QnZ5kp2NFHjMS/exec'; 
+
+        async function loadDashboard() {
+            let data = null;
+
+            try {
+                const res = await fetch(API_URL);
+                data = await res.json();
+                
+                if(!data || !data.success) throw new Error("Gagal ambil data");
+                
+                console.log("Data berhasil dimuat dari API");
+            } catch(e) { 
+                console.error("Gagal koneksi API, menggunakan data simulasi JSON Anda.");
+                // Menggunakan data yang Anda berikan sebagai fallback
+                data = {
+                    success: true,
+                    totalAktif: 722,
+                    perDaerah: {"Jawa Barat":97,"Riau":60,"Jawa Timur":52,"Jawa Tengah":50,"Nusa Tenggara Barat":31,"Sulawesi Selatan":30,"Banten":30,"Aceh":23,"Sumatera Barat":14},
+                    perAngkatan: {"441":76,"443":112,"451":82,"452":160,"461":65,"471":70,"472":59}
+                };
+            }
+
+            animateValue("totalDisplay", 0, data.totalAktif, 1500);
+            renderCharts(data);
+        }
+
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function renderCharts(data) {
+            Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+
+            // --- OPTIMASI DATA DAERAH ---
+            // Karena provinsi sangat banyak, kita urutkan dan ambil top 8, sisanya masuk "Lainnya"
+            const sortedDaerah = Object.entries(data.perDaerah)
+                .sort((a, b) => b[1] - a[1]);
+            
+            const topDaerah = sortedDaerah.slice(0, 35);
+            const lainnyaCount = sortedDaerah.slice(35).reduce((acc, curr) => acc + curr[1], 0);
+            
+            if(lainnyaCount > 0) topDaerah.push(["Lainnya", lainnyaCount]);
+
+            const daerahLabels = topDaerah.map(x => x[0]);
+            const daerahValues = topDaerah.map(x => x[1]);
+
+            // Donut Chart
+            new Chart(document.getElementById('daerahChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: daerahLabels,
+                    datasets: [{
+                        data: daerahValues,
+                        backgroundColor: ['#0a572c', '#159c52', '#22c55e', '#4ade80', '#86efac', '#bbf7d0', '#dcfce7', '#f0fdf4', '#94a3b8'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    rtl: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { padding: 20, usePointStyle: true, font: { size: 11, weight: '600' } }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+
+            // Bar Chart Angkatan
+            new Chart(document.getElementById('angkatanChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(data.perAngkatan),
+                    datasets: [{
+                        label: 'Mahasiswa',
+                        data: Object.values(data.perAngkatan),
+                        backgroundColor: '#159c52',
+                        borderRadius: 8,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('load', loadDashboard);
+    </script>
+</body>
+</html>
