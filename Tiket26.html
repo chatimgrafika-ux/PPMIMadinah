@@ -174,12 +174,15 @@
                         <div class="flex-1">
                             <input type="text" id="f-tiket-file" oninput="updateTiketLink()" placeholder="https://drive.google.com/..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 transition-colors">
                         </div>
+                        
+                        <!-- Icon Upload File -->
                         <label for="f-tiket-upload" id="btn-upload-label" class="w-[46px] h-[46px] shrink-0 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center hover:bg-blue-200 transition-colors shadow-sm mb-0.5 cursor-pointer" title="Upload File (Max 3MB)">
                             <i class="fas fa-upload text-sm"></i>
                         </label>
                         <input type="file" id="f-tiket-upload" accept=".pdf,image/png,image/jpeg,image/jpg" class="hidden" onchange="handleFileUpload(this)">
                         
-                        <a id="btn-open-tiket" href="#" target="_blank" class="hidden w-[46px] h-[46px] shrink-0 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center hover:bg-blue-200 transition-colors shadow-sm mb-0.5">
+                        <!-- Icon Open Link File Tiket -->
+                        <a id="btn-open-tiket" href="#" target="_blank" class="hidden w-[46px] h-[46px] shrink-0 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center hover:bg-blue-200 transition-colors shadow-sm mb-0.5" title="Buka File Tiket">
                             <i id="icon-open-tiket" class="fab fa-google-drive text-lg"></i>
                         </a>
                     </div>
@@ -366,7 +369,8 @@
                 // Mengambil string Base64 murni tanpa header tipe data
                 const base64Data = e.target.result.split(',')[1];
                 tiketFileObj = {
-                    name: file.name,
+                    originalName: file.name, // Simpan original name untuk ekstensi nanti
+                    name: file.name, 
                     mimeType: file.type,
                     data: base64Data
                 };
@@ -520,6 +524,7 @@
                 inp.readOnly = locked;
                 inp.classList.toggle('bg-gray-100', locked);
             });
+            // Tombol Hapus disembunyikan, tetapi Tombol WhatsApp tetap dibiarkan agar anggota bisa saling chat
             document.querySelectorAll('.btn-remove-anggota').forEach(btn => btn.classList.toggle('hidden', locked));
             
             // Kunci tombol save agar anggota tidak merusak tiket
@@ -553,19 +558,36 @@
             });
             // Reset hidden val jika user mengetik sembarangan agar tidak tersimpan data salah
             document.getElementById(`val-${id}`).value = ''; 
+            document.getElementById(`wa-btn-${id}`).classList.add('hidden'); // Sembunyikan ikon WA jika ngetik ulang
         }
 
-        function selectMember(id, studentId, studentName) {
+        function selectMember(id, studentId, studentName, studentWa) {
             document.getElementById(`search-${id}`).value = `${studentId} - ${studentName}`;
             document.getElementById(`val-${id}`).value = studentId;
             document.getElementById(`drop-${id}`).classList.add('hidden');
+
+            // Update tombol WhatsApp
+            const waBtn = document.getElementById(`wa-btn-${id}`);
+            if (waBtn) {
+                if (studentWa && studentWa.trim() !== '') {
+                    // Bersihkan nomor dari karakter selain angka
+                    let cleanWa = studentWa.replace(/\D/g, ''); 
+                    waBtn.href = `https://wa.me/${cleanWa}`;
+                    waBtn.classList.remove('hidden');
+                } else {
+                    waBtn.classList.add('hidden');
+                    waBtn.href = '#';
+                }
+            }
         }
 
         function populateDropdown(id) {
             const drop = document.getElementById(`drop-${id}`);
             let html = '';
             ALL_STUDENTS.forEach(s => {
-                html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 hover:bg-green-50 cursor-pointer transition-colors" onclick="selectMember('${id}', '${s.id}', '${s.nama.replace(/'/g, "\\'")}')">${s.id} - <span class="font-bold text-gray-800">${s.nama}</span></div>`;
+                const safeName = s.nama.replace(/'/g, "\\'");
+                const safeWa = s.wa ? s.wa.replace(/'/g, "") : ''; // Mengambil data WA
+                html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 hover:bg-green-50 cursor-pointer transition-colors" onclick="selectMember('${id}', '${s.id}', '${safeName}', '${safeWa}')">${s.id} - <span class="font-bold text-gray-800">${s.nama}</span></div>`;
             });
             if(html === '') html = '<div class="px-3 py-2 text-xs text-gray-400 text-center">Tidak ada data</div>';
             drop.innerHTML = html;
@@ -576,9 +598,21 @@
             const uniqueId = 'anggota-' + Date.now() + Math.floor(Math.random() * 1000);
             
             let initialName = '';
+            let initialWaHref = '#';
+            let waHiddenClass = 'hidden';
+
             if(valId) {
                 const student = ALL_STUDENTS.find(s => s.id === valId);
-                initialName = student ? `${student.id} - ${student.nama}` : valId;
+                if (student) {
+                    initialName = `${student.id} - ${student.nama}`;
+                    if (student.wa) {
+                        let cleanWa = student.wa.replace(/\D/g, '');
+                        initialWaHref = `https://wa.me/${cleanWa}`;
+                        waHiddenClass = ''; // Tampilkan tombol WA
+                    }
+                } else {
+                    initialName = valId; // Jika hanya berupa angka NIM
+                }
             }
 
             const div = document.createElement('div');
@@ -594,7 +628,8 @@
                         <!-- Populated by JS -->
                     </div>
                 </div>
-                <button type="button" onclick="document.getElementById('wrapper-${uniqueId}').remove()" class="btn-remove-anggota text-red-500 p-2.5 bg-white border border-red-100 hover:bg-red-50 rounded-xl transition-colors shadow-sm"><i class="fas fa-trash"></i></button>
+                <a href="${initialWaHref}" id="wa-btn-${uniqueId}" target="_blank" class="${waHiddenClass} text-green-500 p-2.5 bg-white border border-green-100 hover:bg-green-50 rounded-xl transition-colors shadow-sm" title="Chat WhatsApp"><i class="fab fa-whatsapp text-lg"></i></a>
+                <button type="button" onclick="document.getElementById('wrapper-${uniqueId}').remove()" class="btn-remove-anggota text-red-500 p-2.5 bg-white border border-red-100 hover:bg-red-50 rounded-xl transition-colors shadow-sm" title="Hapus Anggota"><i class="fas fa-trash"></i></button>
             `;
             container.appendChild(div);
             populateDropdown(uniqueId);
@@ -665,17 +700,38 @@
         }
 
         function getFormData() {
+            const anggotaList = getAnggotaList();
+            const tiketNomor = document.getElementById('f-tiket-nomor').value.trim();
+            const tiketKetua = document.getElementById('f-tiket-ketua').value;
+
+            // Merubah nama file secara dinamis
+            if (tiketFileObj) {
+                const ext = tiketFileObj.originalName.substring(tiketFileObj.originalName.lastIndexOf('.'));
+                const safeNomor = tiketNomor || 'TIKET';
+                const safeKetua = tiketKetua || currentThalib;
+                
+                let newFileName = `${safeNomor}-${safeKetua}`;
+                if (anggotaList) {
+                    // Merapikan list anggota dengan spasi setelah koma agar formatnya persis
+                    const formattedAnggota = anggotaList.split(',').map(a => a.trim()).join(', ');
+                    newFileName += `, ${formattedAnggota}`;
+                }
+                newFileName += ext; // Tambahkan ekstensi asli file (.pdf, .jpg)
+                
+                tiketFileObj.name = newFileName;
+            }
+
             return {
                 email: currentUserEmail,
                 thalib: currentThalib,
-                tiket_nomor: document.getElementById('f-tiket-nomor').value,
+                tiket_nomor: tiketNomor,
                 tiket_grup: document.getElementById('f-tiket-grup').value,
-                tiket_ketua: document.getElementById('f-tiket-ketua').value,
+                tiket_ketua: tiketKetua,
                 tiket_berangkat: document.getElementById('f-tiket-berangkat').value,
                 tiket_pulang: document.getElementById('f-tiket-pulang').value,
                 tiket_file: document.getElementById('f-tiket-file').value,
                 tiket_file_upload: tiketFileObj, // Membawa object base64 ke payload
-                tiket_anggota: getAnggotaList()
+                tiket_anggota: anggotaList
             };
         }
 
