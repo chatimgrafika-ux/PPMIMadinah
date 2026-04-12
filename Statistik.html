@@ -32,7 +32,7 @@
             overflow-x: hidden;
         }
 
-        .site-container { max-width: 1100px; margin: 0 auto; }
+        .site-container { max-width: 1200px; margin: 0 auto; }
 
         .header-card {
             background: linear-gradient(135deg, #0a572c 0%, #159c52 100%);
@@ -99,7 +99,11 @@
             100% { transform: translateX(-100%); }
         }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(12, 1fr); 
+            gap: 20px; 
+        }
 
         .card {
             background: var(--white);
@@ -118,23 +122,86 @@
             border-right: 6px solid var(--primary-green);
         }
 
+        .hero-val-box {
+            text-align: center;
+        }
+
         .hero-val-box .big-number {
             font-size: clamp(2.5rem, 6vw, 3.5rem);
             font-weight: 800;
             color: var(--dark-green);
             display: block;
+            line-height: 1.1;
         }
 
-        .chart-card { grid-column: span 6; min-height: 450px; display: flex; flex-direction: column; }
-        .card-header { margin-bottom: 20px; text-align: center; }
-        .card-header h4 { margin: 0; font-family: 'Cairo', sans-serif; font-size: 1.1rem; }
-        .canvas-wrapper { flex-grow: 1; position: relative; width: 100%; height: 320px; }
+        /* Filter Section Styling */
+        .filter-section {
+            grid-column: span 12;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 0 10px;
+            margin-top: -5px;
+            margin-bottom: -5px;
+            gap: 15px;
+        }
 
-        @media (max-width: 992px) { .chart-card { grid-column: span 12; } }
-        @media (max-width: 600px) {
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-section label {
+            font-weight: 700;
+            color: var(--dark-green);
+            margin: 0;
+        }
+
+        .custom-select {
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 600;
+            color: var(--text-main);
+            outline: none;
+            background-color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .custom-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(21, 156, 82, 0.1);
+        }
+
+        /* Update ukuran card chart agar muat 3 sejajar di desktop */
+        .chart-card { 
+            grid-column: span 4; 
+            min-height: 400px; 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        .card-header { margin-bottom: 20px; text-align: center; }
+        .card-header h4 { margin: 0; font-family: 'Cairo', sans-serif; font-size: 1.1rem; color: var(--dark-green); }
+        .canvas-wrapper { flex-grow: 1; position: relative; width: 100%; height: 280px; }
+
+        /* Responsif untuk Tablet dan Mobile */
+        @media (max-width: 992px) { 
+            .chart-card { grid-column: span 6; } /* 2 Kolom di tablet */
+            .chart-card:last-child { grid-column: span 12; }
+        }
+        @media (max-width: 768px) {
+            .chart-card { grid-column: span 12; } /* 1 Kolom di HP */
             .header-card { flex-direction: column; text-align: center; padding: 30px 20px; }
             .logo-box { margin-top: 15px; }
-            .hero-card { flex-direction: column; padding: 30px; }
+            .hero-card { flex-direction: column; padding: 30px; gap: 15px; }
+            .filter-section { justify-content: center; flex-direction: column; gap: 10px; width: 100%; }
+            .filter-group { width: 100%; justify-content: space-between; }
+            .custom-select { width: 60%; }
         }
     </style>
 </head>
@@ -158,20 +225,52 @@
         </div>
 
         <main class="stats-grid">
+            <!-- Total Card -->
             <div class="card hero-card">
                 <div style="font-size: 3.5rem;">📊</div>
                 <div class="hero-val-box">
-                    <h3 style="margin:0; color:var(--text-muted); font-size:0.9rem;">TOTAL MAHASISWA AKTIF TERDAFTAR</h3>
-                    <span class="big-number" id="totalDisplay">0</span>
-                </div>
-                <div style="font-size: 3.5rem;">🎓</div>
+                <h3 style="margin:0; color:var(--text-muted); font-size:0.9rem;">TOTAL MAHASISWA (<span id="labelFilterType">SEMUA</span>)</h3>
+                <span class="big-number" id="totalDisplay">0</span>
+            </div>
+            <div style="font-size: 3.5rem;">🎓</div>
+        </div>
+
+        <!-- Filter Dropdown -->
+        <div class="filter-section">
+            <div class="filter-group">
+                <label for="kampusFilter">Kampus :</label>
+                <select id="kampusFilter" class="custom-select">
+                    <option value="Semua">Semua Kampus</option>
+                    <option value="UIM">UIM</option>
+                    <option value="Thaibah">Thaibah</option>
+                    <option value="Mahad Harom">Mahad Harom</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="visaFilter">Program :</label>
+                <select id="visaFilter" class="custom-select">
+                    <option value="Semua">Semua Program (All)</option>
+                    <option value="Online">Online</option>
+                    <option value="Mahad Online">Mahad Online</option>
+                    <option value="Offline Visa Pelajar">Offline Visa Pelajar</option>
+                    <option value="Offline Pemegang Iqomah">Offline Pemegang Iqomah</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Chart 1: Status Mahasiswa (Aktif/Cuti/Alumni) -->
+        <div class="card chart-card">
+                <div class="card-header"><h4>Status Keseluruhan Mahasiswa</h4></div>
+                <div class="canvas-wrapper"><canvas id="statusChart"></canvas></div>
             </div>
 
+            <!-- Chart 2: Sebaran Daerah (Berdasarkan Filter) -->
             <div class="card chart-card">
                 <div class="card-header"><h4>Sebaran Per Wilayah</h4></div>
                 <div class="canvas-wrapper"><canvas id="daerahChart"></canvas></div>
             </div>
 
+            <!-- Chart 3: Sebaran Angkatan (Berdasarkan Filter) -->
             <div class="card chart-card">
                 <div class="card-header"><h4>Sebaran Per Angkatan</h4></div>
                 <div class="canvas-wrapper"><canvas id="angkatanChart"></canvas></div>
@@ -180,8 +279,10 @@
     </div>
 
     <script>
-        // 1. FIXED URL (Hanya satu kali /exec)
         const API_URL = 'https://script.google.com/macros/s/AKfycbwm3Ivf4V_P7wSi7-HsGWQKtblbxdnR4axkJrfkMHHBJ_gzmHGoyU4QnZ5kp2NFHjMS/exec'; 
+        
+        let dashboardData = null;
+        let charts = { daerah: null, angkatan: null, status: null };
 
         async function loadDashboard() {
             let data = null;
@@ -190,22 +291,134 @@
                 const res = await fetch(API_URL);
                 data = await res.json();
                 
-                if(!data || !data.success) throw new Error("Gagal ambil data");
+                if(!data || !data.success || !data.kampus) throw new Error("Format API belum diperbarui");
                 
                 console.log("Data berhasil dimuat dari API");
             } catch(e) { 
-                console.error("Gagal koneksi API, menggunakan data simulasi JSON Anda.");
-                // Menggunakan data yang Anda berikan sebagai fallback
+                console.warn("API Error / Format lama terdeteksi. Menggunakan Simulasi Data.", e);
+                
                 data = {
                     success: true,
-                    totalAktif: 722,
-                    perDaerah: {"Jawa Barat":97,"Riau":60,"Jawa Timur":52,"Jawa Tengah":50,"Nusa Tenggara Barat":31,"Sulawesi Selatan":30,"Banten":30,"Aceh":23,"Sumatera Barat":14},
-                    perAngkatan: {"441":76,"443":112,"451":82,"452":160,"461":65,"471":70,"472":59}
+                    kampus: {
+                        "Semua": {
+                            status: { "Aktif": 722, "Cuti": 45, "Alumni": 310 },
+                            visa: {
+                                "Semua": {
+                                    daerah: {"Jawa Barat":97,"Riau":60,"Jawa Timur":52,"Jawa Tengah":50,"Nusa Tenggara Barat":31,"Sulawesi Selatan":30,"Banten":30,"Aceh":23,"Sumatera Barat":14},
+                                    angkatan: {"441":76,"443":112,"451":82,"452":160,"461":65,"471":70,"472":59}
+                                },
+                                "Offline Visa Pelajar": {
+                                    daerah: {"Jawa Barat":70,"Riau":50,"Jawa Timur":40,"Jawa Tengah":40,"Nusa Tenggara Barat":21,"Sulawesi Selatan":20,"Banten":20,"Aceh":13,"Sumatera Barat":10},
+                                    angkatan: {"441":60,"443":90,"451":60,"452":120,"461":50,"471":60,"472":40}
+                                },
+                                "Online": {
+                                    daerah: {"Jawa Barat":27,"Riau":10,"Jawa Timur":12,"Jawa Tengah":10,"Nusa Tenggara Barat":10,"Sulawesi Selatan":10,"Banten":10,"Aceh":10,"Sumatera Barat":4},
+                                    angkatan: {"441":16,"443":22,"451":22,"452":40,"461":15,"471":10,"472":19}
+                                },
+                                "Mahad Online": {
+                                    daerah: {"Jawa Barat": 15, "Banten": 5},
+                                    angkatan: {"481": 20}
+                                },
+                                "Offline Pemegang Iqomah": {
+                                    daerah: {"Jawa Timur": 5, "Banten": 3},
+                                    angkatan: {"451": 8}
+                                }
+                            }
+                        },
+                        "UIM": {
+                            status: { "Aktif": 500, "Cuti": 30, "Alumni": 200 },
+                            visa: {
+                                "Semua": {
+                                    daerah: {"Jawa Barat":70,"Riau":40,"Jawa Timur":40,"Jawa Tengah":30,"Nusa Tenggara Barat":20,"Sulawesi Selatan":20},
+                                    angkatan: {"441":50,"443":80,"451":60,"452":100,"461":50,"471":50,"472":40}
+                                },
+                                "Offline Visa Pelajar": {
+                                    daerah: {"Jawa Barat":50,"Riau":35,"Jawa Timur":30,"Jawa Tengah":25,"Nusa Tenggara Barat":15,"Sulawesi Selatan":15},
+                                    angkatan: {"441":40,"443":60,"451":40,"452":80,"461":40,"471":40,"472":30}
+                                },
+                                "Online": {
+                                    daerah: {"Jawa Barat":20,"Riau":5,"Jawa Timur":10,"Jawa Tengah":5,"Nusa Tenggara Barat":5,"Sulawesi Selatan":5},
+                                    angkatan: {"441":10,"443":20,"451":20,"452":20,"461":10,"471":10,"472":10}
+                                },
+                                "Mahad Online": {
+                                    daerah: {"Jawa Barat": 15, "Banten": 5},
+                                    angkatan: {"481": 20}
+                                },
+                                "Offline Pemegang Iqomah": {
+                                    daerah: {},
+                                    angkatan: {}
+                                }
+                            }
+                        },
+                        "Thaibah": {
+                            status: { "Aktif": 122, "Cuti": 10, "Alumni": 60 },
+                            visa: {
+                                "Semua": {
+                                    daerah: {"Jawa Barat":17,"Riau":10,"Jawa Timur":8,"Jawa Tengah":10,"Nusa Tenggara Barat":6,"Sulawesi Selatan":5,"Banten":5},
+                                    angkatan: {"441":16,"443":20,"451":12,"452":30,"461":10,"471":10,"472":9}
+                                },
+                                "Offline Visa Pelajar": {
+                                    daerah: {"Jawa Barat":17,"Riau":10,"Jawa Timur":8,"Jawa Tengah":10,"Nusa Tenggara Barat":6,"Sulawesi Selatan":5,"Banten":5},
+                                    angkatan: {"441":16,"443":20,"451":12,"452":30,"461":10,"471":10,"472":9}
+                                },
+                                "Online": { daerah: {}, angkatan: {} },
+                                "Mahad Online": { daerah: {}, angkatan: {} },
+                                "Offline Pemegang Iqomah": { daerah: {}, angkatan: {} }
+                            }
+                        },
+                        "Mahad Harom": {
+                            status: { "Aktif": 100, "Cuti": 5, "Alumni": 50 },
+                            visa: {
+                                "Semua": {
+                                    daerah: {"Jawa Barat":10,"Riau":10,"Jawa Timur":4,"Jawa Tengah":10,"Nusa Tenggara Barat":5,"Sulawesi Selatan":5,"Banten":5,"Aceh":13,"Sumatera Barat":14},
+                                    angkatan: {"Tdk Terdata": 100}
+                                },
+                                "Offline Visa Pelajar": {
+                                    daerah: {"Jawa Barat":10,"Riau":10,"Jawa Timur":4,"Jawa Tengah":10,"Nusa Tenggara Barat":5,"Sulawesi Selatan":5,"Banten":5,"Aceh":13,"Sumatera Barat":14},
+                                    angkatan: {"Tdk Terdata": 100}
+                                },
+                                "Online": { daerah: {}, angkatan: {} },
+                                "Mahad Online": { daerah: {}, angkatan: {} },
+                                "Offline Pemegang Iqomah": { daerah: {}, angkatan: {} }
+                            }
+                        }
+                    }
                 };
             }
 
-            animateValue("totalDisplay", 0, data.totalAktif, 1500);
-            renderCharts(data);
+            dashboardData = data;
+            
+            // Event Listeners
+            document.getElementById('kampusFilter').addEventListener('change', updateDashboard);
+            document.getElementById('visaFilter').addEventListener('change', updateDashboard);
+
+            // Render Pertama Kali
+            updateDashboard();
+        }
+
+        function updateDashboard() {
+            if (!dashboardData) return;
+
+            const kampusVal = document.getElementById('kampusFilter').value;
+            const visaVal = document.getElementById('visaFilter').value;
+
+            const selectedKampus = dashboardData.kampus[kampusVal];
+            const selectedVisaData = selectedKampus.visa[visaVal];
+            
+            // Hitung total mahasiswa aktif
+            const totalAktif = Object.values(selectedVisaData.daerah).reduce((a, b) => a + b, 0);
+            
+            // Update UI Teks
+            let filterText = kampusVal.toUpperCase();
+            if(visaVal !== "Semua") filterText += ` - ${visaVal.toUpperCase()}`;
+            document.getElementById('labelFilterType').innerText = filterText;
+            
+            // Animasi angka total
+            const currentTotal = parseInt(document.getElementById("totalDisplay").innerText.replace(/,/g, '')) || 0;
+            animateValue("totalDisplay", currentTotal, totalAktif, 1000);
+
+            // Render Ulang Grafik
+            renderCharts(selectedKampus.status, selectedVisaData);
         }
 
         function animateValue(id, start, end, duration) {
@@ -220,30 +433,23 @@
             window.requestAnimationFrame(step);
         }
 
-        function renderCharts(data) {
+        function renderCharts(statusData, visaData) {
             Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
 
-            // --- OPTIMASI DATA DAERAH ---
-            // Karena provinsi sangat banyak, kita urutkan dan ambil top 8, sisanya masuk "Lainnya"
-            const sortedDaerah = Object.entries(data.perDaerah)
-                .sort((a, b) => b[1] - a[1]);
-            
-            const topDaerah = sortedDaerah.slice(0, 35);
-            const lainnyaCount = sortedDaerah.slice(35).reduce((acc, curr) => acc + curr[1], 0);
-            
-            if(lainnyaCount > 0) topDaerah.push(["Lainnya", lainnyaCount]);
+            // ========================================================
+            // 1. CHART STATUS MAHASISWA (Berdasarkan Kampus)
+            // ========================================================
+            const statusLabels = Object.keys(statusData);
+            const statusValues = Object.values(statusData);
 
-            const daerahLabels = topDaerah.map(x => x[0]);
-            const daerahValues = topDaerah.map(x => x[1]);
-
-            // Donut Chart
-            new Chart(document.getElementById('daerahChart'), {
-                type: 'doughnut',
+            if (charts.status) charts.status.destroy(); // Hancurkan chart lama
+            charts.status = new Chart(document.getElementById('statusChart'), {
+                type: 'pie',
                 data: {
-                    labels: daerahLabels,
+                    labels: statusLabels,
                     datasets: [{
-                        data: daerahValues,
-                        backgroundColor: ['#0a572c', '#159c52', '#22c55e', '#4ade80', '#86efac', '#bbf7d0', '#dcfce7', '#f0fdf4', '#94a3b8'],
+                        data: statusValues,
+                        backgroundColor: ['#159c52', '#f59e0b', '#3b82f6'], // Hijau (Aktif), Kuning (Cuti), Biru (Alumni)
                         borderWidth: 2,
                         borderColor: '#ffffff'
                     }]
@@ -253,25 +459,59 @@
                     maintainAspectRatio: false,
                     rtl: true,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { padding: 20, usePointStyle: true, font: { size: 11, weight: '600' } }
-                        }
-                    },
-                    cutout: '65%'
+                        legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true, font: { size: 11, weight: '600' } } }
+                    }
                 }
             });
 
-            // Bar Chart Angkatan
-            new Chart(document.getElementById('angkatanChart'), {
+            // ========================================================
+            // 2. CHART DAERAH (Dinamis sesuai Filter Kampus & Visa)
+            // ========================================================
+            const sortedDaerah = Object.entries(visaData.daerah).sort((a, b) => b[1] - a[1]);
+            // Ambil top 6 daerah saja agar grafik tidak terlalu padat di kolom kecil, sisanya masuk "Lainnya"
+            const topDaerah = sortedDaerah.slice(0, 6);
+            const lainnyaCount = sortedDaerah.slice(6).reduce((acc, curr) => acc + curr[1], 0);
+            if(lainnyaCount > 0) topDaerah.push(["Lainnya", lainnyaCount]);
+
+            const daerahLabels = topDaerah.map(x => x[0]);
+            const daerahValues = topDaerah.map(x => x[1]);
+
+            if (charts.daerah) charts.daerah.destroy(); // Hancurkan chart lama sebelum render baru
+            charts.daerah = new Chart(document.getElementById('daerahChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: daerahLabels,
+                    datasets: [{
+                        data: daerahValues,
+                        backgroundColor: ['#0a572c', '#159c52', '#22c55e', '#4ade80', '#86efac', '#bbf7d0', '#94a3b8'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    rtl: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true, font: { size: 11, weight: '600' } } }
+                    },
+                    cutout: '60%'
+                }
+            });
+
+            // ========================================================
+            // 3. CHART ANGKATAN (Dinamis sesuai Filter)
+            // ========================================================
+            if (charts.angkatan) charts.angkatan.destroy(); // Hancurkan chart lama sebelum render baru
+            charts.angkatan = new Chart(document.getElementById('angkatanChart'), {
                 type: 'bar',
                 data: {
-                    labels: Object.keys(data.perAngkatan),
+                    labels: Object.keys(visaData.angkatan),
                     datasets: [{
                         label: 'Mahasiswa',
-                        data: Object.values(data.perAngkatan),
+                        data: Object.values(visaData.angkatan),
                         backgroundColor: '#159c52',
-                        borderRadius: 8,
+                        borderRadius: 6,
                     }]
                 },
                 options: {
