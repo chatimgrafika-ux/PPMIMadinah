@@ -8,41 +8,42 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Font Poppins (Tema dari referensi) -->
+    <!-- Font Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         html, body { 
-            overflow-x: hidden !important; 
+            overflow: hidden !important; /* Mencegah scroll di level body */
             position: relative; 
             width: 100%; 
-            max-width: 100%; 
-            height: 100%; 
+            height: 100dvh; /* Menggunakan ukuran layar penuh HP */
             margin: 0; 
             padding: 0; 
             touch-action: manipulation; 
-            -webkit-text-size-adjust: 100%; 
-            background-color: #f0fdf4; /* Warna hijau sangat lembut */
+            background-color: #f8fafc; /* Warna dasar abu sangat terang */
             font-family: 'Poppins', sans-serif;
         }
-        * { box-sizing: border-box !important; }
+        * { box-sizing: border-box !important; -webkit-tap-highlight-color: transparent; }
         
-        .animate-fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
+        /* Animasi masuk */
+        .animate-fade-in { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .animate-slide-up { animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Hilangkan scrollbar bawaan untuk tampilan lebih bersih (opsional) */
-        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        /* Hilangkan scrollbar bawaan untuk area konten */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="w-full max-w-md mx-auto min-h-screen overflow-x-hidden m-0 p-0 shadow-2xl bg-[#f0fdf4] relative">
-
-    <!-- Background Pattern Decorative (Tema referensi) -->
-    <div class="fixed top-0 left-0 w-full h-64 bg-green-600 rounded-b-[40px] -z-10"></div>
+<body class="w-full max-w-md mx-auto bg-gray-50 relative flex flex-col shadow-2xl">
 
     <!-- Dynamic Island untuk Notifikasi Interaktif -->
     <div id="dynamic-island" class="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-[9999] bg-black text-white px-5 py-3 rounded-full flex items-center justify-center gap-3 transition-all duration-300 opacity-0 scale-90 pointer-events-none shadow-2xl font-medium">
@@ -50,211 +51,245 @@
         <span id="di-text" class="text-sm truncate">Memuat...</span>
     </div>
 
-    <!-- Screen 1: Login -->
-    <div id="screen-login" class="min-h-screen flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto relative z-20 animate-fade-in">
-        <div class="w-full bg-white/95 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-gray-100 relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-green-600"></div>
-
-            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border border-green-100 overflow-hidden">
-                <img src="https://lh3.googleusercontent.com/d/1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E=s220?authuser=0" alt="Logo PPMI" class="w-full h-full object-contain p-2">
+    <!-- ==================== SCREEN 1: LOGIN ==================== -->
+    <div id="screen-login" class="absolute inset-0 z-50 bg-[#f0fdf4] flex flex-col items-center justify-center p-6 animate-fade-in">
+        <div class="fixed top-0 left-0 w-full h-64 bg-green-600 rounded-b-[40px] -z-10"></div>
+        
+        <div class="w-full bg-white/95 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50 relative overflow-hidden">
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-md border border-green-50 overflow-hidden p-2">
+                <img src="https://lh3.googleusercontent.com/d/1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E=s220?authuser=0" alt="Logo PPMI" class="w-full h-full object-contain">
             </div>
 
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Portal PPMI</h2>
-            <p class="text-xs text-center text-gray-500 mb-8 leading-relaxed">Masukkan Email dan Raqm Thalib Anda untuk masuk ke sistem.</p>
+            <p class="text-[11px] text-center text-gray-500 mb-8 leading-relaxed px-2">Sistem Informasi Terpadu Persatuan Pelajar Mahasiswa Indonesia Madinah.</p>
 
             <div class="space-y-4 mb-8">
                 <div class="w-full relative">
-                    <label class="text-xs font-semibold text-gray-700 mb-1.5 block">Alamat Email</label>
                     <div class="relative">
-                        <i class="fas fa-envelope absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="email" id="login-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="contoh@gmail.com">
+                        <i class="fas fa-envelope absolute left-4 top-4 text-gray-400"></i>
+                        <input type="email" id="login-email" class="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="Alamat Email">
                     </div>
                 </div>
                 <div class="w-full relative">
-                    <label class="text-xs font-semibold text-gray-700 mb-1.5 block">Raqm Thalib</label>
                     <div class="relative">
-                        <i class="fas fa-id-card absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="text" id="login-thalib" inputmode="numeric" pattern="[0-9]*" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="9 Digit Angka">
+                        <i class="fas fa-id-card absolute left-4 top-4 text-gray-400"></i>
+                        <input type="text" id="login-thalib" inputmode="numeric" pattern="[0-9]*" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium tracking-wide" placeholder="Raqm Thalib (9 Digit)">
                     </div>
                 </div>
             </div>
 
-            <button onclick="loginApp()" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-xl py-4 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2">
-                <span>Masuk</span>
+            <button onclick="loginApp()" class="w-full bg-green-600 text-white font-bold rounded-2xl py-4 shadow-lg shadow-green-600/30 hover:bg-green-700 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2">
+                <span>Masuk Sekarang</span>
                 <i class="fas fa-arrow-right"></i>
             </button>
         </div>
-        <p class="text-green-800 font-medium text-xs mt-8 opacity-80">© 2026 PPMI Madinah. All rights reserved.</p>
+        <p class="text-green-800 font-medium text-[10px] mt-8 opacity-70 tracking-widest uppercase">© 2026 PPMI Madinah</p>
     </div>
 
-    <!-- Screen 2: Dashboard -->
-    <div id="screen-dashboard" class="hidden w-full h-full relative z-10">
+    <!-- ==================== SCREEN 2: DASHBOARD APP ==================== -->
+    <div id="screen-dashboard" class="hidden flex-1 flex flex-col h-full w-full relative z-10 bg-gray-50">
 
-        <!-- Header Transparan -->
-        <header class="sticky top-0 z-30 bg-green-600/95 backdrop-blur-md px-5 py-4 flex items-center justify-between w-full max-w-md mx-auto shadow-sm">
+        <!-- Background Dekorasi Atas -->
+        <div class="absolute top-0 left-0 w-full h-48 bg-green-600 rounded-b-[2rem] z-0"></div>
+
+        <!-- Header Fixed -->
+        <header class="pt-5 pb-3 px-5 flex items-center justify-between w-full relative z-20">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow overflow-hidden">
-                    <img src="https://lh3.googleusercontent.com/d/1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E=s220?authuser=0" alt="Logo PPMI" class="w-full h-full object-contain p-1">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md overflow-hidden p-1">
+                    <img src="https://lh3.googleusercontent.com/d/1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E=s220?authuser=0" alt="Logo" class="w-full h-full object-contain">
                 </div>
                 <div>
-                    <h1 class="text-sm font-bold text-white leading-tight">Dashboard PPMI</h1>
-                    <p class="text-[10px] text-green-100 font-medium">Cabang Madinah</p>
+                    <h1 class="text-sm font-bold text-white leading-tight" id="greeting-text">Ahlan wa Sahlan!</h1>
+                    <p class="text-[10px] text-green-100 font-medium tracking-wide">PPMI Cabang Madinah</p>
                 </div>
             </div>
-            <button onclick="showNotification('Pusat Notifikasi Kosong', 'success')" class="relative p-2 text-white hover:bg-white/20 rounded-xl transition-colors focus:outline-none">
-                <i class="fas fa-bell text-lg"></i>
-                <span class="absolute top-1.5 right-2 w-2.5 h-2.5 bg-red-500 border-2 border-green-600 rounded-full"></span>
+            <button onclick="showNotification('Tidak ada notifikasi baru', 'success')" class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full text-white flex items-center justify-center relative active:scale-95 transition-transform">
+                <i class="fas fa-bell"></i>
+                <span class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-green-600"></span>
             </button>
         </header>
 
-        <!-- Konten Utama -->
-        <main class="w-full px-4 pt-4 pb-20 animate-fade-in">
+        <!-- Area Konten Scrollable -->
+        <main class="flex-1 overflow-y-auto hide-scrollbar relative z-20 px-4 pb-28 animate-slide-up">
             
-            <!-- Kartu Sapaan Pengguna -->
-            <div class="bg-white rounded-3xl shadow-md border border-gray-100 p-5 mb-6 flex items-center justify-between relative overflow-hidden">
-                <!-- Dekorasi background kartu -->
-                <div class="absolute -right-4 -bottom-4 opacity-5 text-green-600">
-                    <i class="fas fa-leaf text-6xl"></i>
-                </div>
-                
-                <div class="flex items-center gap-4 relative z-10">
-                    <img class="w-12 h-12 rounded-full border-2 border-green-100 object-cover shadow-sm" src="https://ui-avatars.com/api/?name=Admin+PPMI&background=16a34a&color=fff" alt="Avatar">
-                    <div>
-                        <h2 class="text-sm font-bold text-gray-800" id="greeting-text">Ahlan wa Sahlan!</h2>
-                        <p class="text-xs text-gray-500 font-medium">Pengurus Harian</p>
-                    </div>
+            <!-- Kartu Info Utama (Hero Card) -->
+            <div class="bg-gradient-to-br from-white to-green-50 rounded-3xl p-5 shadow-lg shadow-green-900/10 mb-6 relative overflow-hidden border border-white">
+                <div class="absolute -right-6 -top-6 text-green-100 opacity-50">
+                    <i class="fas fa-mosque text-9xl"></i>
                 </div>
                 <div class="relative z-10">
-                    <span class="bg-green-50 text-green-600 text-[10px] font-bold px-2 py-1 rounded-lg border border-green-100" id="current-date">Hari ini</span>
+                    <p class="text-[10px] font-bold text-green-600 uppercase tracking-widest mb-1">Status Pengguna</p>
+                    <div class="flex items-center gap-3 mb-4">
+                        <img class="w-12 h-12 rounded-full border-2 border-green-200 shadow-sm" src="https://ui-avatars.com/api/?name=Admin+PPMI&background=16a34a&color=fff" alt="Avatar">
+                        <div>
+                            <h2 class="text-sm font-bold text-gray-800">Pengurus Harian</h2>
+                            <p class="text-[11px] text-gray-500 font-medium" id="display-email">email@gmail.com</p>
+                        </div>
+                    </div>
+                    <div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 flex justify-between items-center border border-green-100">
+                        <div class="flex items-center gap-2 text-gray-700">
+                            <i class="fas fa-calendar-alt text-green-500"></i>
+                            <span class="text-[11px] font-semibold" id="current-date">Memuat tanggal...</span>
+                        </div>
+                        <span class="text-[10px] bg-green-100 text-green-700 font-bold px-2 py-1 rounded-md">Aktif</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- MENU SUB-FORMULIR INTERAKTIF -->
-            <h3 class="text-sm font-bold text-gray-800 mb-4 px-2 flex items-center gap-2">
-                <i class="fas fa-th-large text-green-600"></i> Menu Akses Formulir
-            </h3>
+            <!-- Fitur Pencarian Interaktif -->
+            <div class="relative mb-6">
+                <i class="fas fa-search absolute left-4 top-3.5 text-gray-400 text-sm"></i>
+                <input type="text" id="searchInput" onkeyup="filterMenu()" placeholder="Cari layanan atau formulir..." class="w-full bg-white rounded-2xl py-3 pl-10 pr-4 shadow-sm border border-gray-100 text-xs font-medium text-gray-700 focus:ring-2 focus:ring-green-500 outline-none transition-shadow placeholder-gray-400">
+            </div>
+
+            <!-- MENU GRID (Konsep Super App - 4 Kolom) -->
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
+                <h3 class="text-sm font-bold text-gray-800 mb-5 flex items-center gap-2">
+                    <i class="fas fa-layer-group text-green-600"></i> Pusat Layanan
+                </h3>
+                
+                <div class="grid grid-cols-4 gap-y-6 gap-x-2" id="menuGrid">
+                    
+                    <!-- Menu 1 -->
+                    <a href="humas.html" data-name="humas hubungan masyarakat" onclick="navigateWithEffect(event, this.href, 'Membuka Humas...')" class="menu-item flex flex-col items-center gap-2 group cursor-pointer">
+                        <div class="w-12 h-12 rounded-[1rem] bg-gradient-to-tr from-blue-500 to-cyan-400 flex items-center justify-center text-white text-xl shadow-md group-active:scale-90 transition-transform">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <span class="text-[9px] font-semibold text-gray-700 text-center leading-tight">Humas</span>
+                    </a>
+
+                    <!-- Menu 2 -->
+                    <a href="internal.html" data-name="internal manajemen" onclick="navigateWithEffect(event, this.href, 'Membuka Internal...')" class="menu-item flex flex-col items-center gap-2 group cursor-pointer">
+                        <div class="w-12 h-12 rounded-[1rem] bg-gradient-to-tr from-purple-500 to-indigo-400 flex items-center justify-center text-white text-xl shadow-md group-active:scale-90 transition-transform">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <span class="text-[9px] font-semibold text-gray-700 text-center leading-tight">Internal</span>
+                    </a>
+
+                    <!-- Menu 3 -->
+                    <a href="olahraga.html" data-name="olahraga jasmani" onclick="navigateWithEffect(event, this.href, 'Membuka Olahraga...')" class="menu-item flex flex-col items-center gap-2 group cursor-pointer">
+                        <div class="w-12 h-12 rounded-[1rem] bg-gradient-to-tr from-orange-500 to-yellow-400 flex items-center justify-center text-white text-xl shadow-md group-active:scale-90 transition-transform">
+                            <i class="fas fa-futbol"></i>
+                        </div>
+                        <span class="text-[9px] font-semibold text-gray-700 text-center leading-tight">Olahraga</span>
+                    </a>
+
+                    <!-- Menu 4 -->
+                    <a href="kesehatan.html" data-name="kesehatan medis rs" onclick="navigateWithEffect(event, this.href, 'Membuka Kesehatan...')" class="menu-item flex flex-col items-center gap-2 group cursor-pointer">
+                        <div class="w-12 h-12 rounded-[1rem] bg-gradient-to-tr from-rose-500 to-pink-400 flex items-center justify-center text-white text-xl shadow-md group-active:scale-90 transition-transform">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <span class="text-[9px] font-semibold text-gray-700 text-center leading-tight">Kesehatan</span>
+                    </a>
+
+                    <!-- Menu 5 -->
+                    <a href="kas-bendahara.html" data-name="kas bendahara keuangan" onclick="navigateWithEffect(event, this.href, 'Membuka Bendahara...')" class="menu-item flex flex-col items-center gap-2 group cursor-pointer">
+                        <div class="w-12 h-12 rounded-[1rem] bg-gradient-to-tr from-emerald-500 to-green-400 flex items-center justify-center text-white text-xl shadow-md group-active:scale-90 transition-transform">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <span class="text-[9px] font-semibold text-gray-700 text-center leading-tight">Bendahara</span>
+                    </a>
+
+                    <!-- Menu 6 -->
+                    <a href="send_humas.html" data-name="inventaris surat arsip" onclick="navigateWithEffect(event, this.href, 'Membuka Inventaris...')" class="menu-item flex flex-col items-center gap-2 group cursor-pointer">
+                        <div class="w-12 h-12 rounded-[1rem] bg-gradient-to-tr from-teal-500 to-cyan-500 flex items-center justify-center text-white text-xl shadow-md group-active:scale-90 transition-transform">
+                            <i class="fas fa-envelope-open-text"></i>
+                        </div>
+                        <span class="text-[9px] font-semibold text-gray-700 text-center leading-tight">Inventaris</span>
+                    </a>
+
+                    <!-- Menu 7 -->
+                    <a href="Thaibah.html" data-name="portal thaibah universitas" onclick="navigateWithEffect(event, this.href, 'Membuka Thaibah...')" class="menu-item flex flex-col items-center gap-2 group cursor-pointer">
+                        <div class="w-12 h-12 rounded-[1rem] bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white text-xl shadow-md group-active:scale-90 transition-transform">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <span class="text-[9px] font-semibold text-gray-700 text-center leading-tight">Thaibah</span>
+                    </a>
+
+                    <!-- Menu 8 -->
+                    <a href="maba.html" data-name="mahad online maba" onclick="navigateWithEffect(event, this.href, 'Membuka Mahad Online...')" class="menu-item flex flex-col items-center gap-2 group cursor-pointer">
+                        <div class="w-12 h-12 rounded-[1rem] bg-gradient-to-tr from-cyan-500 to-blue-400 flex items-center justify-center text-white text-xl shadow-md group-active:scale-90 transition-transform">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <span class="text-[9px] font-semibold text-gray-700 text-center leading-tight">Mahad Online</span>
+                    </a>
+
+                    <!-- Menu 9 -->
+                    <a href="Mahadharom.html" data-name="mahad harom masjid nabawi" onclick="navigateWithEffect(event, this.href, 'Membuka Mahad Harom...')" class="menu-item flex flex-col items-center gap-2 group cursor-pointer">
+                        <div class="w-12 h-12 rounded-[1rem] bg-gradient-to-tr from-amber-500 to-orange-400 flex items-center justify-center text-white text-xl shadow-md group-active:scale-90 transition-transform">
+                            <i class="fas fa-mosque"></i>
+                        </div>
+                        <span class="text-[9px] font-semibold text-gray-700 text-center leading-tight">Mahad Harom</span>
+                    </a>
+
+                    <!-- Menu 10 -->
+                    <a href="Data.html" data-name="uim online data" onclick="navigateWithEffect(event, this.href, 'Membuka UIM Online...')" class="menu-item flex flex-col items-center gap-2 group cursor-pointer">
+                        <div class="w-12 h-12 rounded-[1rem] bg-gradient-to-tr from-green-600 to-emerald-500 flex items-center justify-center text-white text-xl shadow-md group-active:scale-90 transition-transform">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <span class="text-[9px] font-semibold text-gray-700 text-center leading-tight">UIM Online</span>
+                    </a>
+
+                    <!-- Menu 11 -->
+                    <a href="Data.html" data-name="data mahasiswa uim" onclick="navigateWithEffect(event, this.href, 'Membuka Data Mhs...')" class="menu-item flex flex-col items-center gap-2 group cursor-pointer">
+                        <div class="w-12 h-12 rounded-[1rem] bg-gradient-to-tr from-slate-600 to-gray-500 flex items-center justify-center text-white text-xl shadow-md group-active:scale-90 transition-transform">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <span class="text-[9px] font-semibold text-gray-700 text-center leading-tight">Data Mhs</span>
+                    </a>
+
+                    <!-- Menu 12 -->
+                    <a href="Tiket26.html" data-name="manajemen tiket bantuan" onclick="navigateWithEffect(event, this.href, 'Membuka Tiket...')" class="menu-item flex flex-col items-center gap-2 group cursor-pointer">
+                        <div class="w-12 h-12 rounded-[1rem] bg-gradient-to-tr from-fuchsia-500 to-purple-500 flex items-center justify-center text-white text-xl shadow-md group-active:scale-90 transition-transform">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <span class="text-[9px] font-semibold text-gray-700 text-center leading-tight">Tiket/Bantuan</span>
+                    </a>
+
+                </div>
+                
+                <!-- Pesan jika pencarian tidak ditemukan -->
+                <p id="noResults" class="hidden text-center text-xs text-gray-400 py-6">Layanan tidak ditemukan.</p>
+            </div>
             
-            <!-- Grid Kotak Menu -->
-            <div class="grid grid-cols-2 gap-3.5">
-                    <i class="fas fa-users-cog"></i>
-                </div>
-                <h4 class="text-xs font-bold text-gray-800 text-center mb-1">Internal</h4>
-                <p class="text-[9px] text-gray-400 text-center leading-tight">Manajemen internal</p>
-            </a>
+        </main>
 
-            <!-- Menu 3: Olahraga -->
-            <a href="olahraga.html" onclick="navigateWithEffect(event, this.href, 'Memuat Olahraga...')" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-3xl hover:shadow-md transition-all active:scale-95 group relative overflow-hidden">
-                <div class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center text-xl mb-3 group-hover:scale-110 group-hover:bg-orange-500 group-hover:text-white transition-all duration-300">
-                    <i class="fas fa-futbol"></i>
-                </div>
-                <h4 class="text-xs font-bold text-gray-800 text-center mb-1">Olahraga</h4>
-                <p class="text-[9px] text-gray-400 text-center leading-tight">Kegiatan jasmani</p>
-            </a>
+        <!-- Bottom Navigation Bar ala Aplikasi -->
+        <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 px-6 py-3 flex justify-between items-center z-40 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
+            <button class="flex flex-col items-center text-green-600 w-16 group">
+                <i class="fas fa-home text-lg mb-1 group-active:scale-75 transition-transform"></i>
+                <span class="text-[9px] font-bold">Beranda</span>
+            </button>
+            <button onclick="showNotification('Fitur Riwayat Segera Hadir', 'process')" class="flex flex-col items-center text-gray-400 hover:text-green-600 transition-colors w-16 group">
+                <i class="fas fa-history text-lg mb-1 group-active:scale-75 transition-transform"></i>
+                <span class="text-[9px] font-medium">Riwayat</span>
+            </button>
+            <button onclick="logout()" class="flex flex-col items-center text-gray-400 hover:text-red-500 transition-colors w-16 group">
+                <i class="fas fa-sign-out-alt text-lg mb-1 group-active:scale-75 transition-transform"></i>
+                <span class="text-[9px] font-medium">Keluar</span>
+            </button>
+        </nav>
 
-            <!-- Menu 4: Kesehatan -->
-            <a href="kesehatan.html" onclick="navigateWithEffect(event, this.href, 'Memuat Kesehatan...')" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-3xl hover:shadow-md transition-all active:scale-95 group relative overflow-hidden">
-                <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center text-xl mb-3 group-hover:scale-110 group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
-                    <i class="fas fa-heartbeat"></i>
-                </div>
-                <h4 class="text-xs font-bold text-gray-800 text-center mb-1">Kesehatan</h4>
-                <p class="text-[9px] text-gray-400 text-center leading-tight">Layanan medis</p>
-            </a>
-
-            <!-- Menu 5: Kas Bendahara -->
-            <a href="kas-bendahara.html" onclick="navigateWithEffect(event, this.href, 'Memuat Kas Bendahara...')" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-3xl hover:shadow-md transition-all active:scale-95 group relative overflow-hidden">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl mb-3 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
-                    <i class="fas fa-wallet"></i>
-                </div>
-                <h4 class="text-xs font-bold text-gray-800 text-center mb-1">Kas Bendahara</h4>
-                <p class="text-[9px] text-gray-400 text-center leading-tight">Keuangan PPMI</p>
-            </a>
-
-            <!-- Menu 6: Inventarisasi Surat -->
-            <a href="send_humas.html" onclick="navigateWithEffect(event, this.href, 'Memuat Inventaris Surat...')" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-3xl hover:shadow-md transition-all active:scale-95 group relative overflow-hidden">
-                <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-500 flex items-center justify-center text-xl mb-3 group-hover:scale-110 group-hover:bg-teal-500 group-hover:text-white transition-all duration-300">
-                    <i class="fas fa-envelope-open-text"></i>
-                </div>
-                <h4 class="text-xs font-bold text-gray-800 text-center mb-1">Inventaris Surat</h4>
-                <p class="text-[9px] text-gray-400 text-center leading-tight">Arsip & dokumen</p>
-            </a>
-
-            <!-- Menu 7: Portal Thaibah -->
-            <a href="Thaibah.html" onclick="navigateWithEffect(event, this.href, 'Memuat Portal Thaibah...')" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-3xl hover:shadow-md transition-all active:scale-95 group relative overflow-hidden">
-                <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center text-xl mb-3 group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
-                    <i class="fas fa-university"></i>
-                </div>
-                <h4 class="text-xs font-bold text-gray-800 text-center mb-1">Portal Thaibah</h4>
-                <p class="text-[9px] text-gray-400 text-center leading-tight">Universitas Thaibah</p>
-            </a>
-
-            <!-- Menu 8: Portal Mahad Online -->
-            <a href="maba.html" onclick="navigateWithEffect(event, this.href, 'Memuat Mahad Online...')" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-3xl hover:shadow-md transition-all active:scale-95 group relative overflow-hidden">
-                <div class="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-500 flex items-center justify-center text-xl mb-3 group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-white transition-all duration-300">
-                    <i class="fas fa-laptop-code"></i>
-                </div>
-                <h4 class="text-xs font-bold text-gray-800 text-center mb-1">Ma'had Online</h4>
-                <p class="text-[9px] text-gray-400 text-center leading-tight">Pembelajaran online</p>
-            </a>
-
-            <!-- Menu 9: Portal Mahad Harom -->
-            <a href="Mahadharom.html" onclick="navigateWithEffect(event, this.href, 'Memuat Mahad Harom...')" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-3xl hover:shadow-md transition-all active:scale-95 group relative overflow-hidden">
-                <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-xl mb-3 group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
-                    <i class="fas fa-mosque"></i>
-                </div>
-                <h4 class="text-xs font-bold text-gray-800 text-center mb-1">Ma'had Harom</h4>
-                <p class="text-[9px] text-gray-400 text-center leading-tight">Masjid Nabawi</p>
-            </a>
-
-            <!-- Menu 10: Portal UIM Online -->
-            <a href="Data.html" onclick="navigateWithEffect(event, this.href, 'Memuat UIM Online...')" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-3xl hover:shadow-md transition-all active:scale-95 group relative overflow-hidden">
-                <div class="w-12 h-12 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center text-xl mb-3 group-hover:scale-110 group-hover:bg-green-600 group-hover:text-white transition-all duration-300">
-                    <i class="fas fa-graduation-cap"></i>
-                </div>
-                <h4 class="text-xs font-bold text-gray-800 text-center mb-1">UIM Online</h4>
-                <p class="text-[9px] text-gray-400 text-center leading-tight">Univ Islam Madinah</p>
-            </a>
-
-            <!-- Menu 11: Data Mahasiswa UIM -->
-            <a href="Data.html" onclick="navigateWithEffect(event, this.href, 'Memuat Data Mahasiswa...')" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-3xl hover:shadow-md transition-all active:scale-95 group relative overflow-hidden">
-                <div class="w-12 h-12 rounded-2xl bg-slate-50 text-slate-500 flex items-center justify-center text-xl mb-3 group-hover:scale-110 group-hover:bg-slate-500 group-hover:text-white transition-all duration-300">
-                    <i class="fas fa-id-card"></i>
-                </div>
-                <h4 class="text-xs font-bold text-gray-800 text-center mb-1">Data Mahasiswa</h4>
-                <p class="text-[9px] text-gray-400 text-center leading-tight">Database UIM</p>
-            </a>
-
-            <!-- Menu 12: Portal Manajemen Tiket -->
-            <a href="Tiket26.html" onclick="navigateWithEffect(event, this.href, 'Memuat Manajemen Tiket...')" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-3xl hover:shadow-md transition-all active:scale-95 group relative overflow-hidden">
-                <div class="w-12 h-12 rounded-2xl bg-fuchsia-50 text-fuchsia-500 flex items-center justify-center text-xl mb-3 group-hover:scale-110 group-hover:bg-fuchsia-500 group-hover:text-white transition-all duration-300">
-                    <i class="fas fa-ticket-alt"></i>
-                </div>
-                <h4 class="text-xs font-bold text-gray-800 text-center mb-1">Manajemen Tiket</h4>
-                <p class="text-[9px] text-gray-400 text-center leading-tight">Sistem tiket & bantuan</p>
-            </a>
-
-        </div>
-
-    </main>
-    </div> <!-- Tutup screen-dashboard -->
+    </div>
 
     <!-- Skrip Interaktif -->
     <script>
-        // 1. Setup Tanggal dan Sapaan
+        // Setup Tanggal dan Sapaan
         const setupHeaderInfo = () => {
-            const dateStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+            const dateStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
             document.getElementById('current-date').textContent = dateStr;
 
             const hour = new Date().getHours();
             let greeting = "Ahlan wa Sahlan!";
-            if(hour >= 4 && hour < 10) greeting = "Selamat Pagi!";
-            else if(hour >= 10 && hour < 15) greeting = "Selamat Siang!";
-            else if(hour >= 15 && hour < 18) greeting = "Selamat Sore!";
-            else greeting = "Selamat Malam!";
+            if(hour >= 4 && hour < 10) greeting = "Selamat Pagi,";
+            else if(hour >= 10 && hour < 15) greeting = "Selamat Siang,";
+            else if(hour >= 15 && hour < 18) greeting = "Selamat Sore,";
+            else greeting = "Selamat Malam,";
             
             document.getElementById('greeting-text').textContent = greeting;
         };
 
-        // 2. Notifikasi Dynamic Island ala iOS
+        // Notifikasi Dynamic Island
         function showNotification(text, type = 'process') {
             const di = document.getElementById('dynamic-island');
             const icon = document.getElementById('di-icon');
@@ -262,7 +297,6 @@
             
             txt.textContent = text;
             di.className = 'fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-[9999] px-5 py-3 rounded-full flex items-center justify-center gap-3 transition-all duration-300 shadow-xl font-medium';
-            
             di.classList.remove('bg-black', 'bg-green-600', 'bg-red-600');
 
             if (type === 'process') {
@@ -284,7 +318,7 @@
             }
         }
 
-        // 3. Logika Login
+        // Logika Login
         function loginApp() {
             const emailInput = document.getElementById('login-email').value.trim();
             const thalibInput = document.getElementById('login-thalib').value.trim();
@@ -300,26 +334,60 @@
 
             showNotification('Verifikasi data...', 'process');
 
-            // Simulasi proses API Login
+            // Set text di dashboard sesuai email login
+            document.getElementById('display-email').textContent = emailInput.toLowerCase();
+
             setTimeout(() => {
                 showNotification('Berhasil Masuk!', 'success');
                 document.getElementById('screen-login').classList.add('hidden');
                 document.getElementById('screen-dashboard').classList.remove('hidden');
-                setupHeaderInfo(); // Panggil tanggal & sapaan setelah login
-                window.scrollTo(0, 0);
+                setupHeaderInfo();
             }, 1200);
         }
 
-        // Efek klik menu (Mencegah navigasi seketika agar animasi jalan dulu)
+        // Logika Logout
+        function logout() {
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-thalib').value = '';
+            document.getElementById('searchInput').value = '';
+            filterMenu(); // Reset filter
+            
+            document.getElementById('screen-dashboard').classList.add('hidden');
+            document.getElementById('screen-login').classList.remove('hidden');
+            showNotification('Berhasil Keluar', 'success');
+        }
+
+        // Efek klik menu (Delay navigasi untuk animasi)
         function navigateWithEffect(e, url, message) {
             e.preventDefault();
             showNotification(message, 'process');
-            // Simulasi loading 600ms sebelum pindah halaman
-            setTimeout(() => {
-                window.location.href = url;
-            }, 600);
+            setTimeout(() => { window.location.href = url; }, 500);
         }
 
+        // Fitur Live Search untuk Filter Menu
+        function filterMenu() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.menu-item');
+            let hasVisibleItem = false;
+
+            items.forEach(item => {
+                const name = item.getAttribute('data-name').toLowerCase();
+                if(name.includes(query)) {
+                    item.style.display = 'flex';
+                    hasVisibleItem = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Tampilkan tulisan "Layanan tidak ditemukan" jika hasil kosong
+            const noResults = document.getElementById('noResults');
+            if(hasVisibleItem) {
+                noResults.classList.add('hidden');
+            } else {
+                noResults.classList.remove('hidden');
+            }
+        }
     </script>
 </body>
 </html>
