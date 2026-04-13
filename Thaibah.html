@@ -881,7 +881,7 @@
             }
             
             if (data["Raqm Iqamah"] && String(data["Raqm Iqamah"]).length !== 10) { showDynamicIsland('Raqm Iqamah wajib 10 digit!', 'error'); switchTab('perjalanan'); return; }
-            if (String(data["Raqm Thalib"]).length !== 9) { showDynamicIsland('Raqm Thalib wajib 9 digit!', 'error'); switchTab('akademik'); return; }
+            if (String(data["Raqm Thalib"]).length !== 7) { showDynamicIsland('Raqm Thalib wajib 7 digit!', 'error'); switchTab('akademik'); return; }
             if (!String(data["Nomor Kerabat"]).startsWith('628')) { showDynamicIsland('Nomor Kerabat (Indo) harus diawali 628', 'error'); switchTab('diri'); return; }
 
             const m = document.getElementById('confirm-modal');
