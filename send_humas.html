@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
-    <title>Broadcast PPMI Madinah</title>
+    <title>Sistem Broadcast Manual PPMI Madinah</title>
     <!-- Menggunakan Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -64,13 +64,13 @@
         <div class="flex items-center gap-3">
             <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-9 h-9 object-contain bg-white rounded-full p-1 shadow" alt="Logo" onerror="this.style.display='none'">
             <div>
-                <h1 class="text-sm font-bold text-white leading-tight">Broadcast WA</h1>
+                <h1 class="text-sm font-bold text-white leading-tight">Broadcast WA Manual</h1>
                 <p class="text-[10px] text-green-100" id="headerSubtitle">Sistem Terpadu PPMI</p>
             </div>
         </div>
     </header>
 
-    <!-- AREA LOGIN -->
+    <!-- 1. AREA LOGIN -->
     <div id="loginView" class="min-h-screen flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto z-10 relative">
         <div class="w-full bg-white/90 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50 relative overflow-hidden mt-10">
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-green-600"></div>
@@ -80,10 +80,9 @@
             </div>
             
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Portal Broadcast</h2>
-            <p class="text-xs text-center text-gray-500 mb-8 leading-relaxed">Masukkan kode sandi akses untuk menggunakan fitur penyebaran pesan darurat</p>
+            <p class="text-xs text-center text-gray-500 mb-8 leading-relaxed">Masukkan kode sandi akses untuk menggunakan fitur pesan terarah</p>
             
             <div class="space-y-4 mb-8">
-                <!-- URL API Disembunyikan dari UI, hanya Input Password -->
                 <div class="w-full relative">
                     <label class="text-xs font-semibold text-gray-700 mb-1.5 block">Sandi Akses</label>
                     <div class="relative">
@@ -101,7 +100,7 @@
         <p class="text-white text-xs mt-8 opacity-80">© 2026 PPMI Madinah. All rights reserved.</p>
     </div>
 
-    <!-- AREA PILIH KONTAK (Dashboard) -->
+    <!-- 2. AREA PILIH KONTAK (Dashboard) -->
     <div id="selectContactsView" class="hidden flex-1 flex flex-col z-10 w-full max-w-md mx-auto animate-fade-in relative">
         <div class="px-4 flex-1 flex flex-col mb-24">
             
@@ -109,15 +108,15 @@
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sticky top-[72px] z-20 mb-4">
                 <div class="relative">
                     <i class="fas fa-search absolute left-4 top-3.5 text-gray-400 text-sm"></i>
-                    <input type="text" id="searchInput" onkeyup="renderContacts()" placeholder="Cari nama, angkatan, atau visa..." 
+                    <input type="text" id="searchInput" oninput="renderContacts()" placeholder="Ketik nama, angkatan, atau visa..." 
                         class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 text-sm font-medium transition-all">
                 </div>
                 <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100 text-xs font-semibold text-gray-600">
                     <label class="flex items-center gap-2 cursor-pointer bg-gray-50 px-2 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="rounded text-green-600 focus:ring-green-500 w-4 h-4">
-                        Pilih Semua
+                        <input type="checkbox" id="selectAll" onchange="toggleSelectAllFiltered()" class="rounded text-green-600 focus:ring-green-500 w-4 h-4">
+                        Pilih Hasil Cari
                     </label>
-                    <span id="selectedCount" class="bg-green-50 text-green-700 px-3 py-1.5 rounded-lg">0 dipilih</span>
+                    <span id="selectedCount" class="bg-green-50 text-green-700 px-3 py-1.5 rounded-lg border border-green-100">0 dipilih</span>
                 </div>
             </div>
 
@@ -132,60 +131,70 @@
         <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white p-4 border-t border-gray-100 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] z-30 rounded-t-3xl">
             <button onclick="goToCompose()" id="btnNext" disabled
                 class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-400 disabled:text-gray-100 disabled:shadow-none text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-green-600/30 flex justify-center items-center gap-2 text-sm active:scale-[0.98]">
-                <span>Lanjut Buat Pesan (<span id="btnNextCount">0</span>)</span> <i class="fas fa-arrow-right"></i>
+                <span>Lanjut Tulis Pesan (<span id="btnNextCount">0</span>)</span> <i class="fas fa-pen"></i>
             </button>
         </div>
     </div>
 
-    <!-- AREA BUAT PESAN -->
+    <!-- 3. AREA BUAT PESAN -->
     <div id="composeMessageView" class="hidden flex-1 flex flex-col z-10 w-full max-w-md mx-auto animate-fade-in relative bg-white min-h-screen">
         <div class="p-4 bg-white border-b border-gray-100 flex items-center gap-3 sticky top-0 z-20 shadow-sm rounded-b-2xl">
             <button onclick="goToSelect()" class="text-gray-600 hover:text-green-600 flex items-center justify-center w-10 h-10 rounded-full bg-gray-50 hover:bg-green-50 transition-colors">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <h2 class="font-bold text-gray-800 text-lg">Buat Pesan darurat</h2>
+            <h2 class="font-bold text-gray-800 text-lg">Buat Format Pesan</h2>
         </div>
         
         <div class="p-5 flex-1 flex flex-col">
             <div class="bg-blue-50 text-blue-700 p-4 rounded-2xl text-sm mb-6 border border-blue-100 flex items-start gap-3 shadow-sm">
                 <i class="fas fa-info-circle mt-0.5 text-lg"></i> 
-                <p>Pesan Anda akan disiarkan ke <strong id="composeTargetCount" class="text-blue-800 text-base">0</strong> kontak yang telah dipilih secara bertahap.</p>
+                <p>Tulis format pesan untuk <strong id="composeTargetCount" class="text-blue-800 text-base">0</strong> kontak. Sistem akan membuatkan link otomatis untuk dikirim per orang.</p>
             </div>
 
             <label class="text-sm font-semibold text-gray-700 mb-2 flex justify-between items-center">
-                <span>Isi Pesan Spesifik</span>
+                <span>Isi Pesan</span>
                 <div class="flex gap-1.5 flex-wrap justify-end">
                     <span class="text-blue-600 cursor-pointer text-[10px] bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors font-bold shadow-sm" onclick="insertVariable('{nama}')">+ {nama}</span>
                     <span class="text-blue-600 cursor-pointer text-[10px] bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors font-bold shadow-sm" onclick="insertVariable('{jen_k}')">+ {jen_k}</span>
                     <span class="text-blue-600 cursor-pointer text-[10px] bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors font-bold shadow-sm" onclick="insertVariable('{angkatan}')">+ {angkatan}</span>
                     <span class="text-blue-600 cursor-pointer text-[10px] bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors font-bold shadow-sm" onclick="insertVariable('{visa}')">+ {visa}</span>
+                    <span class="text-blue-600 cursor-pointer text-[10px] bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors font-bold shadow-sm" onclick="insertVariable('{wihdah}')">+ {wihdah}</span>
+                    <span class="text-blue-600 cursor-pointer text-[10px] bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors font-bold shadow-sm" onclick="insertVariable('{kamar}')">+ {kamar}</span>
                 </div>
             </label>
             <textarea id="messageText" rows="8" placeholder="Tulis pesan Anda di sini...&#10;&#10;Contoh:&#10;Ahlan {nama}, wihdah kamu di {wihdah} kamar {kamar} ya." 
                 class="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white text-sm mb-6 flex-1 resize-none font-medium transition-all"></textarea>
             
-            <button onclick="sendMessages()" id="btnSend"
+            <button onclick="goToSendLinks()" id="btnGenerateLinks"
                 class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-green-600/30 flex justify-center items-center gap-2 mt-auto text-sm active:scale-[0.98]">
-                <i class="fas fa-paper-plane"></i> <span>Kirim Pesan Sekarang</span>
+                <span>Siapkan Link Pengiriman</span> <i class="fas fa-arrow-right"></i>
             </button>
+        </div>
+    </div>
+
+    <!-- 4. AREA PENGIRIMAN MANUAL (LINK WA) -->
+    <div id="sendLinksView" class="hidden flex-1 flex flex-col z-10 w-full max-w-md mx-auto animate-fade-in relative bg-gray-50 min-h-screen">
+        <div class="p-4 bg-white border-b border-gray-100 flex items-center gap-3 sticky top-0 z-20 shadow-sm rounded-b-2xl">
+            <button onclick="goToComposeBack()" class="text-gray-600 hover:text-green-600 flex items-center justify-center w-10 h-10 rounded-full bg-gray-50 hover:bg-green-50 transition-colors">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div>
+                <h2 class="font-bold text-gray-800 text-lg leading-tight">Daftar Kirim</h2>
+                <p class="text-[10px] text-gray-500">Klik tombol untuk mengirim via WhatsApp</p>
+            </div>
+        </div>
+
+        <div class="p-4 flex-1 flex flex-col mb-10 space-y-3" id="generatedLinksContainer">
+            <!-- Link dikonstruksi disini melalui JS -->
         </div>
     </div>
 
     <script>
         // STATE APLIKASI
         let appState = {
-            token: "",
             contacts: [],
             selectedIds: new Set()
         };
-
-        // FUNGSI CEK NOMOR INDONESIA
-        function isIndoNumber(phone) {
-            if (!phone) return false;
-            let num = phone.toString().replace(/[^0-9]/g, '');
-            // Nomor Indonesia umumnya diawali dengan 08 atau 628
-            return num.startsWith('08') || num.startsWith('628');
-        }
 
         // UI NOTIFICATION (DYNAMIC ISLAND)
         function showDynamicIsland(text, type = 'process') {
@@ -195,7 +204,6 @@
             
             txt.textContent = text;
             
-            // Reset classes
             di.className = 'fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-[9999] px-5 py-3 rounded-full flex items-center justify-center gap-3 transition-all duration-300 shadow-xl font-medium';
             
             if (type === 'process') {
@@ -259,20 +267,17 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    appState.token = result.token;
                     appState.contacts = result.data.map(c => ({
                         ...c,
-                        // Secara bawaan hanya dicentang jika itu nomor Indonesia
-                        sendWa1: !!c.wa1 && isIndoNumber(c.wa1),
-                        sendWa2: !!c.wa2 && isIndoNumber(c.wa2)
+                        sendWa1: !!c.wa1, // Aktifkan checkbox by default jika ada
+                        sendWa2: !!c.wa2
                     }));
                     
                     document.getElementById('loginView').classList.add('hidden');
                     document.getElementById('main-header').classList.remove('hidden');
                     document.getElementById('selectContactsView').classList.remove('hidden');
-                    document.getElementById('headerSubtitle').innerText = `${appState.contacts.length} Kontak Tersedia`;
+                    document.getElementById('headerSubtitle').innerText = `${appState.contacts.length} Kontak Database`;
                     
-                    // Ganti background abu-abu saat masuk dashboard
                     document.body.classList.replace('bg-transparent', 'bg-gray-50');
                     
                     renderContacts();
@@ -288,19 +293,31 @@
             }
         }
 
-        // FUNGSI RENDER DAFTAR KONTAK
+        // PERUBAHAN: TAMPILKAN HANYA JIKA ADA PENCARIAN
         function renderContacts() {
             const container = document.getElementById('contactList');
-            const searchStr = document.getElementById('searchInput').value.toLowerCase();
+            const searchInput = document.getElementById('searchInput');
+            const searchStr = searchInput.value.toLowerCase().trim();
             
             container.innerHTML = "";
+
+            if (!searchStr) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-400 py-12 bg-white rounded-2xl border border-gray-100 shadow-sm mt-2 flex flex-col items-center justify-center">
+                        <i class="fas fa-search text-4xl mb-4 text-green-200"></i>
+                        <p class="text-sm font-semibold text-gray-600">Mulai Pencarian</p>
+                        <p class="text-xs text-gray-400 mt-1">Ketik nama untuk mencari kontak</p>
+                    </div>`;
+                updateCounter();
+                return;
+            }
+
             let filtered = appState.contacts.filter(c => {
-                const s = searchStr;
-                return (c.nama && c.nama.toLowerCase().includes(s)) || 
-                       (c.wihdah && c.wihdah.toLowerCase().includes(s)) ||
-                       (c.jen_k && c.jen_k.toLowerCase().includes(s)) ||
-                       (c.angkatan && String(c.angkatan).toLowerCase().includes(s)) ||
-                       (c.visa && c.visa.toLowerCase().includes(s));
+                return (c.nama && c.nama.toLowerCase().includes(searchStr)) || 
+                       (c.wihdah && c.wihdah.toLowerCase().includes(searchStr)) ||
+                       (c.jen_k && c.jen_k.toLowerCase().includes(searchStr)) ||
+                       (c.angkatan && String(c.angkatan).toLowerCase().includes(searchStr)) ||
+                       (c.visa && c.visa.toLowerCase().includes(searchStr));
             });
 
             if (filtered.length === 0) {
@@ -309,6 +326,7 @@
                         <i class="fas fa-box-open text-4xl mb-3 text-gray-300"></i>
                         <p class="text-sm font-medium">Tidak ada kontak ditemukan</p>
                     </div>`;
+                updateCounter();
                 return;
             }
 
@@ -318,10 +336,8 @@
                 
                 let html = `
                 <div class="rounded-2xl border ${borderClass} shadow-sm transition-all overflow-hidden relative group">
-                    <!-- Decorator Line -->
                     ${isSelected ? `<div class="absolute top-0 left-0 w-1.5 h-full bg-green-500"></div>` : ''}
                     
-                    <!-- Header Card -->
                     <div class="p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50/50" onclick="toggleContact(${c.id})">
                         <div class="flex-shrink-0 ${isSelected ? 'ml-2' : ''} transition-all">
                             <input type="checkbox" ${isSelected ? "checked" : ""} class="rounded-md border-gray-300 text-green-600 focus:ring-green-500 w-5 h-5 cursor-pointer" onclick="event.stopPropagation(); toggleContact(${c.id})">
@@ -339,26 +355,23 @@
                         <i class="fas fa-chevron-${isSelected ? 'up text-green-500' : 'down text-gray-300'} text-xs transition-colors"></i>
                     </div>
                     
-                    <!-- Detail (Expandable) -->
                     ${isSelected ? `
                     <div class="px-4 pb-4 pt-1 border-t border-green-100 ml-2">
-                        <p class="text-xs text-green-800 mb-2 font-semibold">Tentukan nomor tujuan:</p>
+                        <p class="text-xs text-green-800 mb-2 font-semibold">Siapkan Nomor Tujuan:</p>
                         <div class="space-y-2">
                             ${c.wa1 ? `
-                            <label class="flex items-center gap-3 text-sm p-2.5 rounded-xl border ${isIndoNumber(c.wa1) ? 'bg-white border-green-200 shadow-sm cursor-pointer hover:bg-green-50/50' : 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'} transition-colors">
-                                <input type="checkbox" ${c.sendWa1 ? "checked" : ""} ${!isIndoNumber(c.wa1) ? "disabled" : ""} onchange="updateSubTarget(${c.id}, 'wa1', this.checked)" class="rounded ${isIndoNumber(c.wa1) ? 'text-green-600 focus:ring-green-500' : 'text-gray-400'} w-4 h-4 disabled:opacity-50">
-                                <span class="flex-1 font-medium ${isIndoNumber(c.wa1) ? 'text-gray-700' : 'text-gray-500'}">WA 1</span>
-                                <span class="${isIndoNumber(c.wa1) ? 'text-green-600 bg-green-100' : 'text-gray-500 bg-gray-200'} font-semibold px-2 py-0.5 rounded-md text-xs tracking-wide">${c.wa1}</span>
-                                ${!isIndoNumber(c.wa1) ? '<i class="fas fa-ban text-red-400 text-xs" title="Bukan nomor Indonesia"></i>' : ''}
-                            </label>` : `<div class="text-xs text-gray-400 italic px-2 bg-gray-50 p-2 rounded-xl">WA 1 tidak tersedia</div>`}
+                            <label class="flex items-center gap-3 text-sm p-2.5 rounded-xl border bg-white border-green-200 shadow-sm cursor-pointer hover:bg-green-50/50 transition-colors">
+                                <input type="checkbox" ${c.sendWa1 ? "checked" : ""} onchange="updateSubTarget(${c.id}, 'wa1', this.checked)" class="rounded text-green-600 focus:ring-green-500 w-4 h-4">
+                                <span class="flex-1 font-medium text-gray-700">WA 1</span>
+                                <span class="text-green-600 bg-green-100 font-semibold px-2 py-0.5 rounded-md text-xs tracking-wide">${c.wa1}</span>
+                            </label>` : ``}
                             
                             ${c.wa2 ? `
-                            <label class="flex items-center gap-3 text-sm p-2.5 rounded-xl border ${isIndoNumber(c.wa2) ? 'bg-white border-green-200 shadow-sm cursor-pointer hover:bg-green-50/50' : 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'} transition-colors">
-                                <input type="checkbox" ${c.sendWa2 ? "checked" : ""} ${!isIndoNumber(c.wa2) ? "disabled" : ""} onchange="updateSubTarget(${c.id}, 'wa2', this.checked)" class="rounded ${isIndoNumber(c.wa2) ? 'text-green-600 focus:ring-green-500' : 'text-gray-400'} w-4 h-4 disabled:opacity-50">
-                                <span class="flex-1 font-medium ${isIndoNumber(c.wa2) ? 'text-gray-700' : 'text-gray-500'}">WA 2</span>
-                                <span class="${isIndoNumber(c.wa2) ? 'text-green-600 bg-green-100' : 'text-gray-500 bg-gray-200'} font-semibold px-2 py-0.5 rounded-md text-xs tracking-wide">${c.wa2}</span>
-                                ${!isIndoNumber(c.wa2) ? '<i class="fas fa-ban text-red-400 text-xs" title="Bukan nomor Indonesia"></i>' : ''}
-                            </label>` : `<div class="text-xs text-gray-400 italic px-2 bg-gray-50 p-2 rounded-xl border border-gray-100">WA 2 tidak tersedia</div>`}
+                            <label class="flex items-center gap-3 text-sm p-2.5 rounded-xl border bg-white border-green-200 shadow-sm cursor-pointer hover:bg-green-50/50 transition-colors">
+                                <input type="checkbox" ${c.sendWa2 ? "checked" : ""} onchange="updateSubTarget(${c.id}, 'wa2', this.checked)" class="rounded text-green-600 focus:ring-green-500 w-4 h-4">
+                                <span class="flex-1 font-medium text-gray-700">WA 2</span>
+                                <span class="text-green-600 bg-green-100 font-semibold px-2 py-0.5 rounded-md text-xs tracking-wide">${c.wa2}</span>
+                            </label>` : ``}
                         </div>
                     </div>
                     ` : ""}
@@ -380,17 +393,18 @@
             renderContacts();
         }
 
-        function toggleSelectAll() {
+        function toggleSelectAllFiltered() {
             const isChecked = document.getElementById('selectAll').checked;
-            const searchStr = document.getElementById('searchInput').value.toLowerCase();
+            const searchStr = document.getElementById('searchInput').value.toLowerCase().trim();
             
+            if(!searchStr) return; // Jangan pilih semua jika belum ada filter
+
             appState.contacts.forEach(c => {
-                const s = searchStr;
-                const match = (c.nama && c.nama.toLowerCase().includes(s)) || 
-                              (c.wihdah && c.wihdah.toLowerCase().includes(s)) ||
-                              (c.jen_k && c.jen_k.toLowerCase().includes(s)) ||
-                              (c.angkatan && String(c.angkatan).toLowerCase().includes(s)) ||
-                              (c.visa && c.visa.toLowerCase().includes(s));
+                const match = (c.nama && c.nama.toLowerCase().includes(searchStr)) || 
+                              (c.wihdah && c.wihdah.toLowerCase().includes(searchStr)) ||
+                              (c.jen_k && c.jen_k.toLowerCase().includes(searchStr)) ||
+                              (c.angkatan && String(c.angkatan).toLowerCase().includes(searchStr)) ||
+                              (c.visa && c.visa.toLowerCase().includes(searchStr));
                 if (match) {
                     if (isChecked) appState.selectedIds.add(c.id);
                     else appState.selectedIds.delete(c.id);
@@ -410,7 +424,6 @@
         function updateCounter() {
             const size = appState.selectedIds.size;
             document.getElementById('selectedCount').innerText = `${size} dipilih`;
-            document.getElementById('selectAll').checked = size > 0 && size === appState.contacts.length;
             
             const btnNext = document.getElementById('btnNext');
             document.getElementById('btnNextCount').innerText = size;
@@ -425,7 +438,6 @@
             
             const composeView = document.getElementById('composeMessageView');
             composeView.classList.remove('hidden');
-            // Pastikan scroll ke atas saat buka form
             window.scrollTo({ top: 0, behavior: 'instant' });
             
             document.getElementById('composeTargetCount').innerText = appState.selectedIds.size;
@@ -437,9 +449,13 @@
             document.getElementById('main-header').classList.remove('hidden');
         }
 
+        function goToComposeBack() {
+            document.getElementById('sendLinksView').classList.add('hidden');
+            document.getElementById('composeMessageView').classList.remove('hidden');
+        }
+
         function insertVariable(variable) {
             const txt = document.getElementById('messageText');
-            // Insert at cursor position if possible
             const startPos = txt.selectionStart;
             const endPos = txt.selectionEnd;
             txt.value = txt.value.substring(0, startPos) + variable + txt.value.substring(endPos, txt.value.length);
@@ -448,37 +464,49 @@
             txt.selectionEnd = startPos + variable.length;
         }
 
-        // PENGIRIMAN PESAN KE FONNTE
-        async function sendMessages() {
+        // FORMAT NOMOR KE 62
+        function formatWaNumber(phone) {
+            if (!phone) return '';
+            let num = phone.toString().replace(/[^0-9]/g, '');
+            if (num.startsWith('0')) return '62' + num.substring(1);
+            if (num.startsWith('8')) return '62' + num;
+            return num;
+        }
+
+        // FUNGSI MARK AS SENT
+        function markAsSent(btn, name) {
+            // Ubah gaya tombol menjadi abu-abu
+            btn.classList.replace('bg-green-50', 'bg-gray-100');
+            btn.classList.replace('border-green-200', 'border-gray-200');
+            btn.classList.replace('text-green-700', 'text-gray-500');
+            btn.classList.replace('hover:bg-green-100', 'hover:bg-gray-200');
+            
+            // Ubah icon
+            const icon = btn.querySelector('i');
+            icon.className = "fas fa-check-double text-blue-500 mr-2";
+            
+            // Tampilkan notifikasi kecil
+            showDynamicIsland(`WA terbuka untuk ${name}`, 'success');
+        }
+
+        // GENERATE WA LINKS EKSKLUSIF (Manual)
+        function goToSendLinks() {
             const baseMessage = document.getElementById('messageText').value.trim();
-            if (appState.selectedIds.size === 0) {
-                showDynamicIsland("Pilih minimal satu kontak.", "warning"); return;
-            }
             if (!baseMessage) {
                 showDynamicIsland("Isi pesan tidak boleh kosong.", "warning"); return;
             }
 
-            const btn = document.getElementById('btnSend');
-            btn.innerHTML = '<div class="loader"></div> <span>Mengirim Pesan...</span>';
-            btn.disabled = true;
-            
-            showDynamicIsland("Menyiapkan pengiriman...", "process");
+            document.getElementById('composeMessageView').classList.add('hidden');
+            document.getElementById('sendLinksView').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'instant' });
 
-            let successCount = 0;
-            let failCount = 0;
+            const container = document.getElementById('generatedLinksContainer');
+            container.innerHTML = "";
+
             const selectedContacts = appState.contacts.filter(c => appState.selectedIds.has(c.id));
+            let totalLinks = 0;
 
-            for (let i = 0; i < selectedContacts.length; i++) {
-                const contact = selectedContacts[i];
-                showDynamicIsland(`Mengirim ${i + 1} dari ${selectedContacts.length}...`, "process");
-                
-                let targets = [];
-                // Pastikan target hanya masuk jika itu juga nomor Indonesia
-                if (contact.sendWa1 && contact.wa1 && isIndoNumber(contact.wa1)) targets.push(contact.wa1);
-                if (contact.sendWa2 && contact.wa2 && isIndoNumber(contact.wa2)) targets.push(contact.wa2);
-
-                if (targets.length === 0) continue; 
-
+            selectedContacts.forEach(contact => {
                 // Replace variabel
                 let personalMessage = baseMessage
                     .replace(/{nama}/g, contact.nama || '')
@@ -488,40 +516,55 @@
                     .replace(/{angkatan}/g, contact.angkatan || '')
                     .replace(/{visa}/g, contact.visa || '');
 
-                let targetString = targets.join(',');
-
-                try {
-                    const formData = new FormData();
-                    formData.append('target', targetString);
-                    formData.append('message', personalMessage);
-
-                    const res = await fetch('https://api.fonnte.com/send', {
-                        method: 'POST',
-                        headers: { 'Authorization': appState.token },
-                        body: formData
-                    });
-                    
-                    const result = await res.json();
-                    if (result.status) {
-                        successCount += targets.length;
-                    } else {
-                        failCount += targets.length;
-                    }
-                } catch (error) {
-                    failCount += targets.length;
-                }
+                const encodedMessage = encodeURIComponent(personalMessage);
                 
-                // Jeda 1 detik agar aman dari pemblokiran API
-                await new Promise(r => setTimeout(r, 1000));
-            }
+                let linkHTML = `<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 relative overflow-hidden">`;
+                linkHTML += `<h3 class="font-bold text-gray-800 text-sm mb-3 border-b border-gray-50 pb-2">${contact.nama}</h3>`;
+                linkHTML += `<div class="space-y-2">`;
 
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Kirim Pesan Sekarang</span>';
-            btn.disabled = false;
+                let hasValidTarget = false;
 
-            if (failCount === 0) {
-                showDynamicIsland(`Selesai! Berhasil terkirim ke ${successCount} nomor.`, "success");
-            } else {
-                showDynamicIsland(`Selesai. Sukses: ${successCount}, Gagal: ${failCount}`, "warning");
+                if (contact.sendWa1 && contact.wa1) {
+                    const formattedNum = formatWaNumber(contact.wa1);
+                    const waLink = `https://wa.me/${formattedNum}?text=${encodedMessage}`;
+                    linkHTML += `
+                        <a href="${waLink}" target="_blank" onclick="markAsSent(this, '${contact.nama}')"
+                           class="flex items-center justify-between w-full bg-green-50 border border-green-200 text-green-700 py-3 px-4 rounded-xl font-medium text-sm hover:bg-green-100 transition-colors">
+                            <span class="flex items-center"><i class="fab fa-whatsapp text-lg mr-2"></i> Kirim ke WA 1</span>
+                            <span class="text-xs bg-white px-2 py-1 rounded shadow-sm opacity-80">${contact.wa1}</span>
+                        </a>`;
+                    hasValidTarget = true;
+                    totalLinks++;
+                }
+
+                if (contact.sendWa2 && contact.wa2) {
+                    const formattedNum = formatWaNumber(contact.wa2);
+                    const waLink = `https://wa.me/${formattedNum}?text=${encodedMessage}`;
+                    linkHTML += `
+                        <a href="${waLink}" target="_blank" onclick="markAsSent(this, '${contact.nama}')"
+                           class="flex items-center justify-between w-full bg-green-50 border border-green-200 text-green-700 py-3 px-4 rounded-xl font-medium text-sm hover:bg-green-100 transition-colors mt-2">
+                            <span class="flex items-center"><i class="fab fa-whatsapp text-lg mr-2"></i> Kirim ke WA 2</span>
+                            <span class="text-xs bg-white px-2 py-1 rounded shadow-sm opacity-80">${contact.wa2}</span>
+                        </a>`;
+                    hasValidTarget = true;
+                    totalLinks++;
+                }
+
+                if (!hasValidTarget) {
+                    linkHTML += `<p class="text-xs text-red-500 italic"><i class="fas fa-exclamation-circle"></i> Tidak ada nomor valid yang dipilih.</p>`;
+                }
+
+                linkHTML += `</div></div>`;
+                container.insertAdjacentHTML('beforeend', linkHTML);
+            });
+            
+            if(totalLinks === 0) {
+                 container.innerHTML = `
+                    <div class="text-center text-gray-400 py-10 bg-white rounded-2xl border border-gray-100 shadow-sm mt-2">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-3 text-yellow-300"></i>
+                        <p class="text-sm font-medium text-gray-600">Tidak ada nomor tujuan yang dichecklist</p>
+                        <button onclick="goToComposeBack()" class="mt-4 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-xs font-semibold hover:bg-gray-200">Kembali</button>
+                    </div>`;
             }
         }
     </script>
