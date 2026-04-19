@@ -292,9 +292,24 @@
         window.onload = () => {
             setTimeout(() => {
                 document.getElementById('splash-screen').style.opacity = '0';
-                setTimeout(() => document.getElementById('splash-screen').classList.add('hidden'), 500);
+                setTimeout(() => {
+                    document.getElementById('splash-screen').classList.add('hidden');
+                    checkLocalLogin(); // Cek login lokal setelah splash screen
+                }, 500);
             }, 1500);
         };
+
+        // FUNGSI CEK LOGIN LOKAL
+        function checkLocalLogin() {
+            const savedEmail = localStorage.getItem('ppmi_email');
+            const savedThalib = localStorage.getItem('ppmi_thalib');
+
+            if (savedEmail && savedThalib) {
+                document.getElementById('login-email').value = savedEmail;
+                document.getElementById('login-thalib').value = savedThalib;
+                loginApp(); // Otomatis trigger login jika ada data di localStorage
+            }
+        }
 
         function showScreen(id) {
             document.getElementById('screen-email').classList.add('hidden');
@@ -331,6 +346,10 @@
                     if (res.all_students && res.all_students.length > 0) {
                         ALL_STUDENTS = res.all_students;
                     }
+
+                    // Simpan ke localStorage jika berhasil login
+                    localStorage.setItem('ppmi_email', currentUserEmail);
+                    localStorage.setItem('ppmi_thalib', currentThalib);
 
                     // Tampilkan Info Profil di Header
                     document.getElementById('display-nama').textContent = res.nama || "Nama Tidak Ditemukan";
@@ -548,12 +567,18 @@
             document.getElementById(`drop-${id}`).classList.remove('hidden');
         }
 
+        function refreshAndShowDropdown(id) {
+            populateDropdown(id); // Segarkan list untuk mengecek siapa yang baru dipilih di baris lain
+            showDropdown(id);
+        }
+
         function filterDropdown(id) {
             const term = document.getElementById(`search-${id}`).value.toLowerCase();
             const items = document.querySelectorAll(`#drop-${id} .drop-item`);
             items.forEach(item => {
                 const text = item.innerText.toLowerCase();
-                item.style.display = text.includes(term) ? 'block' : 'none';
+                // Gunakan style.display = '' agar kembali mengikuti class bawaan Tailwind (flex/block)
+                item.style.display = text.includes(term) ? '' : 'none';
             });
             // Reset hidden val jika user mengetik sembarangan agar tidak tersimpan data salah
             document.getElementById(`val-${id}`).value = ''; 
@@ -583,11 +608,30 @@
         function populateDropdown(id) {
             const drop = document.getElementById(`drop-${id}`);
             let html = '';
+            
+            // Ambil ID yang sudah terpilih di form untuk mencegah duplikasi pilihan
+            const currentSelectedIds = getAnggotaList().split(',').filter(Boolean);
+
             ALL_STUDENTS.forEach(s => {
                 const safeName = s.nama.replace(/'/g, "\\'");
                 const safeWa = s.wa ? s.wa.replace(/'/g, "") : ''; // Mengambil data WA
-                html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 hover:bg-green-50 cursor-pointer transition-colors" onclick="selectMember('${id}', '${s.id}', '${safeName}', '${safeWa}')">${s.id} - <span class="font-bold text-gray-800">${s.nama}</span></div>`;
+                
+                // Pastikan backend Apps Script Anda mengembalikan properti 'tiket_ketua' di dalam array 'all_students'
+                const inAnotherGroup = s.tiket_ketua && s.tiket_ketua !== '' && s.tiket_ketua !== currentThalib;
+                const isAlreadySelected = currentSelectedIds.includes(s.id) && s.id !== document.getElementById(`val-${id}`).value;
+
+                if (inAnotherGroup) {
+                    // Tampilkan non-aktif (abu-abu) jika sudah di rombongan lain
+                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 bg-gray-50 text-gray-400 cursor-not-allowed flex justify-between items-center" title="Sudah terdaftar di rombongan lain"><span>${s.id} - ${s.nama}</span> <i class="fas fa-lock text-red-300" title="Sudah memiliki rombongan"></i></div>`;
+                } else if (isAlreadySelected) {
+                    // Tampilkan non-aktif (hijau) jika sudah ditambahkan di input baris lain
+                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 bg-green-50 text-green-600 cursor-not-allowed flex justify-between items-center" title="Sudah ada di list Anda"><span>${s.id} - ${s.nama}</span> <i class="fas fa-check text-green-500"></i></div>`;
+                } else {
+                    // Item normal yang bisa diklik
+                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 hover:bg-green-50 cursor-pointer transition-colors" onclick="selectMember('${id}', '${s.id}', '${safeName}', '${safeWa}')">${s.id} - <span class="font-bold text-gray-800">${s.nama}</span></div>`;
+                }
             });
+            
             if(html === '') html = '<div class="px-3 py-2 text-xs text-gray-400 text-center">Tidak ada data</div>';
             drop.innerHTML = html;
         }
@@ -620,7 +664,7 @@
 
             div.innerHTML = `
                 <div class="relative flex-1 w-full">
-                    <input type="text" id="search-${uniqueId}" placeholder="Cari Nama / Raqm..." class="search-anggota w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs outline-none focus:ring-2 focus:ring-green-400 font-medium" onfocus="showDropdown('${uniqueId}')" onkeyup="filterDropdown('${uniqueId}')" value="${initialName}" autocomplete="off">
+                    <input type="text" id="search-${uniqueId}" placeholder="Cari Nama / Raqm..." class="search-anggota w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs outline-none focus:ring-2 focus:ring-green-400 font-medium" onfocus="refreshAndShowDropdown('${uniqueId}')" onkeyup="filterDropdown('${uniqueId}')" value="${initialName}" autocomplete="off">
                     <input type="hidden" class="anggota-val" id="val-${uniqueId}" value="${valId}">
                     
                     <div id="drop-${uniqueId}" class="hidden absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-2xl max-h-48 overflow-y-auto hide-scrollbar">
@@ -644,12 +688,27 @@
                 let val = hiddenInputs[i].value;
                 let textVal = searchInputs[i].value;
                 
+                let candidateId = null;
                 if (val) {
-                    list.push(val);
+                    candidateId = val;
                 } else if (textVal) {
                     // Ekstrak otomatis angka 9 digit jika user mengetik NIM tapi lupa klik dari dropdown
                     let match = textVal.match(/\b\d{9}\b/);
-                    if (match) list.push(match[0]);
+                    if (match) candidateId = match[0];
+                }
+
+                // Validasi agar user tidak bisa bypass dengan mengetik manual ID orang yang sudah punya kelompok
+                if (candidateId) {
+                    const studentInfo = ALL_STUDENTS.find(s => s.id === candidateId);
+                    if (studentInfo) {
+                        const inAnotherGroup = studentInfo.tiket_ketua && studentInfo.tiket_ketua !== '' && studentInfo.tiket_ketua !== currentThalib;
+                        if (!inAnotherGroup) {
+                            list.push(candidateId);
+                        }
+                    } else {
+                        // Jika ID tidak dikenali sama sekali (opsional: tetap dimasukkan atau dibuang)
+                        list.push(candidateId);
+                    }
                 }
             }
             
@@ -758,6 +817,10 @@
         }
 
         function logout() { 
+            // Hapus data lokal saat logout
+            localStorage.removeItem('ppmi_email');
+            localStorage.removeItem('ppmi_thalib');
+            
             currentUserEmail = ''; 
             currentThalib = '';
             document.getElementById('login-email').value = ''; 
