@@ -135,13 +135,13 @@
                 
                 <div class="w-full">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Nomor Tiket (PNR/Booking Code)</label>
-                    <input type="text" id="f-tiket-nomor" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 uppercase font-bold tracking-wider" placeholder="Contoh: AB12CD">
+                    <input type="text" id="f-tiket-nomor" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 uppercase font-bold tracking-wider" placeholder="Contoh: AB12CD" oninput="isFormSaved = false">
                 </div>
 
                 <div class="w-full flex items-end gap-2">
                     <div class="flex-1">
                         <label class="text-xs font-semibold text-gray-700 mb-1 block">Link Grup WhatsApp Rombongan</label>
-                        <input type="text" id="f-tiket-grup" oninput="updateGrupLink()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="https://chat.whatsapp.com/...">
+                        <input type="text" id="f-tiket-grup" oninput="updateGrupLink(); isFormSaved = false" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="https://chat.whatsapp.com/...">
                     </div>
                     <a id="btn-open-grup" href="#" target="_blank" class="hidden w-[46px] h-[46px] shrink-0 bg-green-100 text-green-600 rounded-xl flex items-center justify-center hover:bg-green-200 transition-colors shadow-sm mb-0.5">
                         <i class="fab fa-whatsapp text-lg"></i>
@@ -159,11 +159,11 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div class="w-full">
                         <label class="text-xs font-semibold text-gray-700 mb-1 block">Keberangkatan</label>
-                        <input type="date" id="f-tiket-berangkat" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                        <input type="date" id="f-tiket-berangkat" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" oninput="isFormSaved = false">
                     </div>
                     <div class="w-full">
                         <label class="text-xs font-semibold text-gray-700 mb-1 block">Kepulangan</label>
-                        <input type="date" id="f-tiket-pulang" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                        <input type="date" id="f-tiket-pulang" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" oninput="isFormSaved = false">
                     </div>
                 </div>
 
@@ -171,14 +171,14 @@
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">File Tiket (Upload File ATAU Paste Link)</label>
                     <div class="flex items-end gap-2">
                         <div class="flex-1">
-                            <input type="text" id="f-tiket-file" oninput="updateTiketLink()" placeholder="https://drive.google.com/..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 transition-colors">
+                            <input type="text" id="f-tiket-file" oninput="updateTiketLink(); isFormSaved = false" placeholder="https://drive.google.com/..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 transition-colors">
                         </div>
                         
                         <!-- Icon Upload File -->
                         <label for="f-tiket-upload" id="btn-upload-label" class="w-[46px] h-[46px] shrink-0 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center hover:bg-blue-200 transition-colors shadow-sm mb-0.5 cursor-pointer" title="Upload File (Max 3MB)">
                             <i class="fas fa-upload text-sm"></i>
                         </label>
-                        <input type="file" id="f-tiket-upload" accept=".pdf,image/png,image/jpeg,image/jpg" class="hidden" onchange="handleFileUpload(this)">
+                        <input type="file" id="f-tiket-upload" accept=".pdf,image/png,image/jpeg,image/jpg" class="hidden" onchange="handleFileUpload(this); isFormSaved = false">
                         
                         <!-- Icon Open Link File Tiket -->
                         <a id="btn-open-tiket" href="#" target="_blank" class="hidden w-[46px] h-[46px] shrink-0 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center hover:bg-blue-200 transition-colors shadow-sm mb-0.5" title="Buka File Tiket">
@@ -227,6 +227,28 @@
         </div>
     </div>
 
+    <!-- Welcome / Tutorial Modal (Muncul saat pertama masuk form) -->
+    <div id="welcome-modal" class="hidden fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm w-full max-w-md mx-auto flex items-center justify-center px-4">
+        <div class="bg-white rounded-3xl p-6 w-full shadow-2xl scale-95 opacity-0 transition-all duration-300" id="welcome-box">
+            <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center text-3xl mx-auto mb-4">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <h3 class="text-lg font-bold text-center text-gray-800 mb-4">Panduan Pengisian Tiket</h3>
+            <div class="text-xs text-gray-600 space-y-3 mb-6 bg-gray-50 p-4 rounded-xl border border-gray-100 h-48 overflow-y-auto">
+                <p><b>1. Status Ketua:</b> Klik "Jadikan Saya Ketua" jika Antum merupakan ketua rombongan. Hanya ketua yang bisa menambah anggota.</p>
+                <p><b>2. Aturan Tambah Anggota:</b> Antum <b>wajib</b> mengisi Link Grup WA, Jadwal Penerbangan, dan File/Link Tiket terlebih dahulu sebelum bisa menambahkan anggota lain. (Jika belum lengkap, Anda hanya bisa menambahkan akun sendiri).</p>
+                <p><b>3. Privasi Aman:</b> Nomor Raqm Thalib Anggota telah kami sensor (contoh: 452***7) untuk menjaga privasi.</p>
+                <p><b>4. Undangan WA Otomatis:</b> Ikon WhatsApp pada anggota dapat ditekan untuk mengirimkan undangan <b>hanya jika Antum telah menyimpan data tiket</b>.</p>
+                <p><b>5. Keamanan Dokumen:</b> Pastikan untuk <b>mem-blur atau menutupi informasi sensitif</b> (seperti harga, kode atau barcode tertentu) pada file tiket sebelum di-upload.</p>
+                <p><b>6. Tiket Munfarid:</b> Pastikan untuk <b>menjadikan diri sendiri ketua</b> (memudahkan pendataan dan mencegah kesalahan penambahan anggota dari grup lain).</p>
+                <p><b>7. Tujuan:</b> Portal Manajemen Tiket dibuat untuk memudahkan koordinasi, segala manipulasi data dan informasi adalah kesalahan dan kealalaian user.</p>
+                <p><b>8. Tanggungjawab:</b> Setiap Ketua bertanggungjawab penuh terhadap anggota grupnya.</p>
+
+            </div>
+            <button onclick="closeWelcome()" class="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-blue-600/30 hover:bg-blue-700">Saya Mengerti</button>
+        </div>
+    </div>
+
     <script>
         // =========================================================
         // PENTING: ISI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
@@ -236,6 +258,7 @@
         let currentUserEmail = '';
         let currentThalib = '';
         let ALL_STUDENTS = [];
+        let isFormSaved = true; // Flag keamanan status simpan tiket
 
         // Menutup dropdown pencarian saat klik di luar
         document.addEventListener('click', function(e) {
@@ -289,12 +312,26 @@
             }
         }
 
+        // WELCOME POPUP
+        function showWelcome() {
+            const m = document.getElementById('welcome-modal');
+            const b = document.getElementById('welcome-box');
+            m.classList.remove('hidden'); void m.offsetWidth;
+            b.classList.remove('scale-95', 'opacity-0'); b.classList.add('scale-100', 'opacity-100');
+        }
+        function closeWelcome() {
+            const m = document.getElementById('welcome-modal');
+            const b = document.getElementById('welcome-box');
+            b.classList.remove('scale-100', 'opacity-100'); b.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 300);
+        }
+
         window.onload = () => {
             setTimeout(() => {
                 document.getElementById('splash-screen').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('splash-screen').classList.add('hidden');
-                    checkLocalLogin(); // Cek login lokal setelah splash screen
+                    checkLocalLogin(); 
                 }, 500);
             }, 1500);
         };
@@ -307,7 +344,7 @@
             if (savedEmail && savedThalib) {
                 document.getElementById('login-email').value = savedEmail;
                 document.getElementById('login-thalib').value = savedThalib;
-                loginApp(); // Otomatis trigger login jika ada data di localStorage
+                loginApp(); 
             }
         }
 
@@ -347,17 +384,18 @@
                         ALL_STUDENTS = res.all_students;
                     }
 
-                    // Simpan ke localStorage jika berhasil login
                     localStorage.setItem('ppmi_email', currentUserEmail);
                     localStorage.setItem('ppmi_thalib', currentThalib);
 
-                    // Tampilkan Info Profil di Header
                     document.getElementById('display-nama').textContent = res.nama || "Nama Tidak Ditemukan";
                     document.getElementById('display-thalib').textContent = `Thalib: ${currentThalib} | ${currentUserEmail}`;
 
                     populateForm(res);
                     showDynamicIsland('Data Ditemukan', 'success');
                     showScreen('screen-form');
+                    
+                    // Tampilkan panduan setelah berhasil login dan masuk ke form
+                    setTimeout(() => showWelcome(), 500);
                 }
             } catch (err) {
                 showDynamicIsland(err.message || 'Gagal koneksi ke server', 'error');
@@ -369,11 +407,32 @@
         // ==========================================
         let tiketFileObj = null;
 
+        // HELPER FUNGSI MASKING ID (Misal: 441***7)
+        function maskThalib(id) {
+            if (!id || id.length < 5) return id;
+            return id.substring(0, 3) + '***' + id.substring(id.length - 1);
+        }
+
+        // HELPER FUNGSI GENERATE PESAN WHATSAPP OTOMATIS
+        function generateWaLink(waNumber) {
+            if (!waNumber) return '#';
+            let cleanWa = waNumber.replace(/\D/g, '');
+            const grup = document.getElementById('f-tiket-grup').value.trim();
+            const berangkat = document.getElementById('f-tiket-berangkat').value;
+            const pulang = document.getElementById('f-tiket-pulang').value;
+            
+            let text = `Assalamu'alaikum, antum telah saya tambahkan ke dalam Rombongan Kepulangan PPMI.\n\n`;
+            text += `🛫 Berangkat: ${berangkat || '-'}\n`;
+            text += `🛬 Pulang: ${pulang || '-'}\n\n`;
+            text += `Silakan bergabung ke grup WA Rombongan melalui link berikut:\n${grup || '-'}`;
+            
+            return `https://wa.me/${cleanWa}?text=${encodeURIComponent(text)}`;
+        }
+
         function handleFileUpload(input) {
             const file = input.files[0];
             if (!file) return;
 
-            // Limit maksimal 3MB agar server Apps Script tidak timeout
             if (file.size > 3 * 1024 * 1024) {
                 showDynamicIsland('Ukuran file maksimal 3MB!', 'error');
                 input.value = '';
@@ -384,16 +443,14 @@
             
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Mengambil string Base64 murni tanpa header tipe data
                 const base64Data = e.target.result.split(',')[1];
                 tiketFileObj = {
-                    originalName: file.name, // Simpan original name untuk ekstensi nanti
+                    originalName: file.name, 
                     name: file.name, 
                     mimeType: file.type,
                     data: base64Data
                 };
                 
-                // Kunci & sesuaikan tampilan form File Tiket
                 const fileInputText = document.getElementById('f-tiket-file');
                 fileInputText.value = file.name;
                 fileInputText.readOnly = true; 
@@ -421,7 +478,7 @@
             statusText.textContent = "";
             
             document.getElementById('f-tiket-upload').value = '';
-            updateTiketLink(); // Panggil ulang untuk merefresh tombol buka link
+            updateTiketLink(); 
         }
 
         function updateTiketLink() {
@@ -438,7 +495,6 @@
                 btn.href = val;
                 btn.classList.remove('hidden');
                 
-                // Cek jika ini adalah link Google Drive
                 if(val.includes('drive.google.com')) {
                     icon.className = 'fab fa-google-drive text-lg';
                     btn.className = 'w-[46px] h-[46px] shrink-0 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center hover:bg-blue-200 transition-colors shadow-sm mb-0.5';
@@ -466,12 +522,14 @@
 
         function setSebagaiKetua() {
             document.getElementById('f-tiket-ketua').value = currentThalib;
+            isFormSaved = false;
             checkKetuaRole();
         }
 
         function batalSebagaiKetua() {
             document.getElementById('f-tiket-ketua').value = '';
-            document.getElementById('anggota-list').innerHTML = ''; // Reset anggota
+            document.getElementById('anggota-list').innerHTML = ''; 
+            isFormSaved = false;
             checkKetuaRole();
         }
 
@@ -482,17 +540,15 @@
             const isSetAndNotMe = ketuaVal !== '' && !isKetua;
 
             if (isSetAndNotMe) {
-                // Orang lain adalah ketua
                 const ketuaName = ALL_STUDENTS.find(s => s.id === ketuaVal)?.nama || ketuaVal;
                 container.innerHTML = `
                     <div>
                         <span class="text-xs text-gray-500 block">Ditetapkan oleh Ketua:</span>
-                        <span class="text-sm font-bold text-gray-800"><i class="fas fa-crown text-yellow-500 mr-1"></i> ${ketuaName} (${ketuaVal})</span>
+                        <span class="text-sm font-bold text-gray-800"><i class="fas fa-crown text-yellow-500 mr-1"></i> ${ketuaName} (${maskThalib(ketuaVal)})</span>
                     </div>
                 `;
                 lockTiketFields(true);
             } else if (isKetua) {
-                // User saat ini adalah ketua
                 container.innerHTML = `
                     <div>
                         <span class="text-xs text-gray-500 block">Status Anda:</span>
@@ -502,7 +558,6 @@
                 `;
                 lockTiketFields(false);
             } else {
-                // Belum ada ketua / Kosong
                 container.innerHTML = `
                     <div>
                         <span class="text-xs text-gray-500 block">Status:</span>
@@ -510,18 +565,16 @@
                     </div>
                     <button onclick="setSebagaiKetua()" class="px-3 py-2 bg-green-600 text-white rounded-lg text-xs font-bold hover:bg-green-700 transition shadow-md"><i class="fas fa-user-check mr-1"></i> Jadikan Saya Ketua</button>
                 `;
-                lockTiketFields(true); // Lock members until they become ketua
+                lockTiketFields(true); 
             }
         }
 
         function lockTiketFields(locked) {
-            // Mengunci / Membuka kontainer anggota
             document.getElementById('anggota-container').classList.toggle('opacity-50', locked);
             document.getElementById('anggota-container').classList.toggle('pointer-events-none', locked);
             document.getElementById('btn-add-anggota').classList.toggle('hidden', locked);
             document.getElementById('anggota-warning').classList.toggle('hidden', !locked);
 
-            // Kunci Field Tiket lainnya jika bukan ketua
             const inputs = ['f-tiket-nomor', 'f-tiket-grup', 'f-tiket-berangkat', 'f-tiket-pulang', 'f-tiket-file'];
             inputs.forEach(id => {
                 const el = document.getElementById(id);
@@ -530,22 +583,18 @@
                 el.classList.toggle('cursor-not-allowed', locked);
             });
 
-            // Kunci tombol upload file
             const btnUpload = document.getElementById('btn-upload-label');
             if (btnUpload) {
                 btnUpload.classList.toggle('pointer-events-none', locked);
                 btnUpload.classList.toggle('opacity-50', locked);
             }
 
-            // Kunci input pencarian anggota di dalamnya
             document.querySelectorAll('.search-anggota').forEach(inp => {
                 inp.readOnly = locked;
                 inp.classList.toggle('bg-gray-100', locked);
             });
-            // Tombol Hapus disembunyikan, tetapi Tombol WhatsApp tetap dibiarkan agar anggota bisa saling chat
             document.querySelectorAll('.btn-remove-anggota').forEach(btn => btn.classList.toggle('hidden', locked));
             
-            // Kunci tombol save agar anggota tidak merusak tiket
             const btnSave = document.getElementById('btn-save');
             if(locked && document.getElementById('f-tiket-ketua').value !== '') {
                 btnSave.disabled = true;
@@ -568,7 +617,7 @@
         }
 
         function refreshAndShowDropdown(id) {
-            populateDropdown(id); // Segarkan list untuk mengecek siapa yang baru dipilih di baris lain
+            populateDropdown(id); 
             showDropdown(id);
         }
 
@@ -577,58 +626,60 @@
             const items = document.querySelectorAll(`#drop-${id} .drop-item`);
             items.forEach(item => {
                 const text = item.innerText.toLowerCase();
-                // Gunakan style.display = '' agar kembali mengikuti class bawaan Tailwind (flex/block)
                 item.style.display = text.includes(term) ? '' : 'none';
             });
-            // Reset hidden val jika user mengetik sembarangan agar tidak tersimpan data salah
             document.getElementById(`val-${id}`).value = ''; 
-            document.getElementById(`wa-btn-${id}`).classList.add('hidden'); // Sembunyikan ikon WA jika ngetik ulang
+            document.getElementById(`wa-btn-${id}`).classList.add('hidden'); 
         }
 
         function selectMember(id, studentId, studentName, studentWa) {
-            document.getElementById(`search-${id}`).value = `${studentId} - ${studentName}`;
+            // Tampilan di input akan disensor
+            document.getElementById(`search-${id}`).value = `${maskThalib(studentId)} - ${studentName}`;
+            // Value di hidden input tetap ASLI agar tersimpan di database
             document.getElementById(`val-${id}`).value = studentId;
             document.getElementById(`drop-${id}`).classList.add('hidden');
 
-            // Update tombol WhatsApp
             const waBtn = document.getElementById(`wa-btn-${id}`);
             if (waBtn) {
                 if (studentWa && studentWa.trim() !== '') {
-                    // Bersihkan nomor dari karakter selain angka
-                    let cleanWa = studentWa.replace(/\D/g, ''); 
-                    waBtn.href = `https://wa.me/${cleanWa}`;
+                    waBtn.setAttribute('data-wa', studentWa);
                     waBtn.classList.remove('hidden');
                 } else {
                     waBtn.classList.add('hidden');
-                    waBtn.href = '#';
+                    waBtn.setAttribute('data-wa', '');
                 }
             }
+            isFormSaved = false;
         }
 
         function populateDropdown(id) {
             const drop = document.getElementById(`drop-${id}`);
             let html = '';
             
-            // Ambil ID yang sudah terpilih di form untuk mencegah duplikasi pilihan
             const currentSelectedIds = getAnggotaList().split(',').filter(Boolean);
+            
+            const grup = document.getElementById('f-tiket-grup').value.trim();
+            const berangkat = document.getElementById('f-tiket-berangkat').value;
+            const pulang = document.getElementById('f-tiket-pulang').value;
+            const fileTiket = document.getElementById('f-tiket-file').value.trim();
+            const isComplete = (grup && berangkat && pulang && (fileTiket || tiketFileObj));
 
             ALL_STUDENTS.forEach(s => {
                 const safeName = s.nama.replace(/'/g, "\\'");
-                const safeWa = s.wa ? s.wa.replace(/'/g, "") : ''; // Mengambil data WA
+                const safeWa = s.wa ? s.wa.replace(/'/g, "") : ''; 
                 
-                // Pastikan backend Apps Script Anda mengembalikan properti 'tiket_ketua' di dalam array 'all_students'
                 const inAnotherGroup = s.tiket_ketua && s.tiket_ketua !== '' && s.tiket_ketua !== currentThalib;
                 const isAlreadySelected = currentSelectedIds.includes(s.id) && s.id !== document.getElementById(`val-${id}`).value;
+                const isSelf = s.id === currentThalib;
 
-                if (inAnotherGroup) {
-                    // Tampilkan non-aktif (abu-abu) jika sudah di rombongan lain
-                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 bg-gray-50 text-gray-400 cursor-not-allowed flex justify-between items-center" title="Sudah terdaftar di rombongan lain"><span>${s.id} - ${s.nama}</span> <i class="fas fa-lock text-red-300" title="Sudah memiliki rombongan"></i></div>`;
+                if (!isComplete && !isSelf) {
+                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 bg-gray-50 text-gray-400 cursor-not-allowed flex justify-between items-center" title="Lengkapi tiket untuk menambah anggota ini"><span>${maskThalib(s.id)} - ${s.nama}</span> <i class="fas fa-lock text-gray-300"></i></div>`;
+                } else if (inAnotherGroup) {
+                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 bg-gray-50 text-gray-400 cursor-not-allowed flex justify-between items-center" title="Sudah terdaftar di rombongan lain"><span>${maskThalib(s.id)} - ${s.nama}</span> <i class="fas fa-lock text-red-300" title="Sudah memiliki rombongan"></i></div>`;
                 } else if (isAlreadySelected) {
-                    // Tampilkan non-aktif (hijau) jika sudah ditambahkan di input baris lain
-                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 bg-green-50 text-green-600 cursor-not-allowed flex justify-between items-center" title="Sudah ada di list Anda"><span>${s.id} - ${s.nama}</span> <i class="fas fa-check text-green-500"></i></div>`;
+                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 bg-green-50 text-green-600 cursor-not-allowed flex justify-between items-center" title="Sudah ada di list Anda"><span>${maskThalib(s.id)} - ${s.nama}</span> <i class="fas fa-check text-green-500"></i></div>`;
                 } else {
-                    // Item normal yang bisa diklik
-                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 hover:bg-green-50 cursor-pointer transition-colors" onclick="selectMember('${id}', '${s.id}', '${safeName}', '${safeWa}')">${s.id} - <span class="font-bold text-gray-800">${s.nama}</span></div>`;
+                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 hover:bg-green-50 cursor-pointer transition-colors" onclick="selectMember('${id}', '${s.id}', '${safeName}', '${safeWa}')">${maskThalib(s.id)} - <span class="font-bold text-gray-800">${s.nama}</span></div>`;
                 }
             });
             
@@ -636,25 +687,64 @@
             drop.innerHTML = html;
         }
 
+        function removeAnggota(id) {
+            const el = document.getElementById('wrapper-' + id);
+            if (el) el.remove();
+            isFormSaved = false;
+        }
+
+        function contactMember(event, el) {
+            event.preventDefault();
+            const waNumber = el.getAttribute('data-wa');
+            if (!waNumber) return;
+
+            if (!isFormSaved) {
+                showDynamicIsland('Harap SIMPAN DATA TIKET terlebih dahulu sebelum menghubungi anggota!', 'error');
+                return;
+            }
+            const url = generateWaLink(waNumber);
+            window.open(url, '_blank');
+        }
+
         function addAnggota(valId = '') {
+            // Validasi: Cegah penambahan anggota jika Link Grup, Jadwal, dan Tiket belum diisi (Khusus tambah manual)
+            if (valId === '') {
+                const grup = document.getElementById('f-tiket-grup').value.trim();
+                const berangkat = document.getElementById('f-tiket-berangkat').value;
+                const pulang = document.getElementById('f-tiket-pulang').value;
+                const fileTiket = document.getElementById('f-tiket-file').value.trim();
+                
+                if (!grup || !berangkat || !pulang || (!fileTiket && !tiketFileObj)) {
+                    const currentList = getAnggotaList().split(',').filter(Boolean);
+                    if (!currentList.includes(currentThalib)) {
+                        showDynamicIsland('Data tiket belum lengkap. Hanya menambahkan diri Anda sendiri.', 'success');
+                        valId = currentThalib; 
+                    } else {
+                        showDynamicIsland('Harap lengkapi Link Grup WA, Jadwal, dan File Tiket terlebih dahulu', 'error');
+                        return;
+                    }
+                }
+                isFormSaved = false; // Flag trigger unsaved changes ketika nambah anggota
+            }
+
             const container = document.getElementById('anggota-list');
             const uniqueId = 'anggota-' + Date.now() + Math.floor(Math.random() * 1000);
             
             let initialName = '';
-            let initialWaHref = '#';
+            let rawWa = '';
             let waHiddenClass = 'hidden';
 
             if(valId) {
                 const student = ALL_STUDENTS.find(s => s.id === valId);
                 if (student) {
-                    initialName = `${student.id} - ${student.nama}`;
+                    // Gunakan ID tersensor untuk initial name
+                    initialName = `${maskThalib(student.id)} - ${student.nama}`;
                     if (student.wa) {
-                        let cleanWa = student.wa.replace(/\D/g, '');
-                        initialWaHref = `https://wa.me/${cleanWa}`;
-                        waHiddenClass = ''; // Tampilkan tombol WA
+                        rawWa = student.wa;
+                        waHiddenClass = ''; 
                     }
                 } else {
-                    initialName = valId; // Jika hanya berupa angka NIM
+                    initialName = maskThalib(valId); 
                 }
             }
 
@@ -671,8 +761,8 @@
                         <!-- Populated by JS -->
                     </div>
                 </div>
-                <a href="${initialWaHref}" id="wa-btn-${uniqueId}" target="_blank" class="${waHiddenClass} text-green-500 p-2.5 bg-white border border-green-100 hover:bg-green-50 rounded-xl transition-colors shadow-sm" title="Chat WhatsApp"><i class="fab fa-whatsapp text-lg"></i></a>
-                <button type="button" onclick="document.getElementById('wrapper-${uniqueId}').remove()" class="btn-remove-anggota text-red-500 p-2.5 bg-white border border-red-100 hover:bg-red-50 rounded-xl transition-colors shadow-sm" title="Hapus Anggota"><i class="fas fa-trash"></i></button>
+                <a href="#" id="wa-btn-${uniqueId}" data-wa="${rawWa}" onclick="contactMember(event, this)" class="${waHiddenClass} text-green-500 p-2.5 bg-white border border-green-100 hover:bg-green-50 rounded-xl transition-colors shadow-sm" title="Kirim Undangan via WhatsApp"><i class="fab fa-whatsapp text-lg"></i></a>
+                <button type="button" onclick="removeAnggota('${uniqueId}')" class="btn-remove-anggota text-red-500 p-2.5 bg-white border border-red-100 hover:bg-red-50 rounded-xl transition-colors shadow-sm" title="Hapus Anggota"><i class="fas fa-trash"></i></button>
             `;
             container.appendChild(div);
             populateDropdown(uniqueId);
@@ -684,6 +774,12 @@
             const searchInputs = document.querySelectorAll('.search-anggota');
             let list = [];
             
+            const grup = document.getElementById('f-tiket-grup').value.trim();
+            const berangkat = document.getElementById('f-tiket-berangkat').value;
+            const pulang = document.getElementById('f-tiket-pulang').value;
+            const fileTiket = document.getElementById('f-tiket-file').value.trim();
+            const isComplete = (grup && berangkat && pulang && (fileTiket || tiketFileObj));
+            
             for (let i = 0; i < hiddenInputs.length; i++) {
                 let val = hiddenInputs[i].value;
                 let textVal = searchInputs[i].value;
@@ -692,13 +788,15 @@
                 if (val) {
                     candidateId = val;
                 } else if (textVal) {
-                    // Ekstrak otomatis angka 9 digit jika user mengetik NIM tapi lupa klik dari dropdown
                     let match = textVal.match(/\b\d{9}\b/);
                     if (match) candidateId = match[0];
                 }
 
-                // Validasi agar user tidak bisa bypass dengan mengetik manual ID orang yang sudah punya kelompok
                 if (candidateId) {
+                    if (!isComplete && candidateId !== currentThalib) {
+                        continue; // Blokir manual input jika tiket belum lengkap
+                    }
+
                     const studentInfo = ALL_STUDENTS.find(s => s.id === candidateId);
                     if (studentInfo) {
                         const inAnotherGroup = studentInfo.tiket_ketua && studentInfo.tiket_ketua !== '' && studentInfo.tiket_ketua !== currentThalib;
@@ -706,21 +804,17 @@
                             list.push(candidateId);
                         }
                     } else {
-                        // Jika ID tidak dikenali sama sekali (opsional: tetap dimasukkan atau dibuang)
                         list.push(candidateId);
                     }
                 }
             }
             
-            // Hapus duplikat (menggunakan Set) dan filter field yang kosong lalu gabungkan dengan koma
             return [...new Set(list)].filter(Boolean).join(',');
         }
 
-
         function populateForm(data) {
-            resetUploadState(); // Reset state upload file sebelumnya
+            resetUploadState(); 
 
-            // Populating Tiket Data
             document.getElementById('f-tiket-nomor').value = data.tiket_nomor || '';
             document.getElementById('f-tiket-grup').value = data.tiket_grup || '';
             document.getElementById('f-tiket-ketua').value = data.tiket_ketua || '';
@@ -731,7 +825,6 @@
             updateTiketLink();
             updateGrupLink();
             
-            // Populate Anggota
             document.getElementById('anggota-list').innerHTML = '';
             if (data.tiket_anggota) {
                 const anggotaIds = data.tiket_anggota.split(',');
@@ -740,8 +833,10 @@
                 });
             }
 
-            // Menerapkan rules & locking UI
-            setTimeout(() => checkKetuaRole(), 100);
+            setTimeout(() => {
+                checkKetuaRole();
+                isFormSaved = true; // Set flag saved setelah data loaded
+            }, 100);
         }
 
         function clearForm() {
@@ -751,10 +846,11 @@
             document.getElementById('f-tiket-pulang').value = '';
             document.getElementById('f-tiket-ketua').value = '';
             document.getElementById('anggota-list').innerHTML = '';
-            resetUploadState(); // Reset state upload file
+            resetUploadState(); 
             updateTiketLink();
             updateGrupLink();
             checkKetuaRole();
+            isFormSaved = true;
         }
 
         function getFormData() {
@@ -762,7 +858,6 @@
             const tiketNomor = document.getElementById('f-tiket-nomor').value.trim();
             const tiketKetua = document.getElementById('f-tiket-ketua').value;
 
-            // Merubah nama file secara dinamis
             if (tiketFileObj) {
                 const ext = tiketFileObj.originalName.substring(tiketFileObj.originalName.lastIndexOf('.'));
                 const safeNomor = tiketNomor || 'TIKET';
@@ -770,11 +865,10 @@
                 
                 let newFileName = `${safeNomor}-${safeKetua}`;
                 if (anggotaList) {
-                    // Merapikan list anggota dengan spasi setelah koma agar formatnya persis
                     const formattedAnggota = anggotaList.split(',').map(a => a.trim()).join(', ');
                     newFileName += `, ${formattedAnggota}`;
                 }
-                newFileName += ext; // Tambahkan ekstensi asli file (.pdf, .jpg)
+                newFileName += ext; 
                 
                 tiketFileObj.name = newFileName;
             }
@@ -788,7 +882,7 @@
                 tiket_berangkat: document.getElementById('f-tiket-berangkat').value,
                 tiket_pulang: document.getElementById('f-tiket-pulang').value,
                 tiket_file: document.getElementById('f-tiket-file').value,
-                tiket_file_upload: tiketFileObj, // Membawa object base64 ke payload
+                tiket_file_upload: tiketFileObj,
                 tiket_anggota: anggotaList
             };
         }
@@ -812,12 +906,12 @@
             const data = getFormData();
             try {
                 await serverCall('saveData', data);
+                isFormSaved = true; // Kembalikan flag setelah berhasil
                 showDynamicIsland('Mantap! Data Tiket Disimpan', 'success');
             } catch (err) { showDynamicIsland(err.message || 'Gagal menyimpan ke server', 'error'); }
         }
 
         function logout() { 
-            // Hapus data lokal saat logout
             localStorage.removeItem('ppmi_email');
             localStorage.removeItem('ppmi_thalib');
             
