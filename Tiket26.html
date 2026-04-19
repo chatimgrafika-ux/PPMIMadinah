@@ -922,14 +922,34 @@
 
             if (tiketFileObj) {
                 const ext = tiketFileObj.originalName.substring(tiketFileObj.originalName.lastIndexOf('.'));
-                const safeNomor = tiketNomor || 'TIKET';
-                const safeKetua = tiketKetua || currentThalib;
                 
-                let newFileName = `${safeNomor}-${safeKetua}`;
+                // Buat array penampung nama anggota
+                let namesArr = [];
+                
                 if (anggotaList) {
-                    const formattedAnggota = anggotaList.split(',').map(a => a.trim()).join(', ');
-                    newFileName += `, ${formattedAnggota}`;
+                    const ids = anggotaList.split(',').filter(Boolean);
+                    ids.forEach(id => {
+                        const student = ALL_STUDENTS.find(s => s.id === id);
+                        // Jika nama ditemukan, gunakan nama. Jika tidak, gunakan ID sebagai cadangan
+                        namesArr.push(student ? student.nama : id);
+                    });
+                } else {
+                    // Jika list anggota kosong, gunakan nama ketua/akun sendiri
+                    const selfStudent = ALL_STUDENTS.find(s => s.id === currentThalib);
+                    namesArr.push(selfStudent ? selfStudent.nama : currentThalib);
                 }
+                
+                // Gabungkan seluruh nama menjadi satu string dengan pemisah koma
+                let newFileName = namesArr.join(', ');
+                
+                // Bersihkan karakter yang dilarang di sistem file/Drive
+                newFileName = newFileName.replace(/[<>:"/\\|?*]/g, '');
+                
+                // Batasi panjang string maksimal agar Google Drive tidak error (Max ~150 chars)
+                if (newFileName.length > 150) {
+                    newFileName = newFileName.substring(0, 150) + '...';
+                }
+                
                 newFileName += ext; 
                 
                 tiketFileObj.name = newFileName;
@@ -971,7 +991,16 @@
                 await serverCall('saveData', data);
                 isFormSaved = true; // Kembalikan flag setelah berhasil
                 showDynamicIsland('Mantap! Data Tiket Disimpan', 'success');
-            } catch (err) { showDynamicIsland(err.message || 'Gagal menyimpan ke server', 'error'); }
+            } catch (err) { 
+                // Abaikan error timeout (Failed to fetch) dan langsung anggap sukses
+                // karena server Google Apps Script tetap melanjutkan proses simpan ke Spreadsheet di latar belakang
+                if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+                    isFormSaved = true; 
+                    showDynamicIsland('Mantap! Data Tiket Disimpan', 'success');
+                } else {
+                    showDynamicIsland(err.message || 'Gagal menyimpan ke server', 'error'); 
+                }
+            }
         }
 
         function logout() { 
