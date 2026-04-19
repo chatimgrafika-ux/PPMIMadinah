@@ -194,6 +194,11 @@
                     <p id="upload-status-text" class="text-[10px] text-gray-500 mt-1 hidden"></p>
                 </div>
 
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Catatan Tambahan</label>
+                    <textarea id="f-catatan" rows="2" oninput="isFormSaved = false" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 resize-none transition-colors" placeholder="Tulis catatan opsional di sini..."></textarea>
+                </div>
+
                 <!-- ANGGOTA SECTION -->
                 <div id="anggota-container" class="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 mt-4 transition-all duration-300 opacity-50 pointer-events-none">
                     <div class="flex justify-between items-center mb-2 border-b border-gray-200 pb-2">
@@ -246,7 +251,7 @@
                 <p><b>3. Privasi Aman:</b> Nomor Raqm Thalib Anggota telah kami sensor (contoh: 452***7) untuk menjaga privasi.</p>
                 <p><b>4. Undangan WA Otomatis:</b> Ikon WhatsApp pada anggota dapat ditekan untuk mengirimkan undangan <b>hanya jika Antum telah menyimpan data tiket</b>.</p>
                 <p><b>5. Keamanan Dokumen:</b> Pastikan untuk <b>mem-blur atau menutupi informasi sensitif</b> (seperti harga, kode atau barcode tertentu) pada file tiket sebelum di-upload.</p>
-                <p><b>6. Tiket Munfarid:</b> Pastikan untuk <b>menjadikan diri sendiri ketua & anggota tanpa perlu mengisi link </b> (memudahkan pendataan dan mencegah kesalahan penambahan anggota dari grup lain).</p>
+                <p><b>6. Tiket Munfarid:</b> Pastikan untuk <b>menjadikan diri sendiri ketua</b> (memudahkan pendataan dan mencegah kesalahan penambahan anggota dari grup lain).</p>
                 <p><b>7. Tujuan:</b> Portal Manajemen Tiket dibuat untuk memudahkan koordinasi, segala manipulasi data dan informasi adalah kesalahan dan kealalaian user.</p>
                 <p><b>8. Tanggungjawab:</b> Setiap Ketua bertanggungjawab penuh terhadap anggota grupnya.</p>
 
@@ -285,7 +290,7 @@
         // =========================================================
         // PENTING: ISI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
         // =========================================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbwaOV_JrhWiZ6l2sLvCGIXKuppabHhKzsuY5Jth2IZSCZQZfTAUp0aAaE1gcAL6vijl/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbybFYCYLY9ncgCghA3yOPg2KmgCV7BM1c6n11UPNpyJB4BQnVCyLDLxVeOKwKKgHIlK/exec"; 
 
         let currentUserEmail = '';
         let currentThalib = '';
@@ -630,7 +635,7 @@
             document.getElementById('btn-add-anggota').classList.toggle('hidden', locked);
             document.getElementById('anggota-warning').classList.toggle('hidden', !locked);
 
-            const inputs = ['f-tiket-nomor', 'f-tiket-grup', 'f-tiket-berangkat', 'f-tiket-pulang', 'f-tiket-file'];
+            const inputs = ['f-tiket-nomor', 'f-tiket-grup', 'f-tiket-berangkat', 'f-tiket-pulang', 'f-tiket-file', 'f-catatan'];
             inputs.forEach(id => {
                 const el = document.getElementById(id);
                 el.readOnly = locked;
@@ -875,6 +880,7 @@
             document.getElementById('f-tiket-ketua').value = data.tiket_ketua || '';
             document.getElementById('f-tiket-berangkat').value = data.tiket_berangkat || '';
             document.getElementById('f-tiket-pulang').value = data.tiket_pulang || '';
+            document.getElementById('f-catatan').value = data.catatan || '';
             document.getElementById('f-tiket-file').value = data.tiket_file || '';
             
             updateTiketLink();
@@ -899,6 +905,7 @@
             inputs.forEach(input => input.value = '');
             document.getElementById('f-tiket-berangkat').value = '';
             document.getElementById('f-tiket-pulang').value = '';
+            document.getElementById('f-catatan').value = '';
             document.getElementById('f-tiket-ketua').value = '';
             document.getElementById('anggota-list').innerHTML = '';
             resetUploadState(); 
@@ -936,6 +943,7 @@
                 tiket_ketua: tiketKetua,
                 tiket_berangkat: document.getElementById('f-tiket-berangkat').value,
                 tiket_pulang: document.getElementById('f-tiket-pulang').value,
+                catatan: document.getElementById('f-catatan').value.trim(),
                 tiket_file: document.getElementById('f-tiket-file').value,
                 tiket_file_upload: tiketFileObj,
                 tiket_anggota: anggotaList
