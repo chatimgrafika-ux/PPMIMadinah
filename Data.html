@@ -175,7 +175,7 @@
                 <i id="dashboard-profile-icon" class="fas fa-user text-xl"></i>
             </div>
             <div class="overflow-hidden">
-                <h2 class="text-xs text-gray-500 font-semibold mb-0.5">Ahlan wa Sahlan,</h2>
+                <h2 id="dashboard-greeting" class="text-xs text-gray-500 font-semibold mb-0.5">Ahlan wa Sahlan,</h2>
                 <h3 class="text-lg font-bold text-gray-800 leading-tight truncate w-full" id="dash-nama">Memuat Nama...</h3>
                 <p class="text-xs text-green-600 font-bold mt-1 bg-green-100 px-2 py-0.5 rounded-md inline-block truncate max-w-full" id="dash-thalib">ID: 441234567</p>
             </div>
@@ -209,6 +209,14 @@
         <!-- Alert Container (Paspor) -->
         <div id="alert-passport" class="hidden mb-5">
             <!-- Diisi otomatis oleh JS -->
+        </div>
+
+        <!-- Section Menu Khusus / Istimewa (Hidden by default) -->
+        <div id="special-menu-section" class="hidden">
+            <h3 class="text-sm font-bold text-yellow-600 mb-3 px-1"><i class="fas fa-star mr-1"></i> Menu Istimewa</h3>
+            <div id="special-menu-grid" class="grid grid-cols-2 gap-3 mb-6">
+                <!-- Diisi otomatis oleh JS -->
+            </div>
         </div>
 
         <h3 class="text-sm font-bold text-gray-800 mb-3 px-1">Menu Utama</h3>
@@ -865,6 +873,71 @@
         // TABS LOGIC
         const tabs = ['diri', 'akademik', 'perjalanan', 'info'];
 
+        // DATA AKUN ISTIMEWA (Role-Based Access Control)
+        const SPECIAL_ACCOUNTS = {
+            "443048793": { role: "Kadiv", menus: ["Humas", "Broadcast", "Surat"] },
+            "443050303": { role: "Sekdiv", menus: ["Humas", "Broadcast", "Surat"] },
+            "443048943": { role: "Wakadiv", menus: ["Humas", "Broadcast", "Surat"] },
+            "451026613": { role: "Humas", menus: ["Humas", "Broadcast", "Surat"] },
+            "452047213": { role: "Humas", menus: ["Humas", "Broadcast", "Surat"] },
+            "452047193": { role: "Humas", menus: ["Humas", "Broadcast", "Surat"] },
+            "461025133": { role: "Humas", menus: ["Humas", "Broadcast", "Surat"] },
+            "471030333": { role: "Humas", menus: ["Humas", "Broadcast", "Surat"] },
+            "472040523": { role: "Humas", menus: ["Humas", "Broadcast", "Surat"] },
+            "471035533": { role: "Humas", menus: ["Humas", "Broadcast", "Surat"] },
+
+            "443048833": { role: "Humas", menus: ["Humas", "Broadcast", "Surat"] },
+            "443048013": { role: "Humas", menus: ["Humas", "Broadcast", "Surat"] },
+            "443048733": { role: "Humas", menus: ["Humas", "Broadcast", "Surat"] },
+
+            "443048633": { role: "Mandub", menus: ["Humas", "Thaibah", "Online", "Mahadharom", "Broadcast", "Surat"] }
+        };
+
+        const MENU_LINKS = {
+            "Humas": { url: "humas.html", icon: "fas fa-users-cog", colorClass: "text-red-400" },
+            "Thaibah": { url: "Thaibah.html", icon: "fas fa-mosque", colorClass: "text-teal-400" },
+            "Online": { url: "KJJ.html", icon: "fas fa-globe", colorClass: "text-cyan-400" },
+            "Mahadharom": { url: "Mahadharom.html", icon: "fas fa-chalkboard-teacher", colorClass: "text-amber-400" },
+            "Broadcast": { url: "send_humas.html", icon: "fas fa-bullhorn", colorClass: "text-rose-400" },
+            "Surat": { url: "M-surat.html", icon: "fas fa-envelope-open-text", colorClass: "text-violet-400" }
+        };
+
+        function renderSpecialMenus() {
+            const specialAcc = SPECIAL_ACCOUNTS[currentThalib];
+            const section = document.getElementById('special-menu-section');
+            const grid = document.getElementById('special-menu-grid');
+            const greeting = document.getElementById('dashboard-greeting');
+
+            if (specialAcc) {
+                // Sapaan Khusus
+                greeting.textContent = `Assalamu 'alaikum Pak ${specialAcc.role},`;
+                greeting.className = "text-xs text-yellow-600 font-bold mb-0.5";
+                
+                let html = '';
+                specialAcc.menus.forEach(menuKey => {
+                    const m = MENU_LINKS[menuKey];
+                    if (m) {
+                        // Tampilan Card Menu Istimewa yang Premium
+                        html += `
+                        <a href="${m.url}" class="bg-gradient-to-br from-gray-900 to-black p-4 rounded-[1.2rem] shadow-lg border border-gray-700 flex flex-col items-start gap-3 hover:shadow-xl transition-all group">
+                            <div class="w-10 h-10 rounded-xl bg-white/10 ${m.colorClass} flex items-center justify-center text-lg group-hover:scale-110 transition-transform"><i class="${m.icon}"></i></div>
+                            <div class="text-left">
+                                <h4 class="text-sm font-bold text-white">${menuKey}</h4>
+                                <p class="text-[9px] text-gray-400 leading-tight mt-0.5">Akses khusus ${specialAcc.role}</p>
+                            </div>
+                        </a>`;
+                    }
+                });
+                grid.innerHTML = html;
+                section.classList.remove('hidden');
+            } else {
+                // Reset untuk user biasa
+                greeting.textContent = `Ahlan wa Sahlan,`;
+                greeting.className = "text-xs text-gray-500 font-semibold mb-0.5";
+                section.classList.add('hidden');
+            }
+        }
+
         // FUNGSI DASHBOARD KE EDITOR
         function openEditor(tabId) {
             // Hide dashboard, show editor
@@ -1153,6 +1226,9 @@
                 document.getElementById('dash-nama').textContent = document.getElementById('f-nama-id').value || 'Tanpa Nama';
                 document.getElementById('dash-thalib').textContent = "ID: " + currentThalib;
                 
+                // Cek Akses Istimewa (Menu Khusus & Sapaan)
+                renderSpecialMenus();
+
                 // Update Kelengkapan dan Alert
                 updateCompleteness();
                 checkPassportAlert();
