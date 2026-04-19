@@ -905,10 +905,25 @@
             }
         }
 
+        // FUNGSI CEK LOGIN LOKAL
+        function checkLocalLogin() {
+            const savedEmail = localStorage.getItem('ppmi_email');
+            const savedThalib = localStorage.getItem('ppmi_thalib');
+
+            if (savedEmail && savedThalib) {
+                document.getElementById('login-email').value = savedEmail;
+                document.getElementById('login-thalib').value = savedThalib;
+                loginApp(); // Otomatis trigger login jika ada data di localStorage
+            }
+        }
+
         window.onload = () => {
             setTimeout(() => {
                 document.getElementById('splash-screen').style.opacity = '0';
-                setTimeout(() => document.getElementById('splash-screen').classList.add('hidden'), 500);
+                setTimeout(() => {
+                    document.getElementById('splash-screen').classList.add('hidden');
+                    checkLocalLogin(); // Cek login lokal setelah splash screen
+                }, 500);
             }, 1500);
             initDatePicker();
         };
@@ -948,6 +963,11 @@
                 const res = await serverCall('getData', { email: currentUserEmail, thalib: currentThalib });
                 if (res) {
                     const data = JSON.parse(res);
+                    
+                    // Simpan ke localStorage jika berhasil login
+                    localStorage.setItem('ppmi_email', currentUserEmail);
+                    localStorage.setItem('ppmi_thalib', currentThalib);
+                    
                     populateForm(data);
                     showDynamicIsland('Data Ditemukan', 'success');
                 } else {
@@ -955,6 +975,11 @@
                     document.getElementById('last-updated-text').textContent = "Status: Pengguna Baru";
                     document.getElementById('last-updated-text').className = "text-[10px] text-blue-600 font-medium mt-1 italic";
                     document.getElementById('f-thalib').value = currentThalib; // Set Thalib Input otomatis
+                    
+                    // Simpan ke localStorage agar tidak perlu login lagi jika app ditutup saat mengisi form
+                    localStorage.setItem('ppmi_email', currentUserEmail);
+                    localStorage.setItem('ppmi_thalib', currentThalib);
+                    
                     showDynamicIsland('Akun Baru. Silakan lengkapi formulir', 'success');
                 }
                 document.getElementById('display-email').textContent = currentUserEmail;
@@ -1111,6 +1136,11 @@
 
         function logout() { 
             toggleMenu(); 
+            
+            // Hapus data lokal saat logout
+            localStorage.removeItem('ppmi_email');
+            localStorage.removeItem('ppmi_thalib');
+            
             currentUserEmail = ''; 
             currentThalib = '';
             document.getElementById('login-email').value = ''; 
