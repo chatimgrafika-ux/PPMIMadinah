@@ -92,10 +92,16 @@
                 </div>
             </div>
 
-            <button onclick="loginApp()" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-xl py-4 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2">
-                <span>Akses Portal Tiket</span>
-                <i class="fas fa-plane-departure"></i>
-            </button>
+            <div class="flex flex-col gap-3">
+                <button onclick="loginApp()" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-xl py-3.5 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2">
+                    <span>Akses Portal Tiket</span>
+                    <i class="fas fa-plane-departure"></i>
+                </button>
+                <button onclick="showTutorial()" class="w-full bg-blue-50 text-blue-600 font-bold rounded-xl py-3.5 border border-blue-200 hover:bg-blue-100 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2 shadow-sm">
+                    <i class="fas fa-play-circle text-lg"></i>
+                    <span>Tonton Video Tutorial</span>
+                </button>
+            </div>
             
             <div class="mt-6 text-center border-t border-gray-100 pt-5">
                 <p class="text-[11px] text-gray-500 mb-1.5">Belum terdaftar atau ingin merubah data diri?</p>
@@ -249,6 +255,23 @@
         </div>
     </div>
 
+    <!-- Tutorial Video Modal (Pre-Login) -->
+    <div id="tutorial-modal" class="hidden fixed inset-0 z-[120] bg-black/80 backdrop-blur-sm w-full max-w-md mx-auto flex items-center justify-center px-4">
+        <div class="bg-white rounded-3xl p-6 w-full shadow-2xl scale-95 opacity-0 transition-all duration-300" id="tutorial-box">
+            <div class="w-16 h-16 rounded-full bg-red-100 text-red-500 flex items-center justify-center text-3xl mx-auto mb-4">
+                <i class="fas fa-play-circle"></i>
+            </div>
+            <h3 class="text-lg font-bold text-center text-gray-800 mb-2">Video Tutorial</h3>
+            <p class="text-xs text-center text-gray-600 mb-4">Silakan tonton panduan cara input tiket dan penambahan anggota rombongan berikut ini.</p>
+            
+            <div class="w-full aspect-video rounded-xl overflow-hidden bg-gray-100 mb-6 shadow-inner relative">
+                <iframe src="https://drive.google.com/file/d/1IC1JCfkZtKfnYd_4MWSshQukqTNZ133Q/preview" class="absolute top-0 left-0 w-full h-full border-0" allow="autoplay"></iframe>
+            </div>
+
+            <button onclick="closeTutorial()" class="w-full py-3.5 rounded-xl bg-green-600 text-white font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-green-600/30 hover:bg-green-700">Lanjut Login</button>
+        </div>
+    </div>
+
     <script>
         // =========================================================
         // PENTING: ISI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
@@ -326,12 +349,32 @@
             setTimeout(() => m.classList.add('hidden'), 300);
         }
 
+        // TUTORIAL POPUP (PRE-LOGIN)
+        function showTutorial() {
+            const m = document.getElementById('tutorial-modal');
+            const b = document.getElementById('tutorial-box');
+            m.classList.remove('hidden'); void m.offsetWidth;
+            b.classList.remove('scale-95', 'opacity-0'); b.classList.add('scale-100', 'opacity-100');
+        }
+        function closeTutorial() {
+            const m = document.getElementById('tutorial-modal');
+            const b = document.getElementById('tutorial-box');
+            b.classList.remove('scale-100', 'opacity-100'); b.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 300);
+        }
+
         window.onload = () => {
             setTimeout(() => {
                 document.getElementById('splash-screen').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('splash-screen').classList.add('hidden');
-                    checkLocalLogin(); 
+                    const hasLocalData = checkLocalLogin(); 
+                    const hasLoggedInBefore = localStorage.getItem('ppmi_has_logged_in_before');
+                    
+                    // Muncul otomatis sebelum login HANYA JIKA belum pernah masuk sama sekali di perangkat ini
+                    if (!hasLocalData && !hasLoggedInBefore) {
+                        showTutorial(); 
+                    }
                 }, 500);
             }, 1500);
         };
@@ -345,7 +388,9 @@
                 document.getElementById('login-email').value = savedEmail;
                 document.getElementById('login-thalib').value = savedThalib;
                 loginApp(); 
+                return true;
             }
+            return false;
         }
 
         function showScreen(id) {
@@ -386,6 +431,7 @@
 
                     localStorage.setItem('ppmi_email', currentUserEmail);
                     localStorage.setItem('ppmi_thalib', currentThalib);
+                    localStorage.setItem('ppmi_has_logged_in_before', 'true'); // Flag untuk cegah tutorial muncul lagi setelah logout
 
                     document.getElementById('display-nama').textContent = res.nama || "Nama Tidak Ditemukan";
                     document.getElementById('display-thalib').textContent = `Thalib: ${currentThalib} | ${currentUserEmail}`;
@@ -421,7 +467,7 @@
             const berangkat = document.getElementById('f-tiket-berangkat').value;
             const pulang = document.getElementById('f-tiket-pulang').value;
             
-            let text = `Assalamu'alaikum, antum telah saya tambahkan ke dalam Rombongan Kepulangan Shaifi 2026.\n\n`;
+            let text = `Assalamu'alaikum, antum telah saya tambahkan ke dalam Rombongan Kepulangan PPMI.\n\n`;
             text += `🛫 Berangkat: ${berangkat || '-'}\n`;
             text += `🛬 Pulang: ${pulang || '-'}\n\n`;
             text += `Silakan bergabung ke grup WA Rombongan melalui link berikut:\n${grup || '-'}`;
