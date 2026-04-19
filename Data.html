@@ -4,10 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
-    <title> PPMI Madinah </title>
+    <title> PPMI Madinah Dashboard </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Menggunakan Font Poppins untuk tampilan yang lebih modern -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         html, body { 
@@ -20,7 +19,7 @@
             padding: 0; 
             touch-action: manipulation; 
             -webkit-text-size-adjust: 100%; 
-            background-color: #f0fdf4; /* Warna hijau sangat lembut untuk background */
+            background-color: #f3f4f6; /* Modern gray background */
             font-family: 'Poppins', sans-serif;
         }
         * { box-sizing: border-box !important; }
@@ -35,6 +34,11 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* SVG Donut Animation Helper */
+        #donut-progress {
+            transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.5s ease;
+        }
+
         /* Date Picker specific styles */
         .picker-col { scroll-snap-type: y mandatory; overscroll-behavior-y: contain; }
         .picker-item { scroll-snap-align: center; height: 40px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; color: #9ca3af; font-size: 16px; }
@@ -42,10 +46,7 @@
         .picker-mask { mask-image: linear-gradient(to bottom, transparent, black 40%, black 60%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent); }
     </style>
 </head>
-<body class="w-full max-w-md mx-auto min-h-screen overflow-x-hidden m-0 p-0 shadow-2xl bg-white relative">
-
-    <!-- Background Pattern Decorative -->
-    <div class="fixed top-0 left-0 w-full h-64 bg-green-600 rounded-b-[40px] -z-10"></div>
+<body class="w-full max-w-md mx-auto min-h-screen overflow-x-hidden m-0 p-0 shadow-2xl bg-gray-50 relative">
 
     <!-- Dynamic Island -->
     <div id="dynamic-island" class="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-[9999] bg-black text-white px-5 py-3 rounded-full flex items-center justify-center gap-3 transition-all duration-300 opacity-0 scale-90 pointer-events-none shadow-2xl font-medium">
@@ -60,13 +61,20 @@
         <p class="text-sm text-gray-500 mt-2 font-medium">الجامعة الإسلامية</p>
     </div>
 
-    <!-- Header (Hidden on auth/email check, visible on form) -->
-    <header id="main-header" class="hidden sticky top-0 z-30 bg-green-600/95 backdrop-blur-md px-4 py-4 flex items-center justify-between w-full max-w-md mx-auto shadow-md">
-        <div class="flex items-center gap-3">
+    <!-- Header Global -->
+    <header id="main-header" class="hidden sticky top-0 z-30 bg-green-600/95 backdrop-blur-md px-5 py-4 flex items-center justify-between w-full max-w-md mx-auto shadow-md rounded-b-2xl">
+        <div class="flex items-center gap-3" id="header-title-container">
             <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-9 h-9 object-contain bg-white rounded-full p-1 shadow" alt="Logo" onerror="this.style.display='none'">
-            <h1 class="text-sm font-bold text-white truncate"> PPMI Madinah 2026 </h1>
+            <h1 class="text-sm font-bold text-white truncate"> Dashboard PPMI </h1>
         </div>
-        <button onclick="toggleMenu()" class="p-2 text-white hover:bg-white/20 rounded-lg transition-colors focus:outline-none">
+        
+        <!-- Mode Editor Header (Tombol Back) -->
+        <button id="btn-back-dashboard" onclick="closeEditor()" class="hidden items-center gap-2 text-white font-bold text-sm bg-white/20 px-4 py-1.5 rounded-lg hover:bg-white/30 transition-colors whitespace-nowrap w-max shrink-0">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </button>
+
+        <!-- Menu Hamburger (Hanya di Dashboard) -->
+        <button id="btn-hamburger" onclick="toggleMenu()" class="p-2 text-white hover:bg-white/20 rounded-lg transition-colors focus:outline-none shrink-0">
             <i class="fas fa-bars text-lg"></i>
         </button>
     </header>
@@ -86,12 +94,6 @@
                         <span class="text-xs font-semibold text-gray-600" id="conn-text">Terputus</span>
                     </div>
                 </div>
-                
-                <!-- Menu Manajemen Tiket -->
-                <a href="Tiket26.html" target="_blank" class="w-full flex items-center gap-3 p-4 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors bg-blue-50 rounded-xl mb-4 shadow-sm">
-                    <i class="fas fa-envelope-open-text"></i>
-                    <span class="text-sm font-semibold">Manajemen Tiket</span>
-                </a>
 
                 <button onclick="logout()" class="w-full flex items-center gap-3 p-4 text-red-600 hover:bg-red-600 hover:text-white transition-colors bg-red-50 rounded-xl mt-auto shadow-sm">
                     <i class="fas fa-sign-out-alt"></i>
@@ -101,79 +103,162 @@
         </div>
     </div>
 
-    <!-- Screen 1: Login Check -->
-    <div id="screen-email" class="min-h-screen flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto">
-        <div class="w-full bg-white/90 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50 relative overflow-hidden mt-10">
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-green-600"></div>
-            
-            <div class="bg-white-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-25 h-25 object-contain" alt="Logo" onerror="this.style.display='none'">
-            </div>
-            
-            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Portal Pendataan</h2>
-            <p class="text-xs text-center text-gray-500 mb-8 leading-relaxed">Masukkan Email dan Raqm Thalib Anda untuk masuk ke sistem Terpadu Mandub Indonesia.</p>
-            
-            <div class="space-y-4 mb-8">
-                <div class="w-full relative">
-                    <label class="text-xs font-semibold text-gray-700 mb-1.5 block">Alamat Email</label>
-                    <div class="relative">
-                        <i class="fas fa-envelope absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="email" id="login-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="contoh@gmail.com">
-                    </div>
-                </div>
-                <div class="w-full relative">
-                    <label class="text-xs font-semibold text-gray-700 mb-1.5 block">Raqm Thalib</label>
-                    <div class="relative">
-                        <i class="fas fa-id-card absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="text" id="login-thalib" inputmode="numeric" pattern="[0-9]*" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="9 Digit Angka">
-                    </div>
-                </div>
-            </div>
+    <!-- SCREEN 1: LOGIN -->
+    <div id="screen-email" class="min-h-screen flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto bg-gradient-to-br from-green-600 to-emerald-800 relative overflow-hidden">
+        <!-- Dekorasi Login: Ujian Nihai & Liburan Islami -->
+        <!-- Masjid -->
+        <i class="fas fa-mosque absolute text-white/10 text-[12rem] -bottom-8 -left-10 pointer-events-none"></i>
+        <!-- Buku / Ujian -->
+        <i class="fas fa-book-reader absolute text-white/10 text-7xl top-20 left-6 transform -rotate-12 pointer-events-none"></i>
+        <!-- Toga / Kelulusan -->
+        <i class="fas fa-graduation-cap absolute text-white/10 text-6xl bottom-40 right-8 transform rotate-12 pointer-events-none"></i>
+        <!-- Pesawat / Liburan Musim Panas -->
+        <i class="fas fa-plane absolute text-white/10 text-6xl top-44 right-4 transform rotate-45 pointer-events-none"></i>
+        <!-- Matahari / Musim Panas -->
+        <i class="fas fa-sun absolute text-white/10 text-8xl top-[-20px] right-[-20px] pointer-events-none"></i>
+        <!-- Bulan & Bintang -->
+        <i class="fas fa-star-and-crescent absolute text-white/10 text-5xl top-1/2 left-4 transform -rotate-12 pointer-events-none"></i>
 
-            <button onclick="loginApp()" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-xl py-4 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2">
-                <span>Masuk / Cek Data</span>
-                <i class="fas fa-arrow-right"></i>
-            </button>
+        <!-- Login Card -->
+        <div class="w-full bg-white/95 backdrop-blur-xl rounded-[2rem] p-8 shadow-2xl relative z-10">
+            <div class="bg-gray-50 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-gray-100 transform -translate-y-12">
+                <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-16 h-16 object-contain" alt="Logo" onerror="this.style.display='none'">
+            </div>
+            
+            <div class="-mt-8">
+                <h2 class="text-2xl font-bold text-center text-gray-800 mb-1">Portal Terpadu</h2>
+                <p class="text-xs text-center text-gray-500 mb-8">Masuk menggunakan Data Mandub.</p>
+                
+                <div class="space-y-4 mb-8">
+                    <div class="w-full relative">
+                        <label class="text-[11px] font-bold text-gray-600 mb-1.5 block uppercase tracking-wider">Alamat Email</label>
+                        <div class="relative">
+                            <i class="fas fa-envelope absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="email" id="login-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="contoh@gmail.com">
+                        </div>
+                    </div>
+                    <div class="w-full relative">
+                        <label class="text-[11px] font-bold text-gray-600 mb-1.5 block uppercase tracking-wider">Raqm Thalib</label>
+                        <div class="relative">
+                            <i class="fas fa-id-card absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="text" id="login-thalib" inputmode="numeric" pattern="[0-9]*" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="9 Digit Angka">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="loginApp()" class="w-full bg-gray-900 text-white font-bold rounded-xl py-3.5 shadow-lg active:scale-95 transition-all text-sm flex items-center justify-center gap-2">
+                    <span>Masuk Dashboard</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
         </div>
-        <p class="text-white text-xs mt-8 opacity-80">© 2026 PPMI Madinah. All rights reserved.</p>
+        <p class="text-white/80 text-xs mt-8 z-10 font-medium">© 2026 PPMI Madinah</p>
     </div>
 
-    <!-- Screen 2: Main Form with Tabs -->
-    <div id="screen-form" class="hidden w-full max-w-md mx-auto pb-24 pt-6 px-4">
+    <!-- SCREEN 2: DASHBOARD -->
+    <div id="screen-dashboard" class="hidden w-full max-w-md mx-auto pb-24 px-4 pt-6 animate-fade-in">
         
-        <!-- Header Profil Singkat -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-5 flex items-center gap-4">
-            <div id="profile-icon-container" class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 shadow-sm transition-colors duration-300">
-                <i id="profile-icon" class="fas fa-user text-lg"></i>
+        <!-- Header Welcome -->
+        <div class="flex items-center gap-4 mb-6">
+            <div id="dashboard-profile-container" class="w-14 h-14 rounded-full bg-green-200 flex items-center justify-center text-green-700 shadow-sm border-2 border-white shrink-0">
+                <i id="dashboard-profile-icon" class="fas fa-user text-xl"></i>
             </div>
-            <div class="flex-1 overflow-hidden">
-                <h2 class="text-sm font-bold text-gray-800 truncate" id="display-thalib">441234567</h2>
-                <p class="text-xs text-gray-500 truncate" id="display-email">email@gmail.com</p>
-                <p class="text-[10px] text-green-600 font-medium mt-1 italic" id="last-updated-text">Memuat status...</p>
+            <div class="overflow-hidden">
+                <h2 class="text-xs text-gray-500 font-semibold mb-0.5">Ahlan wa Sahlan,</h2>
+                <h3 class="text-lg font-bold text-gray-800 leading-tight truncate w-full" id="dash-nama">Memuat Nama...</h3>
+                <p class="text-xs text-green-600 font-bold mt-1 bg-green-100 px-2 py-0.5 rounded-md inline-block truncate max-w-full" id="dash-thalib">ID: 441234567</p>
             </div>
         </div>
 
-        <!-- Custom Tab Navigation -->
-        <div class="grid grid-cols-4 bg-white shadow-sm border border-gray-100 p-1.5 rounded-xl mb-6 sticky top-20 z-20 backdrop-blur-md bg-white/90 gap-1">
-            <button id="tab-btn-diri" onclick="switchTab('diri')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg bg-green-600 text-white shadow-md transition-all">
-                <i class="fas fa-address-card mb-1 text-sm"></i> Diri
+        <!-- Kelengkapan Data Widget (Donut Chart Keren) -->
+        <div class="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 p-5 mb-5 flex items-center justify-between">
+            <div class="flex-1 pr-2">
+                <div class="flex items-center gap-2 mb-1">
+                    <i class="fas fa-chart-pie text-blue-500"></i>
+                    <h3 class="text-sm font-bold text-gray-800">Kelengkapan Data</h3>
+                </div>
+                <p id="completeness-status" class="text-[11px] font-bold px-2 py-1 rounded-md inline-block mt-1">Menghitung...</p>
+                <p class="text-[10px] text-gray-400 mt-2 leading-tight pr-2">Lengkapi profil untuk mempermudah layanan administrasi dan tiket.</p>
+            </div>
+            
+            <!-- SVG Donut Chart -->
+            <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                <svg class="transform -rotate-90 w-20 h-20">
+                    <!-- Background Circle -->
+                    <circle cx="40" cy="40" r="34" stroke="#e5e7eb" stroke-width="8" fill="none" />
+                    <!-- Progress Circle (Keliling: 213.6) -->
+                    <circle id="donut-progress" cx="40" cy="40" r="34" stroke="#16a34a" stroke-width="8" fill="none" stroke-dasharray="213.6" stroke-dashoffset="213.6" stroke-linecap="round" />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center z-10">
+                    <span id="progress-text" class="text-sm font-bold text-gray-800">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Container (Paspor) -->
+        <div id="alert-passport" class="hidden mb-5">
+            <!-- Diisi otomatis oleh JS -->
+        </div>
+
+        <h3 class="text-sm font-bold text-gray-800 mb-3 px-1">Menu Utama</h3>
+        
+        <!-- Grid Menu -->
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <!-- Manajemen Tiket Menu (Spans 2 columns) -->
+            <a href="Tiket26.html" target="_blank" class="col-span-2 bg-gradient-to-r from-blue-500 to-blue-600 p-4 rounded-[1.2rem] shadow-md border border-blue-400 flex items-center justify-between hover:shadow-lg transition-all group">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-white/20 text-white flex items-center justify-center text-xl group-hover:scale-110 transition-transform shrink-0"><i class="fas fa-plane-departure"></i></div>
+                    <div class="text-left text-white overflow-hidden">
+                        <h4 class="text-sm font-bold">Manajemen Tiket</h4>
+                        <p class="text-[10px] text-blue-100 leading-tight mt-0.5 truncate">Portal Rombongan & Kepulangan</p>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right text-white/70 group-hover:text-white transition-colors shrink-0 ml-2"></i>
+            </a>
+
+            <!-- Sub Menus -->
+            <button onclick="openEditor('diri')" class="bg-white p-4 rounded-[1.2rem] shadow-sm border border-gray-100 flex flex-col items-start gap-3 hover:shadow-md transition-shadow group">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-lg group-hover:scale-110 transition-transform"><i class="fas fa-address-card"></i></div>
+                <div class="text-left">
+                    <h4 class="text-sm font-bold text-gray-800">Data Diri</h4>
+                    <p class="text-[9px] text-gray-400 leading-tight mt-0.5">Identitas, Kontak & Alamat</p>
+                </div>
             </button>
-            <button id="tab-btn-akademik" onclick="switchTab('akademik')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all">
-                <i class="fas fa-graduation-cap mb-1 text-sm"></i> Akademik
+            <button onclick="openEditor('akademik')" class="bg-white p-4 rounded-[1.2rem] shadow-sm border border-gray-100 flex flex-col items-start gap-3 hover:shadow-md transition-shadow group">
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center text-lg group-hover:scale-110 transition-transform"><i class="fas fa-graduation-cap"></i></div>
+                <div class="text-left">
+                    <h4 class="text-sm font-bold text-gray-800">Akademik</h4>
+                    <p class="text-[9px] text-gray-400 leading-tight mt-0.5">Status, Jenjang & Fakultas</p>
+                </div>
             </button>
-            <button id="tab-btn-perjalanan" onclick="switchTab('perjalanan')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all">
-                <i class="fas fa-passport mb-1 text-sm"></i> Dokumen
+            <button onclick="openEditor('perjalanan')" class="bg-white p-4 rounded-[1.2rem] shadow-sm border border-gray-100 flex flex-col items-start gap-3 hover:shadow-md transition-shadow group">
+                <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center text-lg group-hover:scale-110 transition-transform"><i class="fas fa-passport"></i></div>
+                <div class="text-left">
+                    <h4 class="text-sm font-bold text-gray-800">Dokumen</h4>
+                    <p class="text-[9px] text-gray-400 leading-tight mt-0.5">Paspor, Visa & Iqamah</p>
+                </div>
             </button>
-            <button id="tab-btn-info" onclick="switchTab('info')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all">
-                <i class="fas fa-info-circle mb-1 text-sm"></i> Info
+            <button onclick="openEditor('info')" class="bg-white p-4 rounded-[1.2rem] shadow-sm border border-gray-100 flex flex-col items-start gap-3 hover:shadow-md transition-shadow group">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-lg group-hover:scale-110 transition-transform"><i class="fas fa-info-circle"></i></div>
+                <div class="text-left">
+                    <h4 class="text-sm font-bold text-gray-800">Pusat Info</h4>
+                    <p class="text-[9px] text-gray-400 leading-tight mt-0.5">Kontak Darurat & Tautan</p>
+                </div>
             </button>
         </div>
 
-        <div class="bg-white rounded-3xl shadow-lg border border-gray-100 p-6">
+        <div class="text-center mt-8">
+            <p class="text-[10px] text-gray-400" id="dash-last-updated">Terakhir Diperbarui: -</p>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: EDITOR (FORM MENGISI DATA) -->
+    <div id="screen-editor" class="hidden w-full max-w-md mx-auto pb-24 pt-4 px-4 animate-fade-in">
+        <div class="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 p-6">
             
             <!-- ======================= TAB 1: DATA DIRI ======================= -->
-            <div id="tab-diri" class="tab-content space-y-4 animate-fade-in">
-                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-user-circle text-green-600"></i> Informasi Pribadi</h3>
+            <div id="tab-diri" class="tab-content hidden space-y-4">
+                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-address-card text-blue-500"></i> Informasi Pribadi</h3>
                 
                 <div class="w-full">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Nama Lengkap (Indonesia) sesuai Paspor (beserta endorsement bila ada) </label>
@@ -233,7 +318,7 @@
                     <input type="text" id="f-saudi" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="966..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
                 </div>
 
-                <h3 class="text-sm font-bold text-gray-800 mt-6 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-map-marker-alt text-green-600"></i> Domisili & Tempat Tinggal</h3>
+                <h3 class="text-sm font-bold text-gray-800 mt-6 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-map-marker-alt text-blue-500"></i> Domisili & Tempat Tinggal</h3>
                 
                 <div class="w-full">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Domisili Indo (Provinsi)</label>
@@ -319,8 +404,8 @@
             </div>
 
             <!-- ======================= TAB 2: DATA AKADEMIK ======================= -->
-            <div id="tab-akademik" class="tab-content hidden space-y-4 animate-fade-in">
-                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-university text-green-600"></i> Informasi Akademik</h3>
+            <div id="tab-akademik" class="tab-content hidden space-y-4">
+                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-graduation-cap text-indigo-500"></i> Informasi Akademik</h3>
                 
                 <div class="w-full">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Raqm Thalib (Otomatis dari Login)</label>
@@ -430,8 +515,8 @@
             </div>
 
             <!-- ======================= TAB 3: DATA PERJALANAN ======================= -->
-            <div id="tab-perjalanan" class="tab-content hidden space-y-4 animate-fade-in">
-                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-passport text-green-600"></i> Identitas & Dokumen Perjalanan</h3>
+            <div id="tab-perjalanan" class="tab-content hidden space-y-4">
+                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-passport text-orange-500"></i> Identitas & Dokumen</h3>
                 
                 <div class="w-full" id="visa-container">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Status Visa <span class="text-red-500">*</span></label>
@@ -460,73 +545,38 @@
                 </div>
             </div>
 
-            <!-- ======================= TAB 4: PUSAT INFO & BANTUAN ======================= -->
-            <div id="tab-info" class="tab-content hidden space-y-7 animate-fade-in">
-                
+            <!-- ======================= TAB 4: PUSAT INFO ======================= -->
+            <div id="tab-info" class="tab-content hidden space-y-7">
                 <!-- Section: Kontak Darurat -->
                 <div>
                     <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
                         <i class="fas fa-phone-alt text-red-500"></i> Hotline & Kontak Darurat
                     </h3>
                     <div class="space-y-3">
-                        <div class="flex items-center p-3.5 bg-white border border-red-100 shadow-sm rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
-                            <div class="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center mr-3 text-lg">
-                                <i class="fas fa-shield-alt"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="text-sm font-bold text-gray-800">Polisi (Saudi)</h4>
-                                <p class="text-[10px] text-gray-500">Keamanan / Tindak Kriminal</p>
-                            </div>
-                            <a href="tel:999" class="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition-colors">999</a>
+                        <div class="flex items-center p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                            <div class="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center mr-3"><i class="fas fa-shield-alt"></i></div>
+                            <div class="flex-1"><h4 class="text-xs font-bold">Polisi (Saudi)</h4></div>
+                            <a href="tel:999" class="px-3 py-1.5 bg-red-50 text-red-600 text-xs font-bold rounded-lg">999</a>
                         </div>
-                        
-                        <div class="flex items-center p-3.5 bg-white border border-red-100 shadow-sm rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
-                            <div class="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center mr-3 text-lg">
-                                <i class="fas fa-ambulance"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="text-sm font-bold text-gray-800">Ambulan (Saudi)</h4>
-                                <p class="text-[10px] text-gray-500">Medis / Kecelakaan</p>
-                            </div>
-                            <a href="tel:997" class="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition-colors">997</a>
+                        <div class="flex items-center p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                            <div class="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center mr-3"><i class="fas fa-ambulance"></i></div>
+                            <div class="flex-1"><h4 class="text-xs font-bold">Ambulan (Saudi)</h4></div>
+                            <a href="tel:997" class="px-3 py-1.5 bg-red-50 text-red-600 text-xs font-bold rounded-lg">997</a>
                         </div>
-
-                        <div class="flex items-center p-3.5 bg-white border border-red-100 shadow-sm rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
-                            <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center mr-3 text-lg">
-                                <i class="fas fa-hands-helping"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="text-xs font-bold text-gray-800">Darurat KJRI Jeddah</h4>
-                                <p class="text-[10px] text-gray-500">Konsulat Jenderal RI</p>
-                            </div>
-                            <a href="https://wa.me/+966503609667" target="_blank" class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition-colors"><i class="fab fa-whatsapp text-sm"></i> Chat</a>
+                        <div class="flex items-center p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                            <div class="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center mr-3"><i class="fas fa-building"></i></div>
+                            <div class="flex-1"><h4 class="text-xs font-bold">Darurat KJRI Jeddah</h4></div>
+                            <a href="https://wa.me/+966503609667" target="_blank" class="px-3 py-1.5 bg-red-50 text-red-600 text-xs font-bold rounded-lg">Chat WA</a>
                         </div>
-
-                        <div class="flex items-center p-3.5 bg-white border border-red-100 shadow-sm rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
-                            <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center mr-3 text-lg">
-                                <i class="fas fa-hands-helping"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="text-xs font-bold text-gray-800">Darurat KBRI Riyadh</h4>
-                                <p class="text-[10px] text-gray-500">Kedutaan Besar RI</p>
-                            </div>
-                            <a href="https://wa.me/+966569173990" target="_blank" class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition-colors"><i class="fab fa-whatsapp text-sm"></i> Chat</a>
+                        <div class="flex items-center p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                            <div class="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center mr-3"><i class="fas fa-building"></i></div>
+                            <div class="flex-1"><h4 class="text-xs font-bold">Darurat KBRI Riyadh</h4></div>
+                            <a href="https://wa.me/+966569173990" target="_blank" class="px-3 py-1.5 bg-red-50 text-red-600 text-xs font-bold rounded-lg">Chat WA</a>
                         </div>
-
-                        <div class="flex items-center p-3.5 bg-white border border-green-100 shadow-sm rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-green-500"></div>
-                            <div class="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center mr-3 text-lg">
-                                <i class="fas fa-headset"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="text-sm font-bold text-gray-800">Humas PPMI Madinah</h4>
-                                <p class="text-[10px] text-gray-500">Pelayanan & Bantuan Mahasiswa</p>
-                            </div>
-                            <a href="https://wa.me/6281313777542" target="_blank" class="px-4 py-2 bg-green-50 hover:bg-green-100 text-green-600 text-xs font-bold rounded-xl transition-colors"><i class="fab fa-whatsapp text-sm"></i> Chat</a>
+                        <div class="flex items-center p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                            <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center mr-3"><i class="fas fa-headset"></i></div>
+                            <div class="flex-1"><h4 class="text-xs font-bold">Humas PPMI Madinah</h4></div>
+                            <a href="https://wa.me/6281313777542" target="_blank" class="px-3 py-1.5 bg-green-50 text-green-600 text-xs font-bold rounded-lg">Chat WA</a>
                         </div>
                     </div>
                 </div>
@@ -730,14 +780,13 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Bottom Navigation Buttons -->
-            <div class="flex gap-3 mt-8 w-full border-t border-gray-100 pt-5">
-                <button id="btn-prev" onclick="prevTab()" class="hidden flex-[0.7] py-3.5 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm active:scale-95 transition-all hover:bg-gray-200 shadow-sm"><i class="fas fa-chevron-left mr-1"></i> Kembali</button>
-                <button id="btn-next" onclick="nextTab()" class="flex-1 py-3.5 rounded-xl bg-gray-800 text-white font-bold text-sm shadow-md active:scale-95 transition-all hover:bg-gray-900">Selanjutnya <i class="fas fa-chevron-right ml-1"></i></button>
-                <button id="btn-save" onclick="confirmSave()" class="hidden flex-1 py-3.5 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-sm shadow-lg shadow-green-600/30 active:scale-[0.98] transition-all"><i class="fas fa-check-circle mr-1"></i> Simpan Data</button>
-            </div>
 
+            <!-- Editor Action Button -->
+            <div id="editor-actions" class="mt-8 border-t border-gray-100 pt-5">
+                <button onclick="confirmSave()" class="w-full py-4 rounded-2xl bg-gray-900 text-white font-bold text-sm shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-save"></i> Simpan Data Sistem
+                </button>
+            </div>
         </div>
     </div>
 
@@ -748,10 +797,10 @@
                 <i class="fas fa-exclamation-triangle"></i>
             </div>
             <h3 class="text-lg font-bold text-center text-gray-800 mb-2">Konfirmasi Simpan</h3>
-            <p class="text-sm text-center text-gray-600 mb-6">Apakah Anda yakin seluruh data di form yang dimasukkan sudah benar? Data Anda akan diperbarui ke sistem.</p>
+            <p class="text-sm text-center text-gray-600 mb-6">Pastikan data di formulir sudah benar. Data Anda akan diperbarui ke sistem.</p>
             <div class="flex gap-3 w-full">
-                <button onclick="closeConfirm()" class="flex-1 py-3.5 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm active:scale-95 transition-transform hover:bg-gray-200">Batal / Cek Lagi</button>
-                <button onclick="executeSave()" class="flex-1 py-3.5 rounded-xl bg-green-600 text-white font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-green-600/30 hover:bg-green-700">Ya, Simpan!</button>
+                <button onclick="closeConfirm()" class="flex-1 py-3.5 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm active:scale-95 transition-transform hover:bg-gray-200">Batal</button>
+                <button onclick="executeSave()" class="flex-1 py-3.5 rounded-xl bg-green-600 text-white font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-green-600/30 hover:bg-green-700">Ya, Simpan</button>
             </div>
         </div>
     </div>
@@ -792,44 +841,142 @@
 
         // TABS LOGIC
         const tabs = ['diri', 'akademik', 'perjalanan', 'info'];
-        let currentTabIndex = 0;
 
-        function switchTab(tabId) {
-            currentTabIndex = tabs.indexOf(tabId);
-            updateTabUI();
+        // FUNGSI DASHBOARD KE EDITOR
+        function openEditor(tabId) {
+            // Hide dashboard, show editor
+            document.getElementById('screen-dashboard').classList.add('hidden');
+            document.getElementById('screen-editor').classList.remove('hidden');
+            
+            // Toggle Header Button
+            document.getElementById('btn-hamburger').classList.add('hidden');
+            document.getElementById('btn-back-dashboard').classList.remove('hidden');
+            document.getElementById('btn-back-dashboard').style.display = 'flex';
+
+            // Show correct tab inside editor
+            tabs.forEach(tab => {
+                document.getElementById(`tab-${tab}`).classList.add('hidden');
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            // Hide save button if info tab
+            if(tabId === 'info') {
+                document.getElementById('editor-actions').classList.add('hidden');
+            } else {
+                document.getElementById('editor-actions').classList.remove('hidden');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function nextTab() {
-            if (currentTabIndex < tabs.length - 1) { currentTabIndex++; updateTabUI(); }
+        function closeEditor() {
+            // Evaluasi ulang completeness dan alert sebelum kembali
+            updateCompleteness();
+            checkPassportAlert();
+
+            document.getElementById('screen-editor').classList.add('hidden');
+            document.getElementById('screen-dashboard').classList.remove('hidden');
+
+            // Toggle Header Button
+            document.getElementById('btn-back-dashboard').classList.add('hidden');
+            document.getElementById('btn-back-dashboard').style.display = 'none';
+            document.getElementById('btn-hamburger').classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function prevTab() {
-            if (currentTabIndex > 0) { currentTabIndex--; updateTabUI(); }
-        }
-
-        function updateTabUI() {
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Naik ke atas saat ganti tab
-
-            tabs.forEach((tab, index) => {
-                const content = document.getElementById(`tab-${tab}`);
-                const btn = document.getElementById(`tab-btn-${tab}`);
-                
-                if (index === currentTabIndex) {
-                    content.classList.remove('hidden');
-                    btn.classList.add('bg-green-600', 'text-white', 'shadow-md');
-                    btn.classList.remove('text-gray-500', 'hover:text-green-600', 'hover:bg-green-50');
-                } else {
-                    content.classList.add('hidden');
-                    btn.classList.remove('bg-green-600', 'text-white', 'shadow-md');
-                    btn.classList.add('text-gray-500', 'hover:text-green-600', 'hover:bg-green-50');
+        // KELENGKAPAN DATA (DONUT CHART) & ALERT PASPOR
+        function updateCompleteness() {
+            const fields = [
+                'f-nama-id', 'f-nama-ar', 'f-tgl-lahir', 'f-jen-k', 'f-wa', 
+                'f-saudi', 'f-dom-indo', 'f-dom-madinah', 'f-wihdah', 'f-kamar', 
+                'f-kerabat-nama', 'f-kerabat-nomor', 'f-kerabat-hub',
+                'stts', 'f-angkatan', 'f-jenjang', 'f-jurusan', 
+                'f-visa', 'f-paspor', 'f-expired', 'f-iqamah'
+            ];
+            
+            let filled = 0;
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                if(el && el.value && el.value.trim() !== '' && el.value !== 'Lainnya') {
+                    filled++;
                 }
             });
-
-            document.getElementById('btn-prev').classList.toggle('hidden', currentTabIndex === 0);
-            document.getElementById('btn-next').classList.toggle('hidden', currentTabIndex === tabs.length - 1);
             
-            // Tombol "Simpan Data" akan muncul di Tab ke-3 (Dokumen) dan Tab ke-4 (Info)
-            document.getElementById('btn-save').classList.toggle('hidden', currentTabIndex < 2);
+            const pct = Math.round((filled / fields.length) * 100);
+            
+            // Update SVG Donut Math (Circumference ~213.6)
+            const donut = document.getElementById('donut-progress');
+            const text = document.getElementById('progress-text');
+            const statusText = document.getElementById('completeness-status');
+            
+            const offset = 213.6 - (pct / 100) * 213.6;
+            donut.style.strokeDashoffset = offset;
+            text.textContent = `${pct}%`;
+            
+            if(pct === 100) {
+                statusText.textContent = "Data Lengkap";
+                statusText.className = "text-[11px] font-bold px-2 py-1 rounded-md inline-block mt-1 bg-green-100 text-green-700";
+                donut.style.stroke = "#16a34a"; // green-600
+                text.className = "text-sm font-bold text-green-600";
+            } else if(pct >= 70) {
+                statusText.textContent = "Data Hampir Lengkap";
+                statusText.className = "text-[11px] font-bold px-2 py-1 rounded-md inline-block mt-1 bg-blue-100 text-blue-700";
+                donut.style.stroke = "#3b82f6"; // blue-500
+                text.className = "text-sm font-bold text-blue-600";
+            } else {
+                statusText.textContent = "Data Belum Lengkap";
+                statusText.className = "text-[11px] font-bold px-2 py-1 rounded-md inline-block mt-1 bg-orange-100 text-orange-700";
+                donut.style.stroke = "#f97316"; // orange-500
+                text.className = "text-sm font-bold text-orange-500";
+            }
+        }
+
+        function checkPassportAlert() {
+            const dateStr = document.getElementById('f-expired').value;
+            const alertBox = document.getElementById('alert-passport');
+            
+            if(!dateStr || dateStr.trim() === '') {
+                alertBox.classList.add('hidden');
+                return;
+            }
+            
+            let y, m, d;
+            if(dateStr.includes('/')) { 
+                [d, m, y] = dateStr.split('/');
+            } else if(dateStr.includes('-')) { 
+                [y, m, d] = dateStr.split('-');
+            } else {
+                return;
+            }
+            
+            const expDate = new Date(y, m - 1, d);
+            const today = new Date(); 
+            
+            // Kalkulasi selisih bulan
+            const diffMonths = (expDate.getFullYear() - today.getFullYear()) * 12 + (expDate.getMonth() - today.getMonth());
+            
+            if (expDate < today) {
+                alertBox.classList.remove('hidden');
+                alertBox.innerHTML = `
+                    <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0"><i class="fas fa-exclamation-triangle text-lg"></i></div> 
+                    <div>
+                        <h4 class="text-sm font-bold text-red-800">Paspor Kedaluwarsa!</h4>
+                        <p class="text-[10px] text-red-600 leading-tight mt-0.5">Paspor Anda telah habis masa berlakunya. Segera lakukan pembaruan.</p>
+                    </div>`;
+                alertBox.className = "flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-2xl shadow-sm mb-5 animate-fade-in";
+            } else if (diffMonths <= 10) {
+                alertBox.classList.remove('hidden');
+                alertBox.innerHTML = `
+                    <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center shrink-0"><i class="fas fa-exclamation-circle text-lg"></i></div> 
+                    <div>
+                        <h4 class="text-sm font-bold text-orange-800">Paspor Segera Kedaluwarsa</h4>
+                        <p class="text-[10px] text-orange-600 leading-tight mt-0.5">Sisa masa berlaku: <b>${diffMonths} Bulan</b>. Bersiaplah melakukan perpanjangan dokumen.</p>
+                    </div>`;
+                alertBox.className = "flex items-center gap-3 p-4 bg-orange-50 border border-orange-200 rounded-2xl shadow-sm mb-5 animate-fade-in";
+            } else {
+                alertBox.classList.add('hidden');
+            }
         }
 
         // KONEKSI API
@@ -893,15 +1040,15 @@
         }
 
         function updateProfileIcon(gender) {
-            const container = document.getElementById('profile-icon-container');
-            const icon = document.getElementById('profile-icon');
+            const container = document.getElementById('dashboard-profile-container');
+            const icon = document.getElementById('dashboard-profile-icon');
             if (!container || !icon) return;
             if (gender === 'Akhwat') {
-                container.className = 'w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 shadow-sm transition-colors duration-300';
-                icon.className = 'fas fa-female text-lg';
+                container.className = 'w-14 h-14 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 shadow-sm border-2 border-white shrink-0';
+                icon.className = 'fas fa-female text-xl';
             } else {
-                container.className = 'w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 shadow-sm transition-colors duration-300';
-                icon.className = 'fas fa-male text-lg';
+                container.className = 'w-14 h-14 rounded-full bg-green-200 flex items-center justify-center text-green-700 shadow-sm border-2 border-white shrink-0';
+                icon.className = 'fas fa-user-graduate text-xl';
             }
         }
 
@@ -913,7 +1060,7 @@
             if (savedEmail && savedThalib) {
                 document.getElementById('login-email').value = savedEmail;
                 document.getElementById('login-thalib').value = savedThalib;
-                loginApp(); // Otomatis trigger login jika ada data di localStorage
+                loginApp(); 
             }
         }
 
@@ -922,7 +1069,7 @@
                 document.getElementById('splash-screen').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('splash-screen').classList.add('hidden');
-                    checkLocalLogin(); // Cek login lokal setelah splash screen
+                    checkLocalLogin(); 
                 }, 500);
             }, 1500);
             initDatePicker();
@@ -930,14 +1077,13 @@
 
         function showScreen(id) {
             document.getElementById('screen-email').classList.add('hidden');
-            document.getElementById('screen-form').classList.add('hidden');
+            document.getElementById('screen-dashboard').classList.add('hidden');
+            document.getElementById('screen-editor').classList.add('hidden');
             document.getElementById('main-header').classList.add('hidden');
-            document.body.classList.replace('bg-green-600', 'bg-white'); // Fix background color transition
 
             document.getElementById(id).classList.remove('hidden');
-            if(id === 'screen-form') {
+            if(id === 'screen-dashboard') {
                 document.getElementById('main-header').classList.remove('hidden');
-                switchTab('diri'); // Selalu mulai dari tab Data Diri
             }
         }
 
@@ -956,7 +1102,7 @@
             currentUserEmail = emailInput.toLowerCase();
             currentThalib = thalibInput;
             
-            showDynamicIsland('Verifikasi & Mengambil data...', 'process');
+            showDynamicIsland('Memuat Dashboard...', 'process');
 
             try {
                 // Mengirim Email dan Thalib ke backend GAS
@@ -964,27 +1110,31 @@
                 if (res) {
                     const data = JSON.parse(res);
                     
-                    // Simpan ke localStorage jika berhasil login
                     localStorage.setItem('ppmi_email', currentUserEmail);
                     localStorage.setItem('ppmi_thalib', currentThalib);
                     
                     populateForm(data);
-                    showDynamicIsland('Data Ditemukan', 'success');
+                    showDynamicIsland('Login Berhasil', 'success');
                 } else {
                     clearForm();
-                    document.getElementById('last-updated-text').textContent = "Status: Pengguna Baru";
-                    document.getElementById('last-updated-text').className = "text-[10px] text-blue-600 font-medium mt-1 italic";
-                    document.getElementById('f-thalib').value = currentThalib; // Set Thalib Input otomatis
+                    document.getElementById('dash-last-updated').textContent = "Status: Pengguna Baru";
+                    document.getElementById('f-thalib').value = currentThalib; 
                     
-                    // Simpan ke localStorage agar tidak perlu login lagi jika app ditutup saat mengisi form
                     localStorage.setItem('ppmi_email', currentUserEmail);
                     localStorage.setItem('ppmi_thalib', currentThalib);
                     
                     showDynamicIsland('Akun Baru. Silakan lengkapi formulir', 'success');
                 }
-                document.getElementById('display-email').textContent = currentUserEmail;
-                document.getElementById('display-thalib').textContent = "ID: " + currentThalib;
-                showScreen('screen-form');
+                
+                // Set info Dashboard
+                document.getElementById('dash-nama').textContent = document.getElementById('f-nama-id').value || 'Tanpa Nama';
+                document.getElementById('dash-thalib').textContent = "ID: " + currentThalib;
+                
+                // Update Kelengkapan dan Alert
+                updateCompleteness();
+                checkPassportAlert();
+
+                showScreen('screen-dashboard');
             } catch (err) {
                 showDynamicIsland(err.message || 'Gagal koneksi ke server', 'error');
             }
@@ -1033,7 +1183,7 @@
             document.getElementById('f-dom-madinah').value = data.dom_madinah || '';
             document.getElementById('f-wihdah').value = data.wihdah || '';
             document.getElementById('f-kamar').value = data.kamar || '';
-            document.getElementById('f-thalib').value = data.thalib || currentThalib; // Prefer current
+            document.getElementById('f-thalib').value = data.thalib || currentThalib; 
             document.getElementById('f-alumni').value = data.alumni || '';
             document.getElementById('f-kerabat-nama').value = data.kerabat_nama || '';
             document.getElementById('f-kerabat-nomor').value = data.kerabat_nomor || '';
@@ -1041,15 +1191,14 @@
             
             updateProfileIcon(data.jen_k);
             if(data.last_updated) {
-                document.getElementById('last-updated-text').textContent = `Diperbarui: ${data.last_updated}`;
-                document.getElementById('last-updated-text').className = "text-[10px] text-green-600 font-medium mt-1 italic";
+                document.getElementById('dash-last-updated').textContent = `Terakhir Diperbarui: ${data.last_updated}`;
             }
         }
 
         function clearForm() {
-            const inputs = document.querySelectorAll('#screen-form input[type="text"]:not(#f-thalib)');
+            const inputs = document.querySelectorAll('#screen-editor input[type="text"]:not(#f-thalib)');
             inputs.forEach(input => input.value = '');
-            const selects = document.querySelectorAll('#screen-form select');
+            const selects = document.querySelectorAll('#screen-editor select');
             selects.forEach(select => select.selectedIndex = 0);
             updateProfileIcon('');
         }
@@ -1065,7 +1214,7 @@
                 nama_ar: document.getElementById('f-nama-ar').value,
                 nama_pertama_ar: document.getElementById('f-nama-pertama-ar').value,
                 nama_keempat_ar: document.getElementById('f-nama-keempat-ar').value,
-                tgl_lahir: document.getElementById('f-tgl-lahir').value, // Menangkap Data Tanggal Lahir
+                tgl_lahir: document.getElementById('f-tgl-lahir').value, 
                 paspor: document.getElementById('f-paspor').value,
                 stts: document.getElementById('stts').value, 
                 jen_k: document.getElementById('f-jen-k').value,
@@ -1095,9 +1244,9 @@
                     showDynamicIsland('Terdapat kolom kosong yang wajib diisi!', 'error'); return;
                 }
             }
-            if (data.iqamah.length !== 10) { showDynamicIsland('Raqm Iqamah wajib 10 digit!', 'error'); switchTab('perjalanan'); return; }
-            if (data.thalib.length !== 9) { showDynamicIsland('Raqm Thalib wajib 9 digit!', 'error'); switchTab('akademik'); return; }
-            if (!data.kerabat_nomor.startsWith('628')) { showDynamicIsland('Nomor Kerabat harus diawali 628', 'error'); switchTab('diri'); return; }
+            if (data.iqamah.length !== 10) { showDynamicIsland('Raqm Iqamah wajib 10 digit!', 'error'); return; }
+            if (data.thalib.length !== 9) { showDynamicIsland('Raqm Thalib wajib 9 digit!', 'error'); return; }
+            if (!data.kerabat_nomor.startsWith('628')) { showDynamicIsland('Nomor Kerabat harus diawali 628', 'error'); return; }
 
             const m = document.getElementById('confirm-modal');
             const b = document.getElementById('confirm-box');
@@ -1116,11 +1265,20 @@
             closeConfirm(); showDynamicIsland('Menyimpan Data...', 'process');
             const data = getFormData();
             try {
-                // Gunakan save data endpoint yang dimodifikasi untuk menampung satu objek 'data' utuh
                 await serverCall('saveData', data);
+                
                 const now = new Date().toLocaleString('id-ID');
-                document.getElementById('last-updated-text').textContent = `Diperbarui: ${now}`;
-                showDynamicIsland('Mantap! Data Berhasil Disimpan', 'success');
+                document.getElementById('dash-last-updated').textContent = `Terakhir Diperbarui: ${now}`;
+                
+                // Update nama di dashboard jika berubah
+                document.getElementById('dash-nama').textContent = data.nama_id || 'Tanpa Nama';
+                
+                showDynamicIsland('Data Berhasil Disimpan', 'success');
+                
+                // Kembali ke dashboard setelah save berhasil
+                setTimeout(() => {
+                    closeEditor();
+                }, 800);
             } catch (err) { showDynamicIsland('Gagal menyimpan ke server', 'error'); }
         }
 
@@ -1137,7 +1295,6 @@
         function logout() { 
             toggleMenu(); 
             
-            // Hapus data lokal saat logout
             localStorage.removeItem('ppmi_email');
             localStorage.removeItem('ppmi_thalib');
             
@@ -1165,7 +1322,7 @@
         // Date Picker UI Logic
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
         let activeDate = { d: '01', m: 'Jan', y: '2026' };
-        let activeDateTargetId = ''; // Menyimpan ID input mana yang sedang memakai date picker
+        let activeDateTargetId = '';
 
         function initDatePicker() {
             const createItems = (id, arr, loopCount) => {
@@ -1175,7 +1332,7 @@
             };
             createItems('wheel-date-content', Array.from({length: 31}, (_, i) => String(i+1).padStart(2, '0')), 10);
             createItems('wheel-month-content', months, 10);
-            createItems('wheel-year-content', Array.from({length: 70}, (_, i) => String(1970 + i)), 5); // Ubah Range Tahun untuk mencakup tanggal lahir (1970 - 2039)
+            createItems('wheel-year-content', Array.from({length: 70}, (_, i) => String(1970 + i)), 5);
         }
         
         function openDatePicker(targetId) {
