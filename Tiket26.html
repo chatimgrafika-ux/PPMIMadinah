@@ -194,9 +194,31 @@
                     <p id="upload-status-text" class="text-[10px] text-gray-500 mt-1 hidden"></p>
                 </div>
 
+                <!-- MUNFARID FIELDS SECTION -->
+                <div id="munfarid-section" class="hidden w-full bg-blue-50/50 p-4 rounded-xl border border-blue-100 shadow-inner mb-2 animate-fade-in">
+                    <h4 class="text-sm font-bold text-blue-800 mb-3 flex items-center gap-2"><i class="fas fa-user-shield"></i> Data Tiket Personal (Munfarid)</h4>
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="w-full">
+                            <label class="text-[11px] font-semibold text-blue-800 mb-1 block">Nama Arab</label>
+                            <input type="text" id="f-nama-arab" class="w-full bg-white border border-blue-200 rounded-xl px-3 py-2 text-xs outline-none text-gray-600 font-medium cursor-not-allowed" readonly>
+                        </div>
+                        <div class="w-full">
+                            <label class="text-[11px] font-semibold text-blue-800 mb-1 block">Nama Indo</label>
+                            <input type="text" id="f-nama-indo" class="w-full bg-white border border-blue-200 rounded-xl px-3 py-2 text-xs outline-none text-gray-600 font-medium cursor-not-allowed" readonly>
+                        </div>
+                    </div>
+                    <div class="w-full">
+                        <label class="text-[11px] font-semibold text-blue-800 mb-1 block">Jenis Keberangkatan</label>
+                        <select id="f-tiket-jenis" onchange="handleJenisChange(); isFormSaved = false" class="w-full bg-white border border-blue-200 rounded-xl px-3 py-2.5 text-xs outline-none focus:ring-2 focus:ring-blue-400 font-semibold text-blue-900 cursor-pointer shadow-sm transition-colors hover:bg-blue-50">
+                            <option value="Normal">✈️ Penerbangan Normal</option>
+                            <option value="Ganda">⚠️ Tiket Ganda (Batal Penerbangan)</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="w-full">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Catatan Tambahan</label>
-                    <textarea id="f-catatan" rows="2" oninput="isFormSaved = false" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 resize-none transition-colors" placeholder="Tulis catatan opsional di sini..."></textarea>
+                    <textarea id="f-catatan" rows="3" oninput="isFormSaved = false" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 resize-none transition-colors" placeholder="Tulis catatan opsional di sini..."></textarea>
                 </div>
 
                 <!-- ANGGOTA SECTION -->
@@ -251,10 +273,9 @@
                 <p><b>3. Privasi Aman:</b> Nomor Raqm Thalib Anggota telah kami sensor (contoh: 452***7) untuk menjaga privasi.</p>
                 <p><b>4. Undangan WA Otomatis:</b> Ikon WhatsApp pada anggota dapat ditekan untuk mengirimkan undangan <b>hanya jika Antum telah menyimpan data tiket</b>.</p>
                 <p><b>5. Keamanan Dokumen:</b> Pastikan untuk <b>mem-blur atau menutupi informasi sensitif</b> (seperti harga, kode atau barcode tertentu) pada file tiket sebelum di-upload.</p>
-                <p><b>6. Tiket Munfarid:</b> Pastikan untuk <b>menjadikan diri sendiri ketua</b> (memudahkan pendataan dan mencegah kesalahan penambahan anggota dari grup lain).</p>
+                <p><b>6. Tiket Munfarid:</b> Pastikan untuk <b>menjadikan diri sendiri ketua</b> (memudahkan pendataan dan mencegah kesalahan penambahan anggota dari grup lain). Anda dapat memilih Jenis Tiket Ganda bila perlu membatalkan penerbangan.</p>
                 <p><b>7. Tujuan:</b> Portal Manajemen Tiket dibuat untuk memudahkan koordinasi, segala manipulasi data dan informasi adalah kesalahan dan kealalaian user.</p>
                 <p><b>8. Tanggungjawab:</b> Setiap Ketua bertanggungjawab penuh terhadap anggota grupnya.</p>
-
             </div>
             <button onclick="closeWelcome()" class="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-blue-600/30 hover:bg-blue-700">Saya Mengerti</button>
         </div>
@@ -269,12 +290,8 @@
             <h3 class="text-lg font-bold text-center text-gray-800 mb-2">Video Tutorial</h3>
             <p class="text-xs text-center text-gray-600 mb-4">Silakan tonton panduan cara input tiket dan penambahan anggota rombongan berikut ini.</p>
             
-            <!-- Area Video Diubah Menjadi Link Clickable -->
             <a href="https://drive.google.com/file/d/1IC1JCfkZtKfnYd_4MWSshQukqTNZ133Q/view?usp=sharing" target="_blank" class="block w-full aspect-video rounded-xl overflow-hidden bg-gray-100 mb-6 shadow-inner relative group cursor-pointer">
-                <!-- pointer-events-none akan membuat iframe tidak bisa diklik, sehingga klik dialihkan ke tag <a> -->
                 <iframe src="https://drive.google.com/file/d/1IC1JCfkZtKfnYd_4MWSshQukqTNZ133Q/preview" class="absolute top-0 left-0 w-full h-full border-0 pointer-events-none" allow="autoplay" tabindex="-1"></iframe>
-                
-                <!-- Overlay tombol Play keren -->
                 <div class="absolute inset-0 z-10 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors">
                     <div class="w-14 h-14 rounded-full bg-white/95 text-red-600 flex items-center justify-center text-2xl shadow-xl transform group-hover:scale-110 transition-transform">
                         <i class="fas fa-play ml-1"></i>
@@ -385,7 +402,6 @@
                     const hasLocalData = checkLocalLogin(); 
                     const hasLoggedInBefore = localStorage.getItem('ppmi_has_logged_in_before');
                     
-                    // Muncul otomatis sebelum login HANYA JIKA belum pernah masuk sama sekali di perangkat ini
                     if (!hasLocalData && !hasLoggedInBefore) {
                         showTutorial(); 
                     }
@@ -393,7 +409,6 @@
             }, 1500);
         };
 
-        // FUNGSI CEK LOGIN LOKAL
         function checkLocalLogin() {
             const savedEmail = localStorage.getItem('ppmi_email');
             const savedThalib = localStorage.getItem('ppmi_thalib');
@@ -419,7 +434,6 @@
             }
         }
 
-        // LOGIN SYSTEM
         async function loginApp() {
             const emailInput = document.getElementById('login-email').value.trim();
             const thalibInput = document.getElementById('login-thalib').value.trim();
@@ -445,7 +459,7 @@
 
                     localStorage.setItem('ppmi_email', currentUserEmail);
                     localStorage.setItem('ppmi_thalib', currentThalib);
-                    localStorage.setItem('ppmi_has_logged_in_before', 'true'); // Flag untuk cegah tutorial muncul lagi setelah logout
+                    localStorage.setItem('ppmi_has_logged_in_before', 'true');
 
                     document.getElementById('display-nama').textContent = res.nama || "Nama Tidak Ditemukan";
                     document.getElementById('display-thalib').textContent = `Thalib: ${currentThalib} | ${currentUserEmail}`;
@@ -454,7 +468,6 @@
                     showDynamicIsland('Data Ditemukan', 'success');
                     showScreen('screen-form');
                     
-                    // Tampilkan panduan setelah berhasil login dan masuk ke form
                     setTimeout(() => showWelcome(), 500);
                 }
             } catch (err) {
@@ -467,13 +480,11 @@
         // ==========================================
         let tiketFileObj = null;
 
-        // HELPER FUNGSI MASKING ID (Misal: 441***7)
         function maskThalib(id) {
             if (!id || id.length < 5) return id;
             return id.substring(0, 3) + '***' + id.substring(id.length - 1);
         }
 
-        // HELPER FUNGSI GENERATE PESAN WHATSAPP OTOMATIS
         function generateWaLink(waNumber) {
             if (!waNumber) return '#';
             let cleanWa = waNumber.replace(/\D/g, '');
@@ -580,10 +591,58 @@
             }
         }
 
+        function checkMunfaridStatus() {
+            const ketuaVal = document.getElementById('f-tiket-ketua').value;
+            // Jika bukan ketua (dirinya sendiri), tidak munfarid.
+            if (ketuaVal !== currentThalib) {
+                document.getElementById('munfarid-section').classList.add('hidden');
+                return;
+            }
+
+            // Hitung node input anggota, jika > 0 berarti dia menambahkan anggota (atau berusaha menambahkan)
+            const hiddenInputs = document.querySelectorAll('.anggota-val');
+            let hasOtherMembers = false;
+            for (let i = 0; i < hiddenInputs.length; i++) {
+                if (hiddenInputs[i].value && hiddenInputs[i].value !== currentThalib) {
+                    hasOtherMembers = true;
+                } else if (!hiddenInputs[i].value) {
+                    // Blank input box menandakan user sedang menambah anggota
+                    hasOtherMembers = true;
+                }
+            }
+
+            const sec = document.getElementById('munfarid-section');
+            if (!hasOtherMembers) {
+                sec.classList.remove('hidden');
+                const me = ALL_STUDENTS.find(s => s.id === currentThalib);
+                if (me) {
+                    document.getElementById('f-nama-arab').value = me.arab || '';
+                    document.getElementById('f-nama-indo').value = me.indo || '';
+                }
+            } else {
+                sec.classList.add('hidden');
+            }
+        }
+
+        function handleJenisChange() {
+            const jenis = document.getElementById('f-tiket-jenis').value;
+            const catatanEl = document.getElementById('f-catatan');
+            const targetNote = "Tiket saya double dan mau membatalkan penerbangan ini";
+            
+            if (jenis === 'Ganda') {
+                if (!catatanEl.value.includes(targetNote)) {
+                    catatanEl.value = targetNote + (catatanEl.value ? '\n' + catatanEl.value : '');
+                }
+            } else {
+                catatanEl.value = catatanEl.value.replace(targetNote + '\n', '').replace(targetNote, '');
+            }
+        }
+
         function setSebagaiKetua() {
             document.getElementById('f-tiket-ketua').value = currentThalib;
             isFormSaved = false;
             checkKetuaRole();
+            checkMunfaridStatus();
         }
 
         function batalSebagaiKetua() {
@@ -591,6 +650,7 @@
             document.getElementById('anggota-list').innerHTML = ''; 
             isFormSaved = false;
             checkKetuaRole();
+            checkMunfaridStatus();
         }
 
         function checkKetuaRole() {
@@ -693,9 +753,7 @@
         }
 
         function selectMember(id, studentId, studentName, studentWa) {
-            // Tampilan di input akan disensor
             document.getElementById(`search-${id}`).value = `${maskThalib(studentId)} - ${studentName}`;
-            // Value di hidden input tetap ASLI agar tersimpan di database
             document.getElementById(`val-${id}`).value = studentId;
             document.getElementById(`drop-${id}`).classList.add('hidden');
 
@@ -710,6 +768,7 @@
                 }
             }
             isFormSaved = false;
+            checkMunfaridStatus(); // Cek lagi setelah dia memilih anggota
         }
 
         function populateDropdown(id) {
@@ -731,15 +790,23 @@
                 const inAnotherGroup = s.tiket_ketua && s.tiket_ketua !== '' && s.tiket_ketua !== currentThalib;
                 const isAlreadySelected = currentSelectedIds.includes(s.id) && s.id !== document.getElementById(`val-${id}`).value;
                 const isSelf = s.id === currentThalib;
+                
+                // Pembentukan Teks Preview Arab/Indo
+                let previewText = '';
+                if(s.arab || s.indo) {
+                    const txtArab = s.arab ? s.arab : '';
+                    const txtIng = s.indo ? s.indo : '';
+                    previewText = `<div class="text-[10px] text-gray-500 mt-1">${txtArab}${txtArab && txtIng ? ' | ' : ''}${txtIng}</div>`;
+                }
 
                 if (!isComplete && !isSelf) {
-                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 bg-gray-50 text-gray-400 cursor-not-allowed flex justify-between items-center" title="Lengkapi tiket untuk menambah anggota ini"><span>${maskThalib(s.id)} - ${s.nama}</span> <i class="fas fa-lock text-gray-300"></i></div>`;
+                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 bg-gray-50 text-gray-400 cursor-not-allowed flex justify-between items-center" title="Lengkapi tiket untuk menambah anggota ini"><div><span>${maskThalib(s.id)} - ${s.nama}</span>${previewText}</div> <i class="fas fa-lock text-gray-300"></i></div>`;
                 } else if (inAnotherGroup) {
-                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 bg-gray-50 text-gray-400 cursor-not-allowed flex justify-between items-center" title="Sudah terdaftar di rombongan lain"><span>${maskThalib(s.id)} - ${s.nama}</span> <i class="fas fa-lock text-red-300" title="Sudah memiliki rombongan"></i></div>`;
+                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 bg-gray-50 text-gray-400 cursor-not-allowed flex justify-between items-center" title="Sudah terdaftar di rombongan lain"><div><span>${maskThalib(s.id)} - ${s.nama}</span>${previewText}</div> <i class="fas fa-lock text-red-300" title="Sudah memiliki rombongan"></i></div>`;
                 } else if (isAlreadySelected) {
-                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 bg-green-50 text-green-600 cursor-not-allowed flex justify-between items-center" title="Sudah ada di list Anda"><span>${maskThalib(s.id)} - ${s.nama}</span> <i class="fas fa-check text-green-500"></i></div>`;
+                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 bg-green-50 text-green-600 cursor-not-allowed flex justify-between items-center" title="Sudah ada di list Anda"><div><span>${maskThalib(s.id)} - ${s.nama}</span>${previewText}</div> <i class="fas fa-check text-green-500"></i></div>`;
                 } else {
-                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 hover:bg-green-50 cursor-pointer transition-colors" onclick="selectMember('${id}', '${s.id}', '${safeName}', '${safeWa}')">${maskThalib(s.id)} - <span class="font-bold text-gray-800">${s.nama}</span></div>`;
+                    html += `<div class="drop-item px-3 py-2.5 text-xs border-b border-gray-50 hover:bg-green-50 cursor-pointer transition-colors" onclick="selectMember('${id}', '${s.id}', '${safeName}', '${safeWa}')"><div>${maskThalib(s.id)} - <span class="font-bold text-gray-800">${s.nama}</span></div>${previewText}</div>`;
                 }
             });
             
@@ -751,6 +818,7 @@
             const el = document.getElementById('wrapper-' + id);
             if (el) el.remove();
             isFormSaved = false;
+            checkMunfaridStatus(); // Cek lagi mode munfarid
         }
 
         function contactMember(event, el) {
@@ -767,7 +835,6 @@
         }
 
         function addAnggota(valId = '') {
-            // Validasi: Cegah penambahan anggota jika Link Grup, Jadwal, dan Tiket belum diisi (Khusus tambah manual)
             if (valId === '') {
                 const grup = document.getElementById('f-tiket-grup').value.trim();
                 const berangkat = document.getElementById('f-tiket-berangkat').value;
@@ -784,7 +851,7 @@
                         return;
                     }
                 }
-                isFormSaved = false; // Flag trigger unsaved changes ketika nambah anggota
+                isFormSaved = false; 
             }
 
             const container = document.getElementById('anggota-list');
@@ -797,7 +864,6 @@
             if(valId) {
                 const student = ALL_STUDENTS.find(s => s.id === valId);
                 if (student) {
-                    // Gunakan ID tersensor untuk initial name
                     initialName = `${maskThalib(student.id)} - ${student.nama}`;
                     if (student.wa) {
                         rawWa = student.wa;
@@ -826,9 +892,9 @@
             `;
             container.appendChild(div);
             populateDropdown(uniqueId);
+            checkMunfaridStatus(); // Cek lagi setiap nambah form input
         }
 
-        // FUNGSI GET ANGGOTA YANG LEBIH CERDAS
         function getAnggotaList() {
             const hiddenInputs = document.querySelectorAll('.anggota-val');
             const searchInputs = document.querySelectorAll('.search-anggota');
@@ -854,9 +920,8 @@
 
                 if (candidateId) {
                     if (!isComplete && candidateId !== currentThalib) {
-                        continue; // Blokir manual input jika tiket belum lengkap
+                        continue; 
                     }
-
                     const studentInfo = ALL_STUDENTS.find(s => s.id === candidateId);
                     if (studentInfo) {
                         const inAnotherGroup = studentInfo.tiket_ketua && studentInfo.tiket_ketua !== '' && studentInfo.tiket_ketua !== currentThalib;
@@ -868,7 +933,6 @@
                     }
                 }
             }
-            
             return [...new Set(list)].filter(Boolean).join(',');
         }
 
@@ -883,6 +947,11 @@
             document.getElementById('f-catatan').value = data.catatan || '';
             document.getElementById('f-tiket-file').value = data.tiket_file || '';
             
+            // Set Munfarid Values Note: Munfarid check determines if these fields appear
+            document.getElementById('f-nama-arab').value = data.nama_arab || '';
+            document.getElementById('f-nama-indo').value = data.nama_indo || '';
+            document.getElementById('f-tiket-jenis').value = data.tiket_jenis || 'Normal';
+            
             updateTiketLink();
             updateGrupLink();
             
@@ -896,7 +965,8 @@
 
             setTimeout(() => {
                 checkKetuaRole();
-                isFormSaved = true; // Set flag saved setelah data loaded
+                checkMunfaridStatus(); 
+                isFormSaved = true; 
             }, 100);
         }
 
@@ -907,11 +977,13 @@
             document.getElementById('f-tiket-pulang').value = '';
             document.getElementById('f-catatan').value = '';
             document.getElementById('f-tiket-ketua').value = '';
+            document.getElementById('f-tiket-jenis').value = 'Normal';
             document.getElementById('anggota-list').innerHTML = '';
             resetUploadState(); 
             updateTiketLink();
             updateGrupLink();
             checkKetuaRole();
+            checkMunfaridStatus();
             isFormSaved = true;
         }
 
@@ -920,38 +992,35 @@
             const tiketNomor = document.getElementById('f-tiket-nomor').value.trim();
             const tiketKetua = document.getElementById('f-tiket-ketua').value;
 
+            // Pastikan jika munfarid kita ambil value-nya
+            const isMunfarid = !document.getElementById('munfarid-section').classList.contains('hidden');
+            const namaArab = isMunfarid ? document.getElementById('f-nama-arab').value : '';
+            const namaIndo = isMunfarid ? document.getElementById('f-nama-indo').value : '';
+            const jenisTiket = isMunfarid ? document.getElementById('f-tiket-jenis').value : 'Normal';
+
             if (tiketFileObj) {
                 const ext = tiketFileObj.originalName.substring(tiketFileObj.originalName.lastIndexOf('.'));
-                
-                // Buat array penampung nama anggota
                 let namesArr = [];
                 
                 if (anggotaList) {
                     const ids = anggotaList.split(',').filter(Boolean);
                     ids.forEach(id => {
                         const student = ALL_STUDENTS.find(s => s.id === id);
-                        // Jika nama ditemukan, gunakan nama. Jika tidak, gunakan ID sebagai cadangan
                         namesArr.push(student ? student.nama : id);
                     });
                 } else {
-                    // Jika list anggota kosong, gunakan nama ketua/akun sendiri
                     const selfStudent = ALL_STUDENTS.find(s => s.id === currentThalib);
                     namesArr.push(selfStudent ? selfStudent.nama : currentThalib);
                 }
                 
-                // Gabungkan seluruh nama menjadi satu string dengan pemisah koma
                 let newFileName = namesArr.join(', ');
-                
-                // Bersihkan karakter yang dilarang di sistem file/Drive
                 newFileName = newFileName.replace(/[<>:"/\\|?*]/g, '');
                 
-                // Batasi panjang string maksimal agar Google Drive tidak error (Max ~150 chars)
                 if (newFileName.length > 150) {
                     newFileName = newFileName.substring(0, 150) + '...';
                 }
                 
                 newFileName += ext; 
-                
                 tiketFileObj.name = newFileName;
             }
 
@@ -966,11 +1035,25 @@
                 catatan: document.getElementById('f-catatan').value.trim(),
                 tiket_file: document.getElementById('f-tiket-file').value,
                 tiket_file_upload: tiketFileObj,
-                tiket_anggota: anggotaList
+                tiket_anggota: anggotaList,
+                nama_arab: namaArab,
+                nama_indo: namaIndo,
+                tiket_jenis: jenisTiket
             };
         }
 
         function confirmSave() {
+            // Validasi: Wajib mengisi Kode Booking (PNR) jika membatalkan penerbangan (Tiket Ganda)
+            const isMunfarid = !document.getElementById('munfarid-section').classList.contains('hidden');
+            const jenisTiket = document.getElementById('f-tiket-jenis').value;
+            const tiketNomor = document.getElementById('f-tiket-nomor').value.trim();
+
+            if (isMunfarid && jenisTiket === 'Ganda' && !tiketNomor) {
+                showDynamicIsland('Kode Booking / PNR Wajib diisi untuk membatalkan tiket!', 'error');
+                document.getElementById('f-tiket-nomor').focus();
+                return;
+            }
+
             const m = document.getElementById('confirm-modal');
             const b = document.getElementById('confirm-box');
             m.classList.remove('hidden'); void m.offsetWidth;
@@ -989,11 +1072,9 @@
             const data = getFormData();
             try {
                 await serverCall('saveData', data);
-                isFormSaved = true; // Kembalikan flag setelah berhasil
+                isFormSaved = true; 
                 showDynamicIsland('Mantap! Data Tiket Disimpan', 'success');
             } catch (err) { 
-                // Abaikan error timeout (Failed to fetch) dan langsung anggap sukses
-                // karena server Google Apps Script tetap melanjutkan proses simpan ke Spreadsheet di latar belakang
                 if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
                     isFormSaved = true; 
                     showDynamicIsland('Mantap! Data Tiket Disimpan', 'success');
