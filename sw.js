@@ -1,18 +1,30 @@
-// Service Worker Dasar untuk mematuhi keamanan PWA Android terbaru
-const CACHE_NAME = 'PPMI-Madinah-v1';
+const CACHE_NAME = 'ppmi-pwa-cache-v1';
 
-self.addEventListener('install', (event) => {
-    // Memaksa service worker segera aktif
-    self.skipWaiting();
+// Cukup file utama agar PWA bisa diinstall pada mode offline ringan
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/manifest.json'
+];
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        return cache.addAll(urlsToCache);
+      })
+  );
 });
 
-self.addEventListener('activate', (event) => {
-    event.waitUntil(self.clients.claim());
-});
-
-self.addEventListener('fetch', (event) => {
-    // Membiarkan fetch berjalan normal, ini sudah cukup untuk bypass syarat PWA Chrome
-    event.respondWith(fetch(event.request).catch(() => {
-        return new Response("Aplikasi sedang offline.");
-    }));
+// Intercept jaringan ringan
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      })
+  );
 });
