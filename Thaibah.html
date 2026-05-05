@@ -111,22 +111,51 @@
                 </div>
             </div>
             <h2 class="text-2xl font-bold text-center text-green-600 mb-2">Portal PPMI Madinah</h2>
-            <p class="text-xs text-center text-gray-500 mb-8 leading-relaxed">Masukkan Email Address Anda untuk masuk ke sistem pendataan terpadu.</p>
+            <!-- Updated Subtitle -->
+            <p class="text-xs text-center text-gray-500 mb-8 leading-relaxed">Masuk dengan Email dan Identitas, atau masukkan Email saja untuk membuat akun baru.</p>
             
-            <div class="space-y-4 mb-8">
+            <div class="space-y-4 mb-6">
+                <!-- Kolom 1: Email -->
                 <div class="w-full relative">
-                    <label class="text-xs font-semibold text-gray-700 mb-1.5 block">Email Address</label>
+                    <label class="text-xs font-semibold text-gray-700 mb-1.5 block">Email Address <span class="text-red-500">*</span></label>
                     <div class="relative">
                         <i class="fas fa-envelope absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="email" id="login-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="contoh@email.com">
+                        <input type="email" id="login-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="contoh@email.com">
+                    </div>
+                </div>
+
+                <!-- Kolom 2: Pilihan ID (Hanya untuk Masuk) -->
+                <div class="w-full relative">
+                    <label class="text-xs font-semibold text-gray-700 mb-1.5 block">Identitas <span class="text-gray-400 font-normal">(Opsional untuk Akun Baru)</span></label>
+                    <div class="flex gap-2">
+                        <select id="login-id-type" class="bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 text-xs outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium text-gray-700 w-[110px]">
+                            <option value="thalib">Raqm Thalib</option>
+                            <option value="iqamah">Iqamah</option>
+                        </select>
+                        <div class="relative flex-1">
+                            <i class="fas fa-id-card absolute left-3 top-3.5 text-gray-400 text-sm"></i>
+                            <input type="text" id="login-id-val" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-3 py-3 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="Masukkan Nomor">
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <button onclick="loginApp()" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-xl py-4 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2">
-                <span>Masuk / Cek Data</span>
-                <i class="fas fa-arrow-right"></i>
-            </button>
+            <!-- Tombol Aksi -->
+            <div class="flex flex-col gap-3 mt-8">
+                <button onclick="processLogin()" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-xl py-3.5 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2">
+                    <i class="fas fa-sign-in-alt"></i> Masuk
+                </button>
+                
+                <div class="relative flex items-center py-1">
+                    <div class="flex-grow border-t border-gray-100"></div>
+                    <span class="flex-shrink-0 mx-4 text-gray-400 text-[10px] font-semibold uppercase tracking-wider">Atau</span>
+                    <div class="flex-grow border-t border-gray-100"></div>
+                </div>
+
+                <button onclick="processRegister()" class="w-full bg-white text-green-600 border-2 border-green-500 font-bold rounded-xl py-3 shadow-sm hover:bg-green-50 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2">
+                    <i class="fas fa-user-plus"></i> Buat Akun Baru
+                </button>
+            </div>
         </div>
         <p class="text-white text-xs mt-8 opacity-80">© 2026 PPMI Madinah. All rights reserved.</p>
     </div>
@@ -144,7 +173,8 @@
                     Memuat... 
                     <span id="badge-blokir" class="hidden bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase">Blokir</span>
                 </h2>
-                <p class="text-xs text-gray-500 truncate" id="display-email">Email: -</p>
+                <!-- Updated display ID -->
+                <p class="text-xs text-gray-500 truncate" id="display-email">ID: -</p>
                 <p class="text-[10px] text-green-600 font-medium mt-1 italic" id="last-updated-text">Memuat status...</p>
             </div>
         </div>
@@ -172,8 +202,9 @@
                 <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-user-circle text-green-600"></i> Informasi Pribadi</h3>
                 
                 <div class="w-full">
-                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Email Address (Login)</label>
-                    <input type="email" id="f-email" readonly class="w-full bg-gray-200 border border-gray-300 rounded-xl px-4 py-3 text-sm outline-none font-bold text-gray-600 cursor-not-allowed">
+                    <!-- Updated Label -->
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">ID Login Terdaftar</label>
+                    <input type="text" id="f-email" readonly class="w-full bg-gray-200 border border-gray-300 rounded-xl px-4 py-3 text-sm outline-none font-bold text-gray-600 cursor-not-allowed">
                 </div>
 
                 <div class="w-full">
@@ -255,7 +286,7 @@
                 
                 <div class="w-full">
                   <label class="text-xs font-semibold text-gray-700 mb-1 block">Domisili Madinah</label>
-                  <input type="text" id="f-dom-madinah" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="Contoh: Sakan Jamiah, Robwah, dll">
+                  <input type="text" id="f-dom-madinah" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="Contoh: Sakan Jamiah, Apartemen, dll">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -295,8 +326,7 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div class="w-full">
                         <label class="text-xs font-semibold text-gray-700 mb-1 block">Raqm Thalib</label>
-                        <input type="text" id="f-thalib" inputmode="numeric" pattern="[0-9]*" maxlength="7" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="7
-                         Digit">
+                        <input type="text" id="f-thalib" inputmode="numeric" pattern="[0-9]*" maxlength="7" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="7 Digit">
                     </div>
                     <div class="w-full">
                         <label class="text-xs font-semibold text-gray-700 mb-1 block">Status</label>
@@ -668,11 +698,30 @@
             }
         }
 
-        window.onload = () => {
+        window.onload = async () => {
             setTimeout(() => {
                 document.getElementById('splash-screen').style.opacity = '0';
                 setTimeout(() => document.getElementById('splash-screen').classList.add('hidden'), 500);
             }, 1500);
+
+            // Auto-Login Check
+            const savedEmail = localStorage.getItem('ppmi_user_email');
+            if (savedEmail) {
+                currentEmail = savedEmail;
+                try {
+                    const res = await serverCall('getData', { email: currentEmail });
+                    if (res) {
+                        const data = JSON.parse(res);
+                        populateForm(data);
+                        document.getElementById('display-email').textContent = "ID: " + currentEmail;
+                        showScreen('screen-form');
+                    } else {
+                        localStorage.removeItem('ppmi_user_email');
+                    }
+                } catch (err) {
+                    console.error("Auto-login failed:", err);
+                }
+            }
         };
 
         function showScreen(id) {
@@ -689,37 +738,72 @@
         }
 
         // LOGIN SYSTEM
-        async function loginApp() {
-            const emailInput = document.getElementById('login-email').value.trim();
+        async function processLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const idType = document.getElementById('login-id-type').value;
+            const idVal = document.getElementById('login-id-val').value.trim();
 
-            if (!emailInput) {
-                showDynamicIsland('Masukkan Email Address Anda', 'error'); return;
-            }
-
+            if (!email) { showDynamicIsland('Masukkan Email Anda', 'error'); return; }
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(emailInput)) {
-                showDynamicIsland('Format Email tidak valid', 'error'); return;
-            }
+            if (!emailRegex.test(email)) { showDynamicIsland('Format Email tidak valid', 'error'); return; }
+            if (!idVal) { showDynamicIsland('Masukkan Nomor Identitas Anda', 'error'); return; }
 
-            currentEmail = emailInput;
-            
-            showDynamicIsland('Verifikasi & Mengambil data...', 'process');
+            currentEmail = email;
+            showDynamicIsland('Memeriksa kredensial...', 'process');
 
             try {
                 const res = await serverCall('getData', { email: currentEmail });
                 if (res) {
                     const data = JSON.parse(res);
+                    
+                    // Cek validasi Identitas
+                    let isValid = false;
+                    if (idType === 'thalib' && String(data["Raqm Thalib"]) === idVal) isValid = true;
+                    if (idType === 'iqamah' && String(data["Raqm Iqamah"]) === idVal) isValid = true;
+
+                    if (!isValid) {
+                        showDynamicIsland('Nomor Identitas tidak cocok dengan Email ini!', 'error');
+                        return;
+                    }
+
                     populateForm(data);
-                    showDynamicIsland('Data Ditemukan', 'success');
+                    showDynamicIsland('Berhasil Masuk', 'success');
+                    document.getElementById('display-email').textContent = "ID: " + currentEmail;
+                    localStorage.setItem('ppmi_user_email', currentEmail);
+                    showScreen('screen-form');
+                } else {
+                    showDynamicIsland('Akun tidak ditemukan. Silakan Buat Akun.', 'error');
+                }
+            } catch (err) {
+                showDynamicIsland(err.message || 'Gagal koneksi ke server', 'error');
+            }
+        }
+
+        async function processRegister() {
+            const email = document.getElementById('login-email').value.trim();
+            
+            if (!email) { showDynamicIsland('Masukkan Email untuk mendaftar', 'error'); return; }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) { showDynamicIsland('Format Email tidak valid', 'error'); return; }
+
+            currentEmail = email;
+            showDynamicIsland('Memeriksa ketersediaan email...', 'process');
+
+            try {
+                const res = await serverCall('getData', { email: currentEmail });
+                if (res) {
+                    showDynamicIsland('Email sudah terdaftar! Silakan Masuk.', 'error');
                 } else {
                     clearForm();
                     document.getElementById('last-updated-text').textContent = "Status: Pengguna Baru";
                     document.getElementById('last-updated-text').className = "text-[10px] text-blue-600 font-medium mt-1 italic";
                     document.getElementById('f-email').value = currentEmail;
-                    showDynamicIsland('Akun Baru. Silakan lengkapi formulir', 'success');
+                    
+                    showDynamicIsland('Silakan lengkapi form pendaftaran', 'success');
+                    document.getElementById('display-email').textContent = "ID: " + currentEmail;
+                    localStorage.setItem('ppmi_user_email', currentEmail);
+                    showScreen('screen-form');
                 }
-                document.getElementById('display-email').textContent = "Email: " + currentEmail;
-                showScreen('screen-form');
             } catch (err) {
                 showDynamicIsland(err.message || 'Gagal koneksi ke server', 'error');
             }
@@ -921,7 +1005,9 @@
         function logout() { 
             toggleMenu(); 
             currentEmail = '';
+            localStorage.removeItem('ppmi_user_email');
             document.getElementById('login-email').value = ''; 
+            document.getElementById('login-id-val').value = ''; 
             showScreen('screen-email'); 
         }
 
