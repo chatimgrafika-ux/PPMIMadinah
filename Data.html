@@ -4,6 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+    
+    <!-- PWA Meta Tags (Android & iOS) -->
+    <meta name="theme-color" content="#16a34a"">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PPMI-Med">
+    <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E"> <!-- Memakai fallback logo jika icon lokal tidak ada -->
+
     <title> PPMI Madinah Dashboard </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -861,6 +870,19 @@
         </div>
     </div>
 
+    <!-- Install App PWA Banner -->
+    <div id="install-banner" class="hidden fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-white p-4 rounded-t-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transition-transform transform translate-y-full duration-300">
+        <div class="flex items-center justify-between gap-4">
+            <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-12 h-12 object-contain bg-gray-50 rounded-xl p-1 shadow-sm">
+            <div class="flex-1">
+                <h4 class="text-sm font-bold text-gray-800">Install Aplikasi PPMI</h4>
+                <p class="text-[10px] text-gray-500">Akses lebih cepat & mudah dari layar utama (Home Screen) Anda.</p>
+            </div>
+            <button onclick="installPWA()" class="bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:bg-green-700">Install</button>
+            <button onclick="dismissInstall()" class="text-gray-400 p-2"><i class="fas fa-times text-lg"></i></button>
+        </div>
+    </div>
+
     <script>
         // =========================================================
         // PENTING: ISI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
@@ -1160,6 +1182,47 @@
             }
         }
 
+        // PWA Install Logic 
+        let deferredPrompt;
+        const installBanner = document.getElementById('install-banner');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Android Prompt detection
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallBanner();
+        });
+
+        function showInstallBanner() {
+            if(localStorage.getItem('pwa_dismissed')) return;
+            installBanner.classList.remove('hidden');
+            setTimeout(() => installBanner.classList.remove('translate-y-full'), 10);
+        }
+
+        function dismissInstall() {
+            installBanner.classList.add('translate-y-full');
+            setTimeout(() => installBanner.classList.add('hidden'), 300);
+            localStorage.setItem('pwa_dismissed', 'true');
+        }
+
+        function installPWA() {
+            const isIos = () => /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
+            const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+
+            if (isIos() && !isInStandaloneMode()) {
+                alert('Untuk install di iPhone: Tap tombol "Share" (kotak dengan panah ke atas) di menu Safari bawah, lalu geser ke bawah dan pilih "Add to Home Screen".');
+                return;
+            }
+
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    deferredPrompt = null;
+                    dismissInstall();
+                });
+            }
+        }
+
         window.onload = () => {
             setTimeout(() => {
                 document.getElementById('splash-screen').style.opacity = '0';
@@ -1169,6 +1232,20 @@
                 }, 500);
             }, 1500);
             initDatePicker();
+
+            // Register PWA Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js')
+                .then(() => console.log('Service Worker PWA Active'))
+                .catch(err => console.log('SW Registration failed', err));
+            }
+
+            // Fallback iOS PWA Prompt 
+            const isIos = () => /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
+            const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+            if (isIos() && !isInStandaloneMode()) {
+                setTimeout(showInstallBanner, 3000); // Munculkan pop-up install untuk pengguna iOS jika diakses lewat safari biasa
+            }
         };
 
         function showScreen(id) {
@@ -1337,18 +1414,32 @@
 
         function confirmSave() {
             const data = getFormData();
+            let hasEmpty = false;
+
+            // Mengecek apakah ada kolom kosong tanpa memblokir save
             for (const key in data) {
                 if (key === 'visa' && data.angkatan !== 'Dirosat') continue;
                 if (!data[key] || data[key].trim() === '') {
-                    showDynamicIsland('Terdapat kolom kosong yang wajib diisi!', 'error'); return;
+                    hasEmpty = true;
                 }
             }
-            if (data.iqamah.length !== 10) { showDynamicIsland('Raqm Iqamah wajib 10 digit!', 'error'); return; }
-            if (data.thalib.length !== 9) { showDynamicIsland('Raqm Thalib wajib 9 digit!', 'error'); return; }
-            if (!data.kerabat_nomor.startsWith('628')) { showDynamicIsland('Nomor Kerabat harus diawali 628', 'error'); return; }
+            
+            // Validasi format angka dilarang longgar (Jika diisi, tapi angkanya kurang, maka akan diblokir)
+            if (data.iqamah && data.iqamah.trim() !== '' && data.iqamah.length !== 10) { showDynamicIsland('Raqm Iqamah wajib 10 digit!', 'error'); return; }
+            if (data.thalib && data.thalib.trim() !== '' && data.thalib.length !== 9) { showDynamicIsland('Raqm Thalib wajib 9 digit!', 'error'); return; }
+            if (data.kerabat_nomor && data.kerabat_nomor.trim() !== '' && !data.kerabat_nomor.startsWith('628')) { showDynamicIsland('Nomor Kerabat harus diawali 628', 'error'); return; }
 
             const m = document.getElementById('confirm-modal');
             const b = document.getElementById('confirm-box');
+            const pTag = b.querySelector('p');
+
+            // Menyesuaikan Pesan jika Kosong atau Penuh
+            if(hasEmpty) {
+                pTag.innerHTML = "<span class='text-red-500 font-bold'>Peringatan:</span> Terdapat kolom yang belum diisi. Data tetap bisa disimpan, namun mohon lengkapi profil Anda di waktu selanjutnya.";
+            } else {
+                pTag.innerHTML = "Pastikan data di formulir sudah benar. Data Anda akan diperbarui ke sistem.";
+            }
+
             m.classList.remove('hidden'); void m.offsetWidth;
             b.classList.remove('scale-95', 'opacity-0'); b.classList.add('scale-100', 'opacity-100');
         }
