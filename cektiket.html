@@ -114,7 +114,6 @@
             <!-- Saudia Logo / Banner Placeholder -->
             <div class="w-full flex justify-center mb-6 mt-4">
                 <div class="w-24 h-24 bg-white rounded-full shadow-md flex items-center justify-center border-4 border-green-50 overflow-hidden">
-                    <!-- Replace src with actual Saudia logo if needed, using a plane icon for now -->
                     <i class="fas fa-plane-departure text-4xl text-green-600"></i>
                 </div>
             </div>
@@ -205,10 +204,12 @@
             }
         }
 
+        // FUNGSI CEK DATA DARI LOCAL STORAGE
         function checkLocalLogin() {
             const savedEmail = localStorage.getItem('ticket_email');
             const savedThalib = localStorage.getItem('ticket_thalib');
             const savedLastName = localStorage.getItem('ticket_lastname');
+            const savedPnr = localStorage.getItem('ticket_pnr'); // Mengambil PNR tersimpan
 
             if (savedEmail && savedThalib) {
                 document.getElementById('login-email').value = savedEmail;
@@ -216,6 +217,9 @@
                 
                 if(savedLastName) {
                     document.getElementById('ticket-lastname').value = savedLastName;
+                }
+                if(savedPnr) { // Memasukkan PNR tersimpan ke dalam form
+                    document.getElementById('ticket-pnr').value = savedPnr;
                 }
                 
                 // Langsung tampilkan screen tiket jika sudah login
@@ -280,6 +284,7 @@
             }
         }
 
+        // FUNGSI MEMPROSES TIKET DAN MENYIMPAN PNR
         function processTicket() {
             const lastName = document.getElementById('ticket-lastname').value.trim();
             const pnr = document.getElementById('ticket-pnr').value.trim();
@@ -293,6 +298,9 @@
                 showDynamicIsland('Booking Code wajib 6 karakter', 'error');
                 return;
             }
+
+            // SIMPAN PNR KE LOCAL STORAGE SAAT TOMBOL DITEKAN
+            localStorage.setItem('ticket_pnr', pnr);
 
             showDynamicIsland('Mengalihkan ke Saudia...', 'process');
 
@@ -310,15 +318,21 @@
             }, 1000);
         }
 
+        // FUNGSI LOGOUT DAN MENGHAPUS SELURUH SESI
         function logout() { 
+            // Menghapus data dari memori browser
             localStorage.removeItem('ticket_email');
             localStorage.removeItem('ticket_thalib');
             localStorage.removeItem('ticket_lastname');
+            localStorage.removeItem('ticket_pnr'); // Menghapus memori PNR
             
+            // Mengosongkan form input
             document.getElementById('login-email').value = ''; 
             document.getElementById('login-thalib').value = ''; 
             document.getElementById('ticket-pnr').value = ''; 
+            document.getElementById('ticket-lastname').value = ''; 
             
+            // Pindah layar kembali ke menu Login
             document.getElementById('screen-ticket').classList.add('hidden'); 
             document.getElementById('screen-email').classList.remove('hidden'); 
         }
