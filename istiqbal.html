@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lajnah Istiqbal - Form Surat Permohonan</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        arabic: ['Amiri', 'serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                        },
+                        accent: '#b45309', // Amber-700
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1; 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8; 
+        }
+
+        /* Animations */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #15803d;
+            color: #fff;
+            text-align: center;
+            border-radius: 9999px;
+            padding: 12px 24px;
+            position: fixed;
+            z-index: 50;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        #toast.show {
+            visibility: visible;
+            animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Paper Style for Letter Preview */
+        .paper-preview {
+            background-color: #fdfdfd;
+            background-image: linear-gradient(#f3f4f6 1px, transparent 1px);
+            background-size: 100% 2rem;
+            border: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-primary-50 text-gray-800 antialiased min-h-screen py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+
+    <div class="w-full max-w-7xl mx-auto space-y-8">
+        
+        <!-- Header Section -->
+        <div class="text-center space-y-2">
+            <div class="inline-flex items-center justify-center p-3 bg-primary-100 rounded-full mb-2 text-primary-700">
+                <i class="fa-solid fa-kaaba text-3xl"></i>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">Lajnah Istiqbal</h1>
+            <p class="text-gray-500 max-w-xl mx-auto">Generator Surat Permohonan Peninjauan Status Penerimaan Universitas Islam Madinah</p>
+        </div>
+
+        <!-- Main Grid Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Column: Form -->
+            <div class="lg:col-span-5 bg-white rounded-3xl shadow-xl shadow-primary-700/5 p-6 sm:p-8 border border-primary-100">
+                <div class="mb-6 pb-4 border-b border-gray-100 flex items-center gap-3">
+                    <i class="fa-solid fa-pen-to-square text-primary-600 text-xl"></i>
+                    <h2 class="text-xl font-bold text-gray-800">Isi Data Diri</h2>
+                </div>
+
+                <form id="letterForm" class="space-y-5" onsubmit="event.preventDefault(); generateLetter();">
+                    
+                    <!-- Nama Lengkap -->
+                    <div>
+                        <label for="namaLengkap" class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap (Huruf Arab) <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+                            <input type="text" id="namaLengkap" required 
+                                class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none font-arabic text-right text-lg" 
+                                placeholder="الاسم الرباعي" 
+                                oninput="this.value = this.value.replace(/[a-zA-Z]/g, '')">
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Harus menggunakan huruf Arab.</p>
+                    </div>
+
+                    <!-- Nomor Pendaftaran -->
+                    <div>
+                        <label for="nomorPendaftaran" class="block text-sm font-semibold text-gray-700 mb-1">Nomor Pendaftaran <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-hashtag"></i>
+                            </div>
+                            <input type="text" id="nomorPendaftaran" required 
+                                class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" 
+                                placeholder="Contoh: APP123456" 
+                                oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()">
+                        </div>
+                    </div>
+
+                    <!-- Nomor Paspor -->
+                    <div>
+                        <label for="nomorPaspor" class="block text-sm font-semibold text-gray-700 mb-1">Nomor Paspor <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-passport"></i>
+                            </div>
+                            <input type="text" id="nomorPaspor" required 
+                                class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" 
+                                placeholder="Masukkan nomor paspor" 
+                                oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()">
+                        </div>
+                    </div>
+
+                    <!-- Nomor WhatsApp -->
+                    <div>
+                        <label for="nomorWhatsapp" class="block text-sm font-semibold text-gray-700 mb-1">Nomor WhatsApp <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-brands fa-whatsapp text-lg"></i>
+                            </div>
+                            <input type="tel" id="nomorWhatsapp" required 
+                                class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" 
+                                placeholder="+628123456789" 
+                                oninput="formatPhone(this)" pattern="^\+[1-9]\d{1,14}$" title="Gunakan awalan + dan kode negara">
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-regular fa-envelope"></i>
+                            </div>
+                            <input type="email" id="email" required 
+                                class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none" 
+                                placeholder="email@contoh.com" 
+                                pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-primary-700 hover:bg-primary-800 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-primary-700/30 transition-all duration-200 transform hover:-translate-y-0.5 flex items-center justify-center gap-2 mt-8">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        Buat Surat
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right Column: Preview & Actions -->
+            <div class="lg:col-span-7 bg-white rounded-3xl shadow-xl shadow-primary-700/5 p-6 sm:p-8 flex flex-col h-full border border-primary-100 relative overflow-hidden">
+                
+                <!-- Header & Actions -->
+                <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-6 gap-4 border-b border-gray-100 pb-4 relative z-10">
+                    <div class="flex items-center gap-3 w-full xl:w-auto">
+                        <i class="fa-regular fa-file-lines text-primary-600 text-xl"></i>
+                        <h2 class="text-xl font-bold text-gray-800">Pratinjau Surat</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 sm:flex sm:flex-row gap-2 w-full xl:w-auto">
+                        <button id="copySubjectBtn" onclick="copySubject()" disabled class="w-full sm:w-auto bg-gray-100 text-gray-400 font-medium py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-not-allowed text-sm">
+                            <i class="fa-solid fa-quote-right"></i>
+                            <span class="hidden sm:inline">Salin Subjek</span>
+                            <span class="sm:hidden">Subjek</span>
+                        </button>
+                        <button id="copyBtn" onclick="copyLetter()" disabled class="w-full sm:w-auto bg-gray-100 text-gray-400 font-medium py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-not-allowed text-sm">
+                            <i class="fa-regular fa-copy"></i>
+                            <span class="hidden sm:inline">Salin Surat</span>
+                            <span class="sm:hidden">Surat</span>
+                        </button>
+                        <a href="https://helpdesk.iu.edu.sa/NewTicket?service_id=38" target="_blank" class="col-span-2 w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg shadow-md shadow-blue-600/20 transition-all duration-200 flex items-center justify-center gap-2 text-sm mt-2 sm:mt-0">
+                            <i class="fa-solid fa-headset"></i>
+                            <span>Nizom Tawassul</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Preview Area -->
+                <div class="flex-grow bg-gray-50 rounded-2xl border border-gray-200 p-1 relative z-10">
+                    
+                    <!-- Empty State -->
+                    <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                        <i class="fa-solid fa-file-signature text-5xl mb-4 opacity-30"></i>
+                        <p class="text-sm font-medium">Isi formulir dan klik "Buat Surat" untuk melihat hasil.</p>
+                    </div>
+
+                    <!-- Generated Content Area -->
+                    <div id="generatedContent" class="hidden h-full flex flex-col">
+                        
+                        <!-- Subject Area -->
+                        <div class="bg-white p-4 rounded-t-xl border-b border-gray-200 shadow-sm">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Subjek (Maudu')</span>
+                            <div dir="rtl" class="font-arabic text-xl text-gray-900 font-bold leading-relaxed">
+                                الموضوع: طلب النظر في حالة القبول لبرنامج البكالوريوس
+                            </div>
+                        </div>
+
+                        <!-- Letter Area (Paper look) -->
+                        <div class="bg-white p-6 sm:p-8 rounded-b-xl overflow-y-auto paper-preview flex-grow shadow-sm">
+                            <div dir="rtl" class="font-arabic text-xl text-gray-800 leading-[2.5] text-justify">
+                                <p class="text-center font-bold mb-6 text-2xl">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</p>
+                                
+                                <p class="mb-4">
+                                    إلى سعادة عميد عمادة القبول والتسجيل<br>
+                                    بـــالجامعة الإسلامية بالمدينة المنورة<br>
+                                    حفظه الله ورعاه
+                                </p>
+                                
+                                <p class="mb-4">السلام عليكم ورحمة الله وبركاته، وبعد:</p>
+                                
+                                <p class="mb-4 indent-8">
+                                    أفيد سعادتكم علماً بأنني من الطلاب الذين مَنَّ الله عليهم بدراسة دبلوم معهد اللغة العربية (عن بُعد)، ولدي رغبة صادقة وطموح كبير في مواصلة مسيرتي العلمية وإكمال دراستي الجامعية في جامعتكم الموقرة.
+                                </p>
+                                
+                                <p class="mb-4 indent-8">
+                                    وقد قمت برفع طلب التقديم رسمياً عبر منصة "ادرس في السعودية"، وأحيط سعادتكم علماً بأنني قد اخترت الجامعة الإسلامية بالمدينة المنورة خياراً أولاً ووحيداً، وذلك حباً في طلب العلم في مدينة رسول الله ﷺ، ورغبةً في الانتساب إلى هذا الصرح العلمي المبارك.
+                                </p>
+                                
+                                <p class="mb-4 indent-8">
+                                    لذا؛ أرجو من سعادتكم التكرم بالنظر في طلبي، والتفضل بدراسة حالة قبولي، سائلاً الله عز وجل أن يكتب لي نصيباً في الالتحاق بجامعتكم المباركة، وأن يوفقكم ويسدد خطاكم.
+                                </p>
+                                
+                                <p class="mb-4">وتفضلوا بقبول فائق الاحترام والتقدير.</p>
+                                
+                                <p class="mb-8">والسلام عليكم ورحمة الله وبركاته.</p>
+                                
+                                <div>
+                                    <p class="font-bold mb-2">مقدم الطلب</p>
+                                    <ul class="space-y-1">
+                                        <li>الاسم الرباعي: <span id="previewName" class="font-bold text-primary-700 bg-primary-50 px-2 rounded"></span></li>
+                                        <li>رقم الطلب (منصة ادرس في السعودية): <span id="previewAppId" class="font-bold text-primary-700 bg-primary-50 px-2 rounded font-sans tracking-wide"></span></li>
+                                        <li>رقم جواز السفر: <span id="previewPassport" class="font-bold text-primary-700 bg-primary-50 px-2 rounded font-sans tracking-wide"></span></li>
+                                        <li>رقم الجوال: <span dir="ltr" id="previewPhone" class="inline-block font-bold text-primary-700 bg-primary-50 px-2 rounded font-sans tracking-wide"></span></li>
+                                        <li>البريد الإلكتروني: <span dir="ltr" id="previewEmail" class="inline-block font-bold text-primary-700 bg-primary-50 px-2 rounded font-sans tracking-wide"></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-circle-check text-xl"></i>
+            <span id="toastMsg" class="font-medium text-sm">Teks berhasil disalin!</span>
+        </div>
+    </div>
+
+    <script>
+        // Variables to hold the raw generated text
+        let finalSubjectText = "";
+        let finalLetterText = "";
+
+        // Local Storage Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+            
+            // Auto-save form inputs as user types
+            document.getElementById('letterForm').addEventListener('input', saveToLocalStorage);
+        });
+
+        function saveToLocalStorage() {
+            const data = {
+                name: document.getElementById('namaLengkap').value,
+                appId: document.getElementById('nomorPendaftaran').value,
+                passport: document.getElementById('nomorPaspor').value,
+                phone: document.getElementById('nomorWhatsapp').value,
+                email: document.getElementById('email').value
+            };
+            localStorage.setItem('lajnahIstiqbalData', JSON.stringify(data));
+        }
+
+        function loadFromLocalStorage() {
+            const data = JSON.parse(localStorage.getItem('lajnahIstiqbalData'));
+            if (data) {
+                document.getElementById('namaLengkap').value = data.name || '';
+                document.getElementById('nomorPendaftaran').value = data.appId || '';
+                document.getElementById('nomorPaspor').value = data.passport || '';
+                document.getElementById('nomorWhatsapp').value = data.phone || '';
+                document.getElementById('email').value = data.email || '';
+            }
+        }
+
+        // Function to format phone number to always start with +
+        function formatPhone(input) {
+            let val = input.value.replace(/[^\+0-9]/g, '');
+            if (val.length > 0 && val[0] !== '+') {
+                val = '+' + val;
+            }
+            if (val.length > 1) {
+                val = val.charAt(0) + val.substring(1).replace(/\+/g, '');
+            }
+            input.value = val;
+        }
+
+        function generateLetter() {
+            // Get form values
+            const name = document.getElementById('namaLengkap').value.trim();
+            const appId = document.getElementById('nomorPendaftaran').value.trim();
+            const passport = document.getElementById('nomorPaspor').value.trim();
+            const phone = document.getElementById('nomorWhatsapp').value.trim();
+            const email = document.getElementById('email').value.trim();
+
+            if(!name || !appId || !passport || !phone || !email) {
+                return; // Native HTML5 validation will usually catch this first
+            }
+
+            // Update Preview HTML
+            document.getElementById('previewName').innerText = name;
+            document.getElementById('previewAppId').innerText = appId;
+            document.getElementById('previewPassport').innerText = passport;
+            document.getElementById('previewPhone').innerText = phone;
+            document.getElementById('previewEmail').innerText = email;
+
+            // Generate raw text for copying
+            finalSubjectText = `طلب النظر في حالة القبول لبرنامج البكالوريوس`;
+            
+            finalLetterText = `بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+
+إلى سعادة عميد عمادة القبول والتسجيل
+بـــالجامعة الإسلامية بالمدينة المنورة
+حفظه الله ورعاه
+
+السلام عليكم ورحمة الله وبركاته، وبعد:
+
+أفيد سعادتكم علماً بأنني من الطلاب الذين مَنَّ الله عليهم بدراسة دبلوم معهد اللغة العربية (عن بُعد)، ولدي رغبة صادقة وطموح كبير في مواصلة مسيرتي العلمية وإكمال دراستي الجامعية في جامعتكم الموقرة.
+
+وقد قمت برفع طلب التقديم رسمياً عبر منصة "ادرس في السعودية"، وأحيط سعادتكم علماً بأنني قد اخترت الجامعة الإسلامية بالمدينة المنورة خياراً أولاً ووحيداً، وذلك حباً في طلب العلم في مدينة رسول الله ﷺ، ورغبةً في الانتساب إلى هذا الصرح العلمي المبارك.
+
+لذا؛ أرجو من سعادتكم التكرم بالنظر في طلبي، والتفضل بدراسة حالة قبولي، سائلاً الله عز وجل أن يكتب لي نصيباً في الالتحاق بجامعتكم المباركة، وأن يوفقكم ويسدد خطاكم.
+
+وتفضلوا بقبول فائق الاحترام والتقدير.
+
+والسلام عليكم ورحمة الله وبركاته.
+
+مقدم الطلب
+
+الاسم الرباعي: ${name}
+رقم الطلب (منصة ادرس في السعودية): ${appId}
+رقم  جواز السفر: ${passport}
+رقم الجوال: ${phone}
+البريد الإلكتروني: ${email}`;
+
+            // Switch views
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('generatedContent').classList.remove('hidden');
+
+            // Style and Enable Copy Buttons
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.disabled = false;
+            copyBtn.className = "w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 px-4 rounded-lg shadow-md shadow-primary-700/20 transition-all duration-200 flex items-center justify-center gap-2 text-sm transform hover:-translate-y-0.5";
+
+            const copySubjectBtn = document.getElementById('copySubjectBtn');
+            copySubjectBtn.disabled = false;
+            copySubjectBtn.className = "w-full sm:w-auto bg-accent hover:bg-amber-800 text-white font-semibold py-2.5 px-4 rounded-lg shadow-md shadow-amber-900/20 transition-all duration-200 flex items-center justify-center gap-2 text-sm transform hover:-translate-y-0.5";
+        }
+
+        function copySubject() {
+            if(!finalSubjectText) return;
+            executeCopy(finalSubjectText, "Subjek berhasil disalin!");
+        }
+
+        function copyLetter() {
+            if(!finalLetterText) return;
+            executeCopy(finalLetterText, "Isi surat berhasil disalin!");
+        }
+
+        function executeCopy(text, successMsg) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            textArea.style.opacity = "0";
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if(successful) {
+                    showToast(successMsg);
+                }
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            document.getElementById("toastMsg").innerText = msg;
+            toast.className = "show";
+            
+            // Remove the show class after 3 seconds
+            setTimeout(function(){ 
+                toast.className = toast.className.replace("show", ""); 
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
