@@ -1,77 +1,76 @@
-<!-- // Created with Musaid Mandub Indonesia - HUMAS -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
-    <title> PPMI Madinah </title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#16a34a">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PPMI-Med">
+    <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E">
+
+    <title>PPMI Madinah Dashboard Online</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Menggunakan Font Poppins untuk tampilan yang lebih modern -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         html, body { 
             overflow-x: hidden !important; 
             position: relative; 
-            width: 100%; 
-            max-width: 100%; 
-            height: 100%; 
-            margin: 0; 
-            padding: 0; 
+            width: 100%; max-width: 100%; height: 100%; 
+            margin: 0; padding: 0; 
             touch-action: manipulation; 
             -webkit-text-size-adjust: 100%; 
-            background-color: #f0fdf4; /* Warna hijau sangat lembut untuk background */
+            background-color: #f3f4f6; 
             font-family: 'Poppins', sans-serif;
         }
         * { box-sizing: border-box !important; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-in-out;
-        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Date Picker specific styles */
-        .picker-col { scroll-snap-type: y mandatory; overscroll-behavior-y: contain; }
-        .picker-item { scroll-snap-align: center; height: 40px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; color: #9ca3af; font-size: 16px; }
-        .picker-item.active { font-weight: bold; font-size: 20px; color: #111827; }
-        .picker-mask { mask-image: linear-gradient(to bottom, transparent, black 40%, black 60%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent); }
+        /* SVG Donut Animation */
+        .chart-circle { transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.5s ease; }
     </style>
 </head>
-<body class="w-full max-w-md mx-auto min-h-screen overflow-x-hidden m-0 p-0 shadow-2xl bg-white relative">
+<body class="w-full max-w-md mx-auto min-h-screen overflow-x-hidden m-0 p-0 shadow-2xl bg-gray-50 relative">
 
-    <!-- Background Pattern Decorative -->
-    <div class="fixed top-0 left-0 w-full h-64 bg-green-600 rounded-b-[40px] -z-10"></div>
-
-    <!-- Dynamic Island -->
     <div id="dynamic-island" class="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-[9999] bg-black text-white px-5 py-3 rounded-full flex items-center justify-center gap-3 transition-all duration-300 opacity-0 scale-90 pointer-events-none shadow-2xl font-medium">
         <i id="di-icon" class="fas fa-spinner fa-spin text-sm"></i>
         <span id="di-text" class="text-sm truncate">Memproses...</span>
     </div>
 
-    <!-- Splash Screen -->
     <div id="splash-screen" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center transition-opacity duration-500 w-full max-w-md mx-auto">
         <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" alt="Logo" class="w-32 h-32 object-contain mb-6 animate-pulse drop-shadow-xl" onerror="this.style.display='none'">
-        <h1 class="text-xl font-bold text-gray-800 tracking-wide">المندبية الإندونبيسية ٢٠٢٦</h1>
+        <h1 class="text-xl font-bold text-gray-800 tracking-wide">المندوبية الإندونيسية ٢٠٢٦</h1>
         <p class="text-sm text-gray-500 mt-2 font-medium">الجامعة الإسلامية</p>
     </div>
 
-    <!-- Header (Hidden on auth/email check, visible on form) -->
-    <header id="main-header" class="hidden sticky top-0 z-30 bg-green-600/95 backdrop-blur-md px-4 py-4 flex items-center justify-between w-full max-w-md mx-auto shadow-md">
+    <!-- Main Header -->
+    <header id="main-header" class="hidden sticky top-0 z-30 bg-green-600/95 backdrop-blur-md px-5 py-4 flex items-center justify-between w-full max-w-md mx-auto shadow-md rounded-b-2xl">
         <div class="flex items-center gap-3">
             <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-9 h-9 object-contain bg-white rounded-full p-1 shadow" alt="Logo" onerror="this.style.display='none'">
-            <h1 class="text-sm font-bold text-white truncate"> PPMI Madinah 2026 </h1>
+            <h1 class="text-sm font-bold text-white truncate" id="header-title">Dashboard PPMI</h1>
         </div>
-        <button onclick="toggleMenu()" class="p-2 text-white hover:bg-white/20 rounded-lg transition-colors focus:outline-none">
+        
+        <button id="btn-back-dashboard" onclick="closeEditor()" class="hidden items-center gap-2 text-white font-bold text-sm bg-white/20 px-4 py-1.5 rounded-lg hover:bg-white/30 transition-colors">
+            <i class="fas fa-arrow-left"></i> Batal
+        </button>
+
+        <button id="btn-hamburger" onclick="toggleMenu()" class="p-2 text-white hover:bg-white/20 rounded-lg transition-colors focus:outline-none">
             <i class="fas fa-bars text-lg"></i>
         </button>
     </header>
 
-    <!-- Menu Overlay -->
     <div id="menu-overlay" class="hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm w-full max-w-md mx-auto">
         <div class="absolute right-0 top-0 bottom-0 w-64 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col" id="menu-panel">
             <div class="p-5 border-b flex justify-between items-center bg-gray-50">
@@ -86,99 +85,167 @@
                         <span class="text-xs font-semibold text-gray-600" id="conn-text">Terputus</span>
                     </div>
                 </div>
+
+                <button onclick="openAccountModal()" class="w-full flex items-center gap-3 p-4 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors bg-blue-50 rounded-xl mb-3 shadow-sm">
+                    <i class="fas fa-user-shield"></i>
+                    <span class="text-sm font-semibold">Ubah Akun Login</span>
+                </button>
                 <button onclick="logout()" class="w-full flex items-center gap-3 p-4 text-red-600 hover:bg-red-600 hover:text-white transition-colors bg-red-50 rounded-xl mt-auto shadow-sm">
                     <i class="fas fa-sign-out-alt"></i>
-                    <span class="text-sm font-semibold">Ganti Akun / Keluar</span>
+                    <span class="text-sm font-semibold">Keluar Dashboard</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Screen 1: Login Check -->
-    <div id="screen-email" class="min-h-screen flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto">
-        <div class="w-full bg-white/90 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50 relative overflow-hidden mt-10">
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-green-600"></div>
-            
-            <div class="bg-white-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-25 h-25 object-contain" alt="Logo" onerror="this.style.display='none'">
+    <div id="screen-email" class="min-h-screen flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto bg-gradient-to-br from-green-600 to-emerald-800 relative overflow-hidden">
+        <i class="fas fa-mosque absolute text-white/10 text-[12rem] -bottom-8 -left-10 pointer-events-none"></i>
+        <i class="fas fa-book-reader absolute text-white/10 text-7xl top-20 left-6 transform -rotate-12 pointer-events-none"></i>
+        <i class="fas fa-globe absolute text-white/10 text-6xl bottom-40 right-8 transform rotate-12 pointer-events-none"></i>
+
+        <div class="w-full bg-white/95 backdrop-blur-xl rounded-[2rem] p-8 shadow-2xl relative z-10 mt-10">
+            <div class="bg-gray-50 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-gray-100 transform -translate-y-12">
+                <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-16 h-16 object-contain" alt="Logo" onerror="this.style.display='none'">
             </div>
             
-            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Portal Pendataan Mahasiswa Online</h2>
-            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">(عن بعد)</h2>
-            <p class="text-xs text-center text-gray-500 mb-8 leading-relaxed">Masukkan Email dan Raqm Thalib Anda untuk masuk ke sistem Terpadu Mandub Indonesia.</p>
-            
-            <div class="space-y-4 mb-8">
-                <div class="w-full relative">
-                    <label class="text-xs font-semibold text-gray-700 mb-1.5 block">Alamat Email</label>
-                    <div class="relative">
-                        <i class="fas fa-envelope absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="email" id="login-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="contoh@gmail.com">
+            <div class="-mt-8">
+                <h2 class="text-2xl font-bold text-center text-gray-800 mb-1">Portal Pendataan</h2>
+                <h2 class="text-lg font-bold text-center text-gray-800 mb-2">(عن بعد)</h2>
+                <p class="text-xs text-center text-gray-500 mb-8">Masuk menggunakan Email dan Raqm Thalib.</p>
+                
+                <div class="space-y-4 mb-6">
+                    <div class="w-full relative">
+                        <label class="text-[11px] font-bold text-gray-600 mb-1.5 block uppercase tracking-wider">Alamat Email</label>
+                        <div class="relative">
+                            <i class="fas fa-envelope absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="email" id="login-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="contoh@gmail.com">
+                        </div>
+                    </div>
+                    <div class="w-full relative">
+                        <label class="text-[11px] font-bold text-gray-600 mb-1.5 block uppercase tracking-wider">Raqm Thalib (NIM)</label>
+                        <div class="relative">
+                            <i class="fas fa-id-card absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="text" id="login-thalib" inputmode="numeric" pattern="[0-9]*" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="9 Digit Angka">
+                        </div>
                     </div>
                 </div>
-                <div class="w-full relative">
-                    <label class="text-xs font-semibold text-gray-700 mb-1.5 block">Raqm Thalib</label>
-                    <div class="relative">
-                        <i class="fas fa-id-card absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="text" id="login-thalib" inputmode="numeric" pattern="[0-9]*" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all font-medium" placeholder="9 Digit Angka">
-                    </div>
+
+                <button onclick="loginApp()" class="w-full bg-gray-900 text-white font-bold rounded-xl py-3.5 shadow-lg active:scale-95 transition-all text-sm flex items-center justify-center gap-2">
+                    <span>Masuk Dashboard</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+
+                <div class="mt-5 text-center">
+                    <button onclick="openForgotModal()" class="text-[11px] font-semibold text-gray-500 hover:text-green-600 transition-colors underline decoration-gray-300">Lupa Email / Raqm Thalib?</button>
                 </div>
-            </div>
 
-            <button onclick="loginApp()" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-xl py-4 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2">
-                <span>Masuk / Cek Data</span>
-                <i class="fas fa-arrow-right"></i>
-            </button>
-
-            <div class="mt-6 text-center border-t border-gray-100 pt-5">
-                <p class="text-[11px] text-gray-500 mb-1.5">Sudah punya akun sebelumnya</p>
-                <a href="Data.html" class="inline-flex items-center gap-1.5 text-xs font-bold text-green-600 hover:text-green-700 transition-colors">
-                    Kuliah Offline? <i class="fas fa-envelope-open-text"></i>
-                </a>
+                <div class="mt-6 text-center border-t border-gray-100 pt-5">
+                    <p class="text-[10px] text-gray-500 mb-1.5">Mahasiswa Kuliah Offline (Reguler)?</p>
+                    <a href="Data.html" class="inline-flex items-center gap-1.5 text-[11px] font-bold text-green-600 hover:text-green-700 transition-colors">
+                        Menuju Dashboard Offline <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
             </div>
         </div>
-        <p class="text-white text-xs mt-8 opacity-80">© 2026 PPMI Madinah. All rights reserved.</p>
+        <p class="text-white/80 text-xs mt-8 z-10 font-medium">© 2026 PPMI Madinah</p>
     </div>
 
-    <!-- Screen 2: Main Form with Tabs -->
-    <div id="screen-form" class="hidden w-full max-w-md mx-auto pb-24 pt-6 px-4">
+    <div id="screen-dashboard" class="hidden w-full max-w-md mx-auto pb-24 px-4 pt-6 animate-fade-in">
         
-        <!-- Header Profil Singkat -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-5 flex items-center gap-4">
-            <div id="profile-icon-container" class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 shadow-sm transition-colors duration-300">
-                <i id="profile-icon" class="fas fa-user text-lg"></i>
+        <div class="flex items-center gap-4 mb-6">
+            <div id="dashboard-profile-container" class="w-14 h-14 rounded-full bg-green-200 flex items-center justify-center text-green-700 shadow-sm border-2 border-white shrink-0">
+                <i id="dashboard-profile-icon" class="fas fa-user text-xl"></i>
             </div>
-            <div class="flex-1 overflow-hidden">
-                <h2 class="text-sm font-bold text-gray-800 truncate" id="display-thalib">441234567</h2>
-                <p class="text-xs text-gray-500 truncate" id="display-email">email@gmail.com</p>
-                <p class="text-[10px] text-green-600 font-medium mt-1 italic" id="last-updated-text">Memuat status...</p>
+            <div class="overflow-hidden">
+                <h2 class="text-xs text-gray-500 font-semibold mb-0.5">Ahlan wa Sahlan,</h2>
+                <h3 class="text-lg font-bold text-gray-800 leading-tight truncate w-full" id="dash-nama">Memuat Nama...</h3>
+                <p class="text-xs text-green-600 font-bold mt-1 bg-green-100 px-2 py-0.5 rounded-md inline-block truncate max-w-full" id="dash-thalib">ID: 441234567</p>
             </div>
         </div>
 
-        <!-- Custom Tab Navigation -->
-        <div class="grid grid-cols-3 bg-white shadow-sm border border-gray-100 p-1.5 rounded-xl mb-6 sticky top-20 z-20 backdrop-blur-md bg-white/90 gap-1">
-            <button id="tab-btn-diri" onclick="switchTab('diri')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg bg-green-600 text-white shadow-md transition-all">
-                <i class="fas fa-address-card mb-1 text-sm"></i> Diri
-            </button>
-            <button id="tab-btn-akademik" onclick="switchTab('akademik')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all">
-                <i class="fas fa-graduation-cap mb-1 text-sm"></i> Akademik
-            </button>
-            <button id="tab-btn-info" onclick="switchTab('info')" class="flex flex-col items-center justify-center py-2 text-[10px] sm:text-xs font-bold rounded-lg text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all">
-                <i class="fas fa-info-circle mb-1 text-sm"></i> Info
-            </button>
+        <div class="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 p-5 mb-6 flex items-center justify-between">
+            <div class="flex-1 pr-2">
+                <div class="flex items-center gap-2 mb-1">
+                    <i class="fas fa-chart-pie text-blue-500"></i>
+                    <h3 class="text-sm font-bold text-gray-800">Total Kelengkapan</h3>
+                </div>
+                <p id="completeness-status" class="text-[11px] font-bold px-2 py-1 rounded-md inline-block mt-1 bg-gray-100 text-gray-600">Menghitung...</p>
+            </div>
+            <div class="relative w-16 h-16 shrink-0 flex items-center justify-center">
+                <svg class="transform -rotate-90 w-16 h-16">
+                    <circle cx="32" cy="32" r="28" stroke="#e5e7eb" stroke-width="6" fill="none" />
+                    <circle id="donut-progress-main" class="chart-circle" cx="32" cy="32" r="28" stroke="#16a34a" stroke-width="6" fill="none" stroke-dasharray="175.9" stroke-dashoffset="175.9" stroke-linecap="round" />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center z-10">
+                    <span id="progress-text-main" class="text-xs font-bold text-gray-800">0%</span>
+                </div>
+            </div>
         </div>
 
-        <div class="bg-white rounded-3xl shadow-lg border border-gray-100 p-6">
+        <h3 class="text-sm font-bold text-gray-800 mb-3 px-1">Menu Pembaruan Data</h3>
+        
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <!-- Data Diri Full Width -->
+            <button onclick="openEditor('diri')" class="col-span-2 relative bg-white p-4 rounded-[1.2rem] shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-shadow group">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-xl group-hover:scale-110 transition-transform shrink-0"><i class="fas fa-address-card"></i></div>
+                <div class="text-left w-full">
+                    <h4 class="text-sm font-bold text-gray-800">Data Diri</h4>
+                    <p class="text-[10px] text-gray-400 leading-tight mt-0.5">Identitas, Domisili & Kontak</p>
+                </div>
+                <div class="absolute top-1/2 -translate-y-1/2 right-4 w-8 h-8">
+                    <svg class="transform -rotate-90 w-8 h-8"><circle cx="16" cy="16" r="14" stroke="#e5e7eb" stroke-width="3" fill="none" /><circle id="chart-diri" class="chart-circle" cx="16" cy="16" r="14" stroke="#3b82f6" stroke-width="3" fill="none" stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round" /></svg>
+                </div>
+            </button>
             
-            <!-- ======================= TAB 1: DATA DIRI ======================= -->
-            <div id="tab-diri" class="tab-content space-y-4 animate-fade-in">
-                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-user-circle text-green-600"></i> Informasi Pribadi</h3>
+            <button onclick="openEditor('akademik')" class="relative bg-white p-4 rounded-[1.2rem] shadow-sm border border-gray-100 flex flex-col items-start gap-3 hover:shadow-md transition-shadow group">
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center text-lg group-hover:scale-110 transition-transform"><i class="fas fa-graduation-cap"></i></div>
+                <div class="text-left w-full">
+                    <h4 class="text-sm font-bold text-gray-800">Akademik</h4>
+                    <p class="text-[9px] text-gray-400 leading-tight mt-0.5">Studi UIM</p>
+                </div>
+                <div class="absolute top-4 right-4 w-6 h-6">
+                    <svg class="transform -rotate-90 w-6 h-6"><circle cx="12" cy="12" r="10" stroke="#e5e7eb" stroke-width="2" fill="none" /><circle id="chart-akademik" class="chart-circle" cx="12" cy="12" r="10" stroke="#6366f1" stroke-width="2" fill="none" stroke-dasharray="62.8" stroke-dashoffset="62.8" stroke-linecap="round" /></svg>
+                </div>
+            </button>
+
+            <button onclick="openEditor('info')" class="relative bg-white p-4 rounded-[1.2rem] shadow-sm border border-gray-100 flex flex-col items-start gap-3 hover:shadow-md transition-shadow group">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-lg group-hover:scale-110 transition-transform"><i class="fas fa-info-circle"></i></div>
+                <div class="text-left w-full">
+                    <h4 class="text-sm font-bold text-gray-800">Pusat Info</h4>
+                    <p class="text-[9px] text-gray-400 leading-tight mt-0.5">Darurat & Sosmed</p>
+                </div>
+                <div class="absolute top-4 right-4 text-emerald-300">
+                    <i class="fas fa-chevron-right text-xs"></i>
+                </div>
+            </button>
+        </div>
+
+        <button onclick="confirmSave()" class="w-full bg-gradient-to-r from-green-600 to-emerald-700 text-white font-bold rounded-2xl py-4 shadow-lg shadow-green-600/30 active:scale-95 transition-all text-sm flex items-center justify-center gap-2 mt-4">
+            <i class="fas fa-paper-plane"></i> Simpan / Perbarui Data
+        </button>
+
+        <div class="text-center mt-6">
+            <p class="text-[10px] text-gray-400" id="dash-last-updated">Terakhir Diperbarui: -</p>
+        </div>
+    </div>
+
+    <div id="screen-editor" class="hidden w-full max-w-md mx-auto pb-24 pt-4 px-4 animate-fade-in">
+        <div class="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 p-6 relative">
+            
+            <div class="flex items-center justify-between mb-6 text-[10px] font-bold text-gray-400 uppercase tracking-wider" id="editor-step-indicator">
+                Langkah 1 dari 3
+            </div>
+
+            <!-- TAB 1: DATA DIRI -->
+            <div id="tab-diri" class="tab-content hidden space-y-4">
+                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-address-card text-blue-500"></i> Informasi Pribadi</h3>
                 
                 <div class="w-full">
-                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Nama Lengkap (Indonesia) sesuai Paspor</label>
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Nama Lengkap (Indonesia)</label>
                     <input type="text" id="f-nama-id" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
                 </div>
                <div class="w-full">
-                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Nama Lengkap (Arab) sesuai Iqomah</label>
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Nama Lengkap (Arab)</label>
                     <input type="text" id="f-nama-ar" lang="ar" dir="rtl" oninput="this.value = this.value.replace(/[^\u0600-\u06FF\s]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 font-medium" placeholder="الاسم الكامل">
                 </div>
                 
@@ -197,10 +264,10 @@
                     </div>
                 </div>
 
-                <h3 class="text-sm font-bold text-gray-800 mt-6 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-map-marker-alt text-green-600"></i> Asal Daerah (Indonesia)</h3>
+                <h3 class="text-sm font-bold text-gray-800 mt-6 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-map-marker-alt text-green-600"></i> Asal Daerah</h3>
                 
                 <div class="w-full">
-                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Domisili Indo (Provinsi)</label>
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Domisili (Provinsi)</label>
                     <select id="f-dom-indo" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
                         <option value="" disabled selected>Pilih Provinsi</option>
                         <option value="Aceh">Aceh</option>
@@ -245,7 +312,7 @@
                 </div>
 
                 <h3 class="text-sm font-bold text-gray-800 mt-6 mb-4 border-b pb-2 flex items-center gap-2">
-                    <i class="fas fa-address-book text-blue-500"></i> Informasi Nomor Cadangan <span class="text-red-500 text-xs ml-1">*Wajib</span>
+                    <i class="fas fa-heart text-red-500"></i> Kontak Darurat <span class="text-red-500 text-xs ml-1">*Wajib</span>
                 </h3>
                 <div class="w-full">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Nama Pemilik Nomor</label>
@@ -261,11 +328,15 @@
                         <input type="text" id="f-kerabat-nomor" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="628..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
                     </div>
                 </div>
+
+                <div class="mt-8 pt-4 border-t border-gray-100 flex justify-end">
+                    <button onclick="navTab('akademik')" class="bg-gray-900 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 text-sm active:scale-95 transition-transform">Lanjutkan <i class="fas fa-arrow-right"></i></button>
+                </div>
             </div>
 
-            <!-- ======================= TAB 2: DATA AKADEMIK ======================= -->
-            <div id="tab-akademik" class="tab-content hidden space-y-4 animate-fade-in">
-                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-university text-green-600"></i> Informasi Akademik</h3>
+            <!-- TAB 2: DATA AKADEMIK -->
+            <div id="tab-akademik" class="tab-content hidden space-y-4">
+                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2"><i class="fas fa-graduation-cap text-indigo-500"></i> Informasi Akademik</h3>
                 
                 <div class="w-full">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Raqm Thalib (Otomatis dari Login)</label>
@@ -330,11 +401,15 @@
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Asal Sekolah / Pondok Pesantren</label>
                     <input type="text" id="f-alumni" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
                 </div>
+
+                <div class="mt-8 pt-4 border-t border-gray-100 flex justify-between">
+                    <button onclick="navTab('diri')" class="bg-gray-100 text-gray-700 font-bold py-3 px-5 rounded-xl flex items-center gap-2 text-sm active:scale-95 transition-transform"><i class="fas fa-arrow-left"></i> Kembali</button>
+                    <button onclick="navTab('info')" class="bg-gray-900 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 text-sm active:scale-95 transition-transform">Lanjutkan <i class="fas fa-arrow-right"></i></button>
+                </div>
             </div>
 
-            <!-- ======================= TAB 3: PUSAT INFO & BANTUAN ======================= -->
-            <div id="tab-info" class="tab-content hidden space-y-7 animate-fade-in">
-                
+            <!-- TAB 3: PUSAT INFO & BANTUAN -->
+            <div id="tab-info" class="tab-content hidden space-y-7">
                 <!-- Section: Kontak Darurat -->
                 <div>
                     <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
@@ -403,55 +478,6 @@
                     </div>
                 </div>
 
-                <!-- Section: Pemerintah Republik Indonesia -->
-                <div>
-                    <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
-                        <i class="fas fa-flag text-red-600"></i> Pemerintah Republik Indonesia
-                    </h3>
-                    <div class="flex flex-col gap-3">
-                        <div class="flex items-center justify-between p-3.5 bg-white border border-gray-100 rounded-2xl shadow-sm">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-lg"><i class="fas fa-landmark"></i></div>
-                                <div>
-                                    <h4 class="text-xs font-bold text-gray-800">Kementerian Luar Negeri</h4>
-                                    <p class="text-[10px] text-gray-500">Republik Indonesia</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <a href="https://instagram.com/kemlu_ri" target="_blank" class="w-8 h-8 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center hover:bg-pink-100 transition-colors"><i class="fab fa-instagram"></i></a>
-                                <a href="https://x.com/Kemlu_RI" target="_blank" class="w-8 h-8 rounded-full bg-gray-100 text-black flex items-center justify-center hover:bg-gray-200 transition-colors"><i class="fab fa-twitter"></i></a>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between p-3.5 bg-white border border-gray-100 rounded-2xl shadow-sm">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-lg"><i class="fas fa-building"></i></div>
-                                <div>
-                                    <h4 class="text-xs font-bold text-gray-800">KBRI Riyadh</h4>
-                                    <p class="text-[10px] text-gray-500">Kedutaan Besar RI</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <a href="https://instagram.com/indonesiainriyadh" target="_blank" class="w-8 h-8 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center hover:bg-pink-100 transition-colors"><i class="fab fa-instagram"></i></a>
-                                <a href="https://x.com/IndonesiaInRYD" target="_blank" class="w-8 h-8 rounded-full bg-gray-100 text-black flex items-center justify-center hover:bg-gray-200 transition-colors"><i class="fab fa-twitter"></i></a>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between p-3.5 bg-white border border-gray-100 rounded-2xl shadow-sm">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-lg"><i class="fas fa-city"></i></div>
-                                <div>
-                                    <h4 class="text-xs font-bold text-gray-800">KJRI Jeddah</h4>
-                                    <p class="text-[10px] text-gray-500">Konsulat Jenderal RI</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <a href="https://instagram.com/indonesiainjeddah" target="_blank" class="w-8 h-8 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center hover:bg-pink-100 transition-colors"><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Section: Saluran WhatsApp UIM -->
                 <div>
                     <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
@@ -470,120 +496,6 @@
                             <div class="w-8 h-8 shrink-0 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm"><i class="fab fa-whatsapp"></i></div>
                             <span class="text-xs font-semibold text-gray-700 leading-tight">I'laanat wa Ansyithah</span>
                         </a>
-                        <a href="https://whatsapp.com/channel/0029VarTXRbEAKWDdXGwvj1e" target="_blank" class="flex items-center gap-3 p-2.5 bg-white rounded-xl hover:bg-green-50 border border-gray-100 transition-all shadow-sm">
-                            <div class="w-8 h-8 shrink-0 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm"><i class="fab fa-whatsapp"></i></div>
-                            <span class="text-xs font-semibold text-gray-700 leading-tight">Idarah Safar</span>
-                        </a>
-                        <a href="https://whatsapp.com/channel/0029VaCqhMh90x2xWaiTrQ2I" target="_blank" class="flex items-center gap-3 p-2.5 bg-white rounded-xl hover:bg-green-50 border border-gray-100 transition-all shadow-sm">
-                            <div class="w-8 h-8 shrink-0 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm"><i class="fab fa-whatsapp"></i></div>
-                            <span class="text-xs font-semibold text-gray-700 leading-tight">Math'am Jami'ah</span>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Section: Akun Twitter/X UIM -->
-                <div>
-                    <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
-                        <i class="fab fa-twitter text-black"></i> Informasi Akademik (X / Twitter)
-                    </h3>
-                    <div class="grid grid-cols-2 gap-2">
-                        <a href="https://x.com/iu_edu" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Univ. Islam Madinah</span>
-                        </a>
-                        <a href="https://x.com/dsa_iu_edu" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Syu'un Thullab</span>
-                        </a>
-                        <a href="https://x.com/AdmissDeanship" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Qabul wat Tasjil</span>
-                        </a>
-                        <a href="https://x.com/iu_Society" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Mujtama' Jami'ah</span>
-                        </a>
-                        <a href="https://x.com/highstudies_iu" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Dirasat Ulya</span>
-                        </a>
-                        <a href="https://x.com/iu_m3had" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Ma'had Ta'lim Lughah</span>
-                        </a>
-                        <a href="https://x.com/ShariaFaculty" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Syari'ah</span>
-                        </a>
-                        <a href="https://x.com/FLE_iu" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Qanun</span>
-                        </a>
-                        <a href="https://x.com/DaawaFaculty" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Dakwah</span>
-                        </a>
-                        <a href="https://x.com/HadithFaculty" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Hadist</span>
-                        </a>
-                        <a href="https://x.com/qurancollege" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Al Qur'an</span>
-                        </a>
-                        <a href="https://x.com/arabic_iu" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Bahasa Arab</span>
-                        </a>
-                        <a href="https://x.com/SciFaculty" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Ulum</span>
-                        </a>
-                        <a href="https://x.com/fcis_iu" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Komputer</span>
-                        </a>
-                        <a href="https://x.com/EngFaculty_IU" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Fakultas Handasah</span>
-                        </a>
-                        <a href="https://x.com/fcf_iu_edu" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Ats Tsaqaafaat</span>
-                        </a>
-                        <a href="https://x.com/MedC_IU" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">RS Jami'ah</span>
-                        </a>
-                        <a href="https://x.com/Riyadah_IU" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Markaz Riyadah</span>
-                        </a>
-                        <a href="https://x.com/asaqefah" target="_blank" class="flex items-center gap-2 p-2 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 transition-colors col-span-2 sm:col-span-1">
-                            <div class="w-6 h-6 shrink-0 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fab fa-twitter"></i></div>
-                            <span class="text-[10px] font-semibold text-gray-800 leading-tight">Asaqefah</span>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Section: Grup Komunikasi PPMI -->
-                <div>
-                    <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2 flex items-center gap-2">
-                        <i class="fas fa-users text-blue-500"></i> Komunikasi & Grup PPMI
-                    </h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <a href="https://chat.whatsapp.com/HS2Zt5aKRFd2UXR2EzSe6j" target="_blank" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-2xl hover:shadow-md transition-all hover:-translate-y-1">
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-green-400 to-green-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-green-500/30 mb-2">
-                                <i class="fab fa-whatsapp"></i>
-                            </div>
-                            <span class="text-xs font-bold text-gray-700 text-center">PPMI Madinah</span>
-                        </a>
-                        <a href="https://chat.whatsapp.com/HN3c65WGO866lj177JFzyn" target="_blank" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 shadow-sm rounded-2xl hover:shadow-md transition-all hover:-translate-y-1">
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-green-400 to-green-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-green-500/30 mb-2">
-                                <i class="fab fa-whatsapp"></i>
-                            </div>
-                            <span class="text-xs font-bold text-gray-700 text-center">Kajian PPMI</span>
-                        </a>
                     </div>
                 </div>
 
@@ -601,15 +513,12 @@
                         </a>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Bottom Navigation Buttons -->
-            <div class="flex gap-3 mt-8 w-full border-t border-gray-100 pt-5">
-                <button id="btn-prev" onclick="prevTab()" class="hidden flex-[0.7] py-3.5 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm active:scale-95 transition-all hover:bg-gray-200 shadow-sm"><i class="fas fa-chevron-left mr-1"></i> Kembali</button>
-                <button id="btn-next" onclick="nextTab()" class="flex-1 py-3.5 rounded-xl bg-gray-800 text-white font-bold text-sm shadow-md active:scale-95 transition-all hover:bg-gray-900">Selanjutnya <i class="fas fa-chevron-right ml-1"></i></button>
-                <button id="btn-save" onclick="confirmSave()" class="hidden flex-1 py-3.5 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-sm shadow-lg shadow-green-600/30 active:scale-[0.98] transition-all"><i class="fas fa-check-circle mr-1"></i> Simpan Data</button>
-            </div>
 
+                <div class="mt-8 pt-4 border-t border-gray-100 flex justify-between">
+                    <button onclick="navTab('akademik')" class="bg-gray-100 text-gray-700 font-bold py-3 px-5 rounded-xl flex items-center gap-2 text-sm active:scale-95 transition-transform"><i class="fas fa-arrow-left"></i> Kembali</button>
+                    <button onclick="confirmSave()" class="bg-gradient-to-r from-green-600 to-emerald-700 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 text-sm active:scale-95 transition-transform shadow-lg shadow-green-600/30"><i class="fas fa-paper-plane"></i> Simpan Data</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -628,27 +537,78 @@
         </div>
     </div>
 
-    <!-- Date Picker Modal -->
-    <div id="date-picker-modal" class="hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm w-full max-w-md mx-auto flex items-end justify-center">
-        <div class="w-full bg-white rounded-t-3xl shadow-2xl transform translate-y-full transition-transform duration-300" id="dp-container">
-            <div class="flex justify-between items-center p-4 border-b border-gray-100">
-                <button onclick="closeDatePicker()" class="text-gray-500 font-semibold text-sm px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors">Batal</button>
-                <h3 class="font-bold text-gray-800 text-sm">Pilih Tanggal</h3>
-                <button onclick="applyDate()" class="text-green-600 font-bold text-sm px-4 py-2 hover:bg-green-50 rounded-lg transition-colors">Pilih</button>
-            </div>
-            <div class="relative h-56 bg-white overflow-hidden picker-mask my-4">
-                <div class="absolute top-1/2 left-4 right-4 h-10 -translate-y-1/2 bg-green-50/60 border-y-2 border-green-200 pointer-events-none rounded-lg z-0"></div>
-                <div class="flex h-full relative z-10 px-4">
-                    <div id="wheel-date" class="flex-1 overflow-y-scroll hide-scrollbar picker-col relative" onscroll="handleWheelScroll('date')">
-                        <div class="h-[92px]"></div><div id="wheel-date-content"></div><div class="h-[92px]"></div>
-                    </div>
-                    <div id="wheel-month" class="flex-1 overflow-y-scroll hide-scrollbar picker-col relative" onscroll="handleWheelScroll('month')">
-                        <div class="h-[92px]"></div><div id="wheel-month-content"></div><div class="h-[92px]"></div>
-                    </div>
-                    <div id="wheel-year" class="flex-1 overflow-y-scroll hide-scrollbar picker-col relative" onscroll="handleWheelScroll('year')">
-                        <div class="h-[92px]"></div><div id="wheel-year-content"></div><div class="h-[92px]"></div>
-                    </div>
+    <!-- Modal Ubah Akun -->
+    <div id="account-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm w-full max-w-md mx-auto flex items-center justify-center px-4">
+        <div class="bg-white rounded-3xl p-6 w-full shadow-2xl scale-95 opacity-0 transition-all duration-300" id="account-box">
+            <h3 class="text-lg font-bold text-gray-800 mb-2 text-center">Ubah Data Login</h3>
+            <p class="text-xs text-gray-500 mb-6 text-center">Email dan Raqm Thalib baru akan dikonfirmasi melalui Email OTP.</p>
+
+            <div id="step-req-otp">
+                <label class="text-[11px] font-bold text-gray-600 mb-1 block uppercase">Email Baru</label>
+                <input type="email" id="new-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm mb-3 focus:ring-2 focus:ring-blue-400 outline-none">
+                
+                <label class="text-[11px] font-bold text-gray-600 mb-1 block uppercase">Raqm Thalib Baru</label>
+                <input type="text" id="new-thalib" inputmode="numeric" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm mb-6 focus:ring-2 focus:ring-blue-400 outline-none">
+                
+                <div class="flex gap-2">
+                    <button onclick="closeAccountModal()" class="w-1/3 py-3 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm active:scale-95 transition-transform">Batal</button>
+                    <button onclick="requestOTP()" class="w-2/3 py-3 rounded-xl bg-blue-600 text-white font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-blue-600/30">Kirim OTP</button>
                 </div>
+            </div>
+
+            <div id="step-verify-otp" class="hidden">
+                <div class="bg-green-50 p-3 rounded-xl mb-4 text-center">
+                    <p class="text-xs text-green-700 font-semibold">OTP 6-Digit telah dikirim ke Email Baru Anda.</p>
+                </div>
+                <input type="text" id="otp-input" inputmode="numeric" maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="XXXXXX" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center tracking-[1em] font-bold text-xl mb-6 focus:ring-2 focus:ring-green-400 outline-none">
+                
+                <div class="flex gap-2">
+                    <button onclick="cancelOTP()" class="w-1/3 py-3 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm active:scale-95 transition-transform">Kembali</button>
+                    <button onclick="submitChangeAccount()" class="w-2/3 py-3 rounded-xl bg-green-600 text-white font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-green-600/30">Simpan Akun</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Verifikasi OTP Pendaftaran Baru -->
+    <div id="new-user-otp-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm w-full max-w-md mx-auto flex items-center justify-center px-4">
+        <div class="bg-white rounded-3xl p-6 w-full shadow-2xl scale-95 opacity-0 transition-all duration-300" id="new-user-otp-box">
+            <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-3xl mx-auto mb-4">
+                <i class="fas fa-envelope-open-text"></i>
+            </div>
+            <h3 class="text-lg font-bold text-center text-gray-800 mb-1">Verifikasi Email Anda</h3>
+            <p class="text-xs text-center text-gray-500 mb-6 px-2">Anda terdeteksi sebagai pengguna baru. Kami telah mengirimkan 6-Digit OTP ke <b id="display-new-email" class="text-gray-800"></b>.</p>
+
+            <input type="text" id="new-user-otp-input" inputmode="numeric" maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="XXXXXX" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center tracking-[1em] font-bold text-xl mb-6 focus:ring-2 focus:ring-blue-400 outline-none">
+            
+            <div class="flex gap-3 w-full">
+                <button onclick="cancelNewUserOTP()" class="flex-1 py-3.5 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm active:scale-95 transition-transform">Batal</button>
+                <button onclick="verifyNewUserOTP()" class="flex-1 py-3.5 rounded-xl bg-blue-600 text-white font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-blue-600/30">Verifikasi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Lupa Data Login -->
+    <div id="forgot-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm w-full max-w-md mx-auto flex items-center justify-center px-4">
+        <div class="bg-white rounded-3xl p-6 w-full shadow-2xl scale-95 opacity-0 transition-all duration-300" id="forgot-box">
+            <h3 class="text-lg font-bold text-gray-800 mb-2 text-center">Bantuan Login</h3>
+            <p class="text-xs text-gray-500 mb-6 text-center">Sistem akan membantu mencari data login Anda yang hilang.</p>
+
+            <label class="text-[11px] font-bold text-gray-600 mb-1 block uppercase">Apa yang Anda lupakan?</label>
+            <select id="forgot-type" onchange="toggleForgotType()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm mb-4 focus:ring-2 focus:ring-green-400 outline-none">
+                <option value="thalib">Saya Lupa Raqm Thalib (NIM)</option>
+                <option value="email">Saya Lupa Alamat Email</option>
+            </select>
+            
+            <div id="forgot-input-container">
+                <label id="forgot-label" class="text-[11px] font-bold text-gray-600 mb-1 block uppercase">Masukkan Email Terdaftar</label>
+                <input type="text" id="forgot-input" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm mb-6 focus:ring-2 focus:ring-green-400 outline-none" placeholder="Email Anda">
+                <p id="forgot-hint" class="text-[10px] text-gray-500 -mt-4 mb-5 leading-tight">*Sistem akan mengirimkan Raqm Thalib Anda ke email tersebut.</p>
+            </div>
+            
+            <div class="flex gap-2">
+                <button onclick="closeForgotModal()" class="w-1/3 py-3 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm active:scale-95 transition-transform">Batal</button>
+                <button onclick="submitForgotRequest()" class="w-2/3 py-3 rounded-xl bg-gray-900 text-white font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-gray-900/30">Cari Data</button>
             </div>
         </div>
     </div>
@@ -662,47 +622,7 @@
         let currentUserEmail = '';
         let currentThalib = '';
 
-        // TABS LOGIC
-        const tabs = ['diri', 'akademik', 'info'];
-        let currentTabIndex = 0;
-
-        function switchTab(tabId) {
-            currentTabIndex = tabs.indexOf(tabId);
-            updateTabUI();
-        }
-
-        function nextTab() {
-            if (currentTabIndex < tabs.length - 1) { currentTabIndex++; updateTabUI(); }
-        }
-
-        function prevTab() {
-            if (currentTabIndex > 0) { currentTabIndex--; updateTabUI(); }
-        }
-
-        function updateTabUI() {
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Naik ke atas saat ganti tab
-
-            tabs.forEach((tab, index) => {
-                const content = document.getElementById(`tab-${tab}`);
-                const btn = document.getElementById(`tab-btn-${tab}`);
-                
-                if (index === currentTabIndex) {
-                    content.classList.remove('hidden');
-                    btn.classList.add('bg-green-600', 'text-white', 'shadow-md');
-                    btn.classList.remove('text-gray-500', 'hover:text-green-600', 'hover:bg-green-50');
-                } else {
-                    content.classList.add('hidden');
-                    btn.classList.remove('bg-green-600', 'text-white', 'shadow-md');
-                    btn.classList.add('text-gray-500', 'hover:text-green-600', 'hover:bg-green-50');
-                }
-            });
-
-            document.getElementById('btn-prev').classList.toggle('hidden', currentTabIndex === 0);
-            document.getElementById('btn-next').classList.toggle('hidden', currentTabIndex === tabs.length - 1);
-            
-            // Tombol "Simpan Data" akan muncul di Tab ke-2 (Akademik) dan Tab ke-3 (Info)
-            document.getElementById('btn-save').classList.toggle('hidden', currentTabIndex < 1);
-        }
+        const tabOrder = ['diri', 'akademik', 'info'];
 
         // KONEKSI API
         function setConnectionStatus(isConnected) {
@@ -765,38 +685,170 @@
         }
 
         function updateProfileIcon(gender) {
-            const container = document.getElementById('profile-icon-container');
-            const icon = document.getElementById('profile-icon');
+            const container = document.getElementById('dashboard-profile-container');
+            const icon = document.getElementById('dashboard-profile-icon');
             if (!container || !icon) return;
             if (gender === 'Akhwat') {
-                container.className = 'w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 shadow-sm transition-colors duration-300';
-                icon.className = 'fas fa-female text-lg';
+                container.className = 'w-14 h-14 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 shadow-sm border-2 border-white shrink-0';
+                icon.className = 'fas fa-female text-xl';
             } else {
-                container.className = 'w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 shadow-sm transition-colors duration-300';
-                icon.className = 'fas fa-male text-lg';
+                container.className = 'w-14 h-14 rounded-full bg-green-200 flex items-center justify-center text-green-700 shadow-sm border-2 border-white shrink-0';
+                icon.className = 'fas fa-user-graduate text-xl';
+            }
+        }
+
+        function toggleMenu() {
+            const overlay = document.getElementById('menu-overlay');
+            const panel = document.getElementById('menu-panel');
+            if (overlay.classList.contains('hidden')) {
+                overlay.classList.remove('hidden'); void overlay.offsetWidth; panel.classList.remove('translate-x-full');
+            } else {
+                panel.classList.add('translate-x-full'); setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        function showScreen(id) {
+            document.getElementById('screen-email').classList.add('hidden');
+            document.getElementById('screen-dashboard').classList.add('hidden');
+            document.getElementById('screen-editor').classList.add('hidden');
+            document.getElementById('main-header').classList.add('hidden');
+            document.body.classList.replace('bg-green-600', 'bg-gray-50');
+
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'screen-dashboard' || id === 'screen-editor') {
+                document.getElementById('main-header').classList.remove('hidden');
+            }
+        }
+
+        function navTab(tabId) {
+            tabOrder.forEach(tab => {
+                document.getElementById(`tab-${tab}`).classList.add('hidden');
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            
+            const stepIndex = tabOrder.indexOf(tabId) + 1;
+            document.getElementById('editor-step-indicator').textContent = `Langkah ${stepIndex} dari 3`;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            updateCompleteness();
+        }
+
+        function openEditor(tabId) {
+            document.getElementById('screen-dashboard').classList.add('hidden');
+            document.getElementById('screen-editor').classList.remove('hidden');
+            
+            document.getElementById('btn-hamburger').classList.add('hidden');
+            document.getElementById('btn-back-dashboard').classList.remove('hidden');
+            document.getElementById('btn-back-dashboard').style.display = 'flex';
+            document.getElementById('header-title').textContent = "Pembaruan Data";
+
+            navTab(tabId || 'diri');
+        }
+
+        function closeEditor() {
+            updateCompleteness();
+            document.getElementById('screen-editor').classList.add('hidden');
+            document.getElementById('screen-dashboard').classList.remove('hidden');
+
+            document.getElementById('btn-back-dashboard').classList.add('hidden');
+            document.getElementById('btn-back-dashboard').style.display = 'none';
+            document.getElementById('btn-hamburger').classList.remove('hidden');
+            document.getElementById('header-title').textContent = "Dashboard PPMI";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateCompleteness() {
+            let totalFilled = 0;
+            let totalRequired = 0;
+
+            const sections = ['diri', 'akademik']; // Tab 'info' tidak wajib
+
+            sections.forEach(section => {
+                let sectionFilled = 0;
+                let sectionRequired = 0;
+
+                if (section === 'diri') {
+                    const fields = ['f-nama-id', 'f-nama-ar', 'f-jen-k', 'f-wa', 'f-dom-indo', 'f-kerabat-nama', 'f-kerabat-hub', 'f-kerabat-nomor'];
+                    sectionRequired = fields.length;
+                    fields.forEach(id => {
+                        const el = document.getElementById(id);
+                        if(el && el.value && el.value.trim() !== '') sectionFilled++;
+                    });
+                } else if (section === 'akademik') {
+                    const fields = ['stts', 'f-angkatan', 'f-jenjang', 'f-jurusan', 'f-alumni'];
+                    sectionRequired = fields.length;
+                    fields.forEach(id => {
+                        const el = document.getElementById(id);
+                        if(el && el.value && el.value.trim() !== '' && el.value !== 'Lainnya') sectionFilled++;
+                    });
+                }
+
+                const pctSection = Math.round((sectionFilled / sectionRequired) * 100);
+                const circle = document.getElementById(`chart-${section}`);
+                if(circle) {
+                    const offset = 87.9 - (pctSection / 100) * 87.9; // Circumference = 2 * pi * r (for r=14 -> 87.9)
+                    if(section === 'akademik') {
+                        circle.style.strokeDasharray = "62.8";
+                        circle.style.strokeDashoffset = 62.8 - (pctSection / 100) * 62.8; // for r=10 -> 62.8
+                    } else {
+                        circle.style.strokeDashoffset = offset;
+                    }
+                    if(pctSection === 100) circle.style.stroke = "#10b981"; 
+                    else circle.style.stroke = (section === 'diri') ? "#3b82f6" : "#6366f1";
+                }
+
+                totalFilled += sectionFilled;
+                totalRequired += sectionRequired;
+            });
+
+            const pctTotal = Math.round((totalFilled / totalRequired) * 100);
+            const mainCircle = document.getElementById('donut-progress-main');
+            const mainText = document.getElementById('progress-text-main');
+            const statusText = document.getElementById('completeness-status');
+            
+            const mainOffset = 175.9 - (pctTotal / 100) * 175.9;
+            mainCircle.style.strokeDashoffset = mainOffset;
+            mainText.textContent = `${pctTotal}%`;
+            
+            if(pctTotal === 100) {
+                statusText.textContent = "Data Telah Lengkap";
+                statusText.className = "text-[11px] font-bold px-2 py-1 rounded-md inline-block mt-1 bg-green-100 text-green-700";
+                mainCircle.style.stroke = "#16a34a";
+                mainText.className = "text-sm font-bold text-green-600";
+            } else if(pctTotal >= 60) {
+                statusText.textContent = "Data Hampir Lengkap";
+                statusText.className = "text-[11px] font-bold px-2 py-1 rounded-md inline-block mt-1 bg-blue-100 text-blue-700";
+                mainCircle.style.stroke = "#3b82f6";
+                mainText.className = "text-sm font-bold text-blue-600";
+            } else {
+                statusText.textContent = "Data Belum Lengkap";
+                statusText.className = "text-[11px] font-bold px-2 py-1 rounded-md inline-block mt-1 bg-orange-100 text-orange-700";
+                mainCircle.style.stroke = "#f97316";
+                mainText.className = "text-sm font-bold text-orange-500";
+            }
+        }
+
+        // Cek Login Lokal
+        function checkLocalLogin() {
+            const savedEmail = localStorage.getItem('online_email');
+            const savedThalib = localStorage.getItem('online_thalib');
+
+            if (savedEmail && savedThalib) {
+                document.getElementById('login-email').value = savedEmail;
+                document.getElementById('login-thalib').value = savedThalib;
+                loginApp(); 
             }
         }
 
         window.onload = () => {
             setTimeout(() => {
                 document.getElementById('splash-screen').style.opacity = '0';
-                setTimeout(() => document.getElementById('splash-screen').classList.add('hidden'), 500);
+                setTimeout(() => {
+                    document.getElementById('splash-screen').classList.add('hidden');
+                    checkLocalLogin();
+                }, 500);
             }, 1500);
-            initDatePicker();
         };
-
-        function showScreen(id) {
-            document.getElementById('screen-email').classList.add('hidden');
-            document.getElementById('screen-form').classList.add('hidden');
-            document.getElementById('main-header').classList.add('hidden');
-            document.body.classList.replace('bg-green-600', 'bg-white'); // Fix background color transition
-
-            document.getElementById(id).classList.remove('hidden');
-            if(id === 'screen-form') {
-                document.getElementById('main-header').classList.remove('hidden');
-                switchTab('diri'); // Selalu mulai dari tab Data Diri
-            }
-        }
 
         // LOGIN SYSTEM
         async function loginApp() {
@@ -828,25 +880,205 @@
                         showDynamicIsland('Akses Ditolak! Khusus Mahasiswa Program Online.', 'error');
                         return; // Hentikan eksekusi, akses ditolak
                     }
-                    // -----------------------------------------
-
+                    
+                    localStorage.setItem('online_email', currentUserEmail);
+                    localStorage.setItem('online_thalib', currentThalib);
+                    
                     populateForm(data);
                     showDynamicIsland('Akses Diterima', 'success');
+                    
+                    document.getElementById('dash-nama').textContent = document.getElementById('f-nama-id').value || 'Tanpa Nama';
+                    document.getElementById('dash-thalib').textContent = "ID: " + currentThalib;
+                    updateCompleteness();
+                    showScreen('screen-dashboard');
                 } else {
-                    // --- Memperbolehkan buat akun baru jika belum terdaftar ---
-                    clearForm();
-                    document.getElementById('last-updated-text').textContent = "Status: Pengguna Baru";
-                    document.getElementById('last-updated-text').className = "text-[10px] text-blue-600 font-medium mt-1 italic";
-                    document.getElementById('f-thalib').value = currentThalib; // Set Thalib Input otomatis
-                    showDynamicIsland('Akun Baru. Silakan lengkapi formulir', 'success');
+                    // PENGGUNA BARU: Kirim OTP Pendaftaran
+                    showDynamicIsland('Mengirim OTP Pendaftaran...', 'process');
+                    await serverCall('sendNewOTP', { email: currentUserEmail });
+                    showDynamicIsland('OTP Terkirim ke Email!', 'success');
+                    openNewUserOTPModal();
                 }
-                
-                // Menampilkan form untuk akun lama maupun akun baru
-                document.getElementById('display-email').textContent = currentUserEmail;
-                document.getElementById('display-thalib').textContent = "ID: " + currentThalib;
-                showScreen('screen-form');
             } catch (err) {
                 showDynamicIsland(err.message || 'Gagal koneksi ke server', 'error');
+            }
+        }
+
+        // --- OTP PENGGUNA BARU ---
+        function openNewUserOTPModal() {
+            document.getElementById('display-new-email').textContent = currentUserEmail;
+            document.getElementById('new-user-otp-input').value = '';
+            
+            const m = document.getElementById('new-user-otp-modal');
+            const b = document.getElementById('new-user-otp-box');
+            m.classList.remove('hidden'); void m.offsetWidth;
+            b.classList.remove('scale-95', 'opacity-0'); b.classList.add('scale-100', 'opacity-100');
+        }
+
+        function cancelNewUserOTP() {
+            const m = document.getElementById('new-user-otp-modal');
+            const b = document.getElementById('new-user-otp-box');
+            b.classList.remove('scale-100', 'opacity-100'); b.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 300);
+            currentUserEmail = ''; currentThalib = ''; 
+        }
+
+        async function verifyNewUserOTP() {
+            const otpCode = document.getElementById('new-user-otp-input').value.trim();
+            if(otpCode.length !== 6) { showDynamicIsland("OTP harus 6 Digit", "error"); return; }
+
+            showDynamicIsland("Memverifikasi...", "process");
+            try {
+                await serverCall('verifyNewOTP', { email: currentUserEmail, otp: otpCode });
+                
+                cancelNewUserOTP();
+                
+                clearForm();
+                document.getElementById('dash-last-updated').textContent = "Status: Pengguna Baru";
+                document.getElementById('f-thalib').value = currentThalib; 
+                
+                localStorage.setItem('online_email', currentUserEmail);
+                localStorage.setItem('online_thalib', currentThalib);
+                
+                showDynamicIsland('Verifikasi Berhasil!', 'success');
+                
+                document.getElementById('dash-nama').textContent = 'Pengguna Baru';
+                document.getElementById('dash-thalib').textContent = "ID: " + currentThalib;
+                updateCompleteness();
+                showScreen('screen-dashboard');
+
+            } catch (err) {
+                showDynamicIsland(err.message, "error");
+            }
+        }
+
+        // --- SISTEM UBAH AKUN (DASHBOARD) ---
+        function openAccountModal() {
+            toggleMenu();
+            document.getElementById('new-email').value = currentUserEmail;
+            document.getElementById('new-thalib').value = currentThalib;
+            document.getElementById('otp-input').value = '';
+            
+            document.getElementById('step-req-otp').classList.remove('hidden');
+            document.getElementById('step-verify-otp').classList.add('hidden');
+
+            const m = document.getElementById('account-modal');
+            const b = document.getElementById('account-box');
+            m.classList.remove('hidden'); void m.offsetWidth;
+            b.classList.remove('scale-95', 'opacity-0'); b.classList.add('scale-100', 'opacity-100');
+        }
+
+        function closeAccountModal() {
+            const m = document.getElementById('account-modal');
+            const b = document.getElementById('account-box');
+            b.classList.remove('scale-100', 'opacity-100'); b.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 300);
+        }
+
+        function cancelOTP() {
+            document.getElementById('step-verify-otp').classList.add('hidden');
+            document.getElementById('step-req-otp').classList.remove('hidden');
+        }
+
+        async function requestOTP() {
+            const nEmail = document.getElementById('new-email').value.trim();
+            const nThalib = document.getElementById('new-thalib').value.trim();
+            
+            if (!nEmail.includes('@') || !nThalib || nThalib.length !== 9) { showDynamicIsland("Pastikan Email dan Raqm Thalib terisi benar", "error"); return; }
+            if (nEmail === currentUserEmail && nThalib === currentThalib) { showDynamicIsland("Gunakan data yang berbeda", "error"); return; }
+            
+            showDynamicIsland("Meminta Kode OTP...", "process");
+            try {
+                await serverCall('sendUpdateOTP', { oldEmail: currentUserEmail, oldThalib: currentThalib, newEmail: nEmail, newThalib: nThalib });
+                showDynamicIsland("OTP Terkirim ke Email Baru", "success");
+                document.getElementById('step-req-otp').classList.add('hidden');
+                document.getElementById('step-verify-otp').classList.remove('hidden');
+            } catch (err) { showDynamicIsland(err.message, "error"); }
+        }
+
+        async function submitChangeAccount() {
+            const nEmail = document.getElementById('new-email').value.trim();
+            const nThalib = document.getElementById('new-thalib').value.trim();
+            const otpCode = document.getElementById('otp-input').value.trim();
+
+            if (otpCode.length !== 6) { showDynamicIsland("OTP harus 6 Digit", "error"); return; }
+            
+            showDynamicIsland("Memverifikasi & Menyimpan...", "process");
+            try {
+                await serverCall('updateAccount', { oldEmail: currentUserEmail, oldThalib: currentThalib, newEmail: nEmail, newThalib: nThalib, otp: otpCode });
+                
+                showDynamicIsland("Berhasil Diubah!", "success");
+                
+                currentUserEmail = nEmail;
+                currentThalib = nThalib;
+                localStorage.setItem('online_email', nEmail);
+                localStorage.setItem('online_thalib', nThalib);
+                
+                document.getElementById('f-thalib').value = nThalib;
+                document.getElementById('dash-thalib').textContent = "ID: " + nThalib;
+
+                closeAccountModal();
+            } catch (err) { showDynamicIsland(err.message, "error"); }
+        }
+
+        // --- SISTEM LUPA DATA LOGIN ---
+        function openForgotModal() {
+            document.getElementById('forgot-input').value = '';
+            toggleForgotType();
+            const m = document.getElementById('forgot-modal');
+            const b = document.getElementById('forgot-box');
+            m.classList.remove('hidden'); void m.offsetWidth;
+            b.classList.remove('scale-95', 'opacity-0'); b.classList.add('scale-100', 'opacity-100');
+        }
+
+        function closeForgotModal() {
+            const m = document.getElementById('forgot-modal');
+            const b = document.getElementById('forgot-box');
+            b.classList.remove('scale-100', 'opacity-100'); b.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 300);
+        }
+
+        function toggleForgotType() {
+            const type = document.getElementById('forgot-type').value;
+            const inputEl = document.getElementById('forgot-input');
+            const labelEl = document.getElementById('forgot-label');
+            const hintEl = document.getElementById('forgot-hint');
+
+            if (type === 'thalib') {
+                labelEl.textContent = "Masukkan Email Terdaftar";
+                inputEl.type = "email";
+                inputEl.placeholder = "emailanda@gmail.com";
+                inputEl.setAttribute("inputmode", "email");
+                inputEl.oninput = null; 
+                hintEl.textContent = "*Sistem akan mengirimkan Raqm Thalib Anda ke email tersebut.";
+            } else {
+                labelEl.textContent = "Masukkan Raqm Thalib (NIM)";
+                inputEl.type = "text";
+                inputEl.placeholder = "9 Digit Angka...";
+                inputEl.setAttribute("inputmode", "numeric");
+                inputEl.oninput = function() { this.value = this.value.replace(/[^0-9]/g, ''); };
+                hintEl.textContent = "*Sistem akan mengirimkan Alamat Email via WhatsApp (jika terdaftar).";
+            }
+        }
+
+        async function submitForgotRequest() {
+            const type = document.getElementById('forgot-type').value;
+            const inputValue = document.getElementById('forgot-input').value.trim();
+
+            if (!inputValue) { showDynamicIsland("Harap isi data dengan benar", "error"); return; }
+
+            showDynamicIsland("Mencari & Mengirim Data...", "process");
+            try {
+                if (type === 'thalib') {
+                    if (!inputValue.includes('@')) throw new Error("Format Email tidak valid");
+                    await serverCall('recoverThalib', { email: inputValue });
+                    showDynamicIsland("Raqm Thalib telah dikirim ke Email", "success");
+                } else {
+                    await serverCall('recoverEmail', { thalib: inputValue });
+                    showDynamicIsland("Email telah dikirim via WhatsApp", "success");
+                }
+                setTimeout(() => closeForgotModal(), 1500);
+            } catch (err) {
+                showDynamicIsland(err.message, "error");
             }
         }
 
@@ -880,15 +1112,14 @@
             
             updateProfileIcon(data.jen_k);
             if(data.last_updated) {
-                document.getElementById('last-updated-text').textContent = `Diperbarui: ${data.last_updated}`;
-                document.getElementById('last-updated-text').className = "text-[10px] text-green-600 font-medium mt-1 italic";
+                document.getElementById('dash-last-updated').textContent = `Terakhir Diperbarui: ${data.last_updated}`;
             }
         }
 
         function clearForm() {
-            const inputs = document.querySelectorAll('#screen-form input[type="text"]:not(#f-thalib)');
+            const inputs = document.querySelectorAll('#screen-editor input[type="text"]:not(#f-thalib)');
             inputs.forEach(input => input.value = '');
-            const selects = document.querySelectorAll('#screen-form select');
+            const selects = document.querySelectorAll('#screen-editor select');
             selects.forEach(select => select.selectedIndex = 0);
             updateProfileIcon('');
         }
@@ -926,8 +1157,8 @@
                     showDynamicIsland('Terdapat kolom kosong yang wajib diisi!', 'error'); return;
                 }
             }
-            if (data.thalib.length !== 9) { showDynamicIsland('Raqm Thalib wajib 9 digit!', 'error'); switchTab('akademik'); return; }
-            if (!data.kerabat_nomor.startsWith('628')) { showDynamicIsland('Nomor Cadangan harus diawali 628', 'error'); switchTab('diri'); return; }
+            if (data.thalib.length !== 9) { showDynamicIsland('Raqm Thalib wajib 9 digit!', 'error'); navTab('akademik'); return; }
+            if (!data.kerabat_nomor.startsWith('628')) { showDynamicIsland('Nomor Cadangan harus diawali 628', 'error'); navTab('diri'); return; }
 
             const m = document.getElementById('confirm-modal');
             const b = document.getElementById('confirm-box');
@@ -946,31 +1177,15 @@
             closeConfirm(); showDynamicIsland('Menyimpan Data...', 'process');
             const data = getFormData();
             try {
-                // Gunakan save data endpoint yang dimodifikasi untuk menampung satu objek 'data' utuh
                 await serverCall('saveData', data);
                 const now = new Date().toLocaleString('id-ID');
-                document.getElementById('last-updated-text').textContent = `Diperbarui: ${now}`;
-                showDynamicIsland('Mantap! Data Berhasil Disimpan', 'success');
+                document.getElementById('dash-last-updated').textContent = `Terakhir Diperbarui: ${now}`;
+                
+                document.getElementById('dash-nama').textContent = data.nama_id || 'Tanpa Nama';
+                
+                showDynamicIsland('Data Berhasil Disimpan', 'success');
+                setTimeout(() => { closeEditor(); }, 800);
             } catch (err) { showDynamicIsland('Gagal menyimpan ke server', 'error'); }
-        }
-
-        function toggleMenu() {
-            const overlay = document.getElementById('menu-overlay');
-            const panel = document.getElementById('menu-panel');
-            if (overlay.classList.contains('hidden')) {
-                overlay.classList.remove('hidden'); void overlay.offsetWidth; panel.classList.remove('translate-x-full');
-            } else {
-                panel.classList.add('translate-x-full'); setTimeout(() => overlay.classList.add('hidden'), 300);
-            }
-        }
-
-        function logout() { 
-            toggleMenu(); 
-            currentUserEmail = ''; 
-            currentThalib = '';
-            document.getElementById('login-email').value = ''; 
-            document.getElementById('login-thalib').value = ''; 
-            showScreen('screen-email'); 
         }
 
         function toggleAngkatanLainnya() {
@@ -986,59 +1201,17 @@
         }
         document.getElementById('f-jurusan-lainnya').addEventListener('input', function() { document.getElementById('f-jurusan').value = this.value; });
 
-        // Date Picker UI Logic
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-        let activeDate = { d: '01', m: 'Jan', y: '2026' };
-        function initDatePicker() {
-            const createItems = (id, arr, loopCount) => {
-                const container = document.getElementById(id); let html = '';
-                for(let i=0; i<loopCount; i++) arr.forEach(val => html += `<div class="picker-item" data-val="${val}">${val}</div>`);
-                container.innerHTML = html;
-            };
-            createItems('wheel-date-content', Array.from({length: 31}, (_, i) => String(i+1).padStart(2, '0')), 10);
-            createItems('wheel-month-content', months, 10);
-            createItems('wheel-year-content', Array.from({length: 30}, (_, i) => String(2020 + i)), 5);
+        function logout() { 
+            toggleMenu(); 
+            localStorage.removeItem('online_email');
+            localStorage.removeItem('online_thalib');
+            currentUserEmail = ''; 
+            currentThalib = '';
+            document.getElementById('login-email').value = ''; 
+            document.getElementById('login-thalib').value = ''; 
+            showScreen('screen-email'); 
         }
-        function openDatePicker() {
-            const modal = document.getElementById('date-picker-modal'); const container = document.getElementById('dp-container'); const input = document.getElementById('f-expired');
-            let d, m, y;
-            if (input.value && input.value.includes('/')) {
-                const parts = input.value.split('/'); d = parts[0]; const mIndex = parseInt(parts[1], 10) - 1;
-                m = (mIndex >= 0 && mIndex < 12) ? months[mIndex] : months[0]; y = parts[2];
-            } else { const today = new Date(); d = String(today.getDate()).padStart(2, '0'); m = months[today.getMonth()]; y = String(today.getFullYear()); }
-            modal.classList.remove('hidden'); void modal.offsetWidth; container.classList.remove('translate-y-full');
-            setTimeout(() => { scrollToVal('date', d); scrollToVal('month', m); scrollToVal('year', y); }, 10);
-        }
-        function closeDatePicker() {
-            const modal = document.getElementById('date-picker-modal'); const container = document.getElementById('dp-container');
-            container.classList.add('translate-y-full'); setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-        function scrollToVal(type, val) {
-            const col = document.getElementById(`wheel-${type}`); const items = col.querySelectorAll('.picker-item'); const total = items.length; const middleIndex = Math.floor(total / 2); let targetIndex = -1;
-            for(let i = middleIndex; i < total; i++) { if(items[i].getAttribute('data-val') === val) { targetIndex = i; break; } }
-            if(targetIndex === -1) { for(let i = 0; i < total; i++) { if(items[i].getAttribute('data-val') === val) { targetIndex = i; break; } } }
-            if(targetIndex !== -1) { const item = items[targetIndex]; col.scrollTop = item.offsetTop - (col.clientHeight / 2) + (item.clientHeight / 2); updateActiveState(type); }
-        }
-        function handleWheelScroll(type) { clearTimeout(window[`scrollTimeout_${type}`]); window[`scrollTimeout_${type}`] = setTimeout(() => updateActiveState(type), 100); }
-        function updateActiveState(type) {
-            const col = document.getElementById(`wheel-${type}`); const items = col.querySelectorAll('.picker-item'); const centerPos = col.scrollTop + (col.clientHeight / 2);
-            let closest = null; let closestDist = Infinity;
-            items.forEach((item) => {
-                item.classList.remove('active'); const itemCenter = item.offsetTop + (item.clientHeight / 2); const dist = Math.abs(centerPos - itemCenter);
-                if(dist < closestDist) { closestDist = dist; closest = item; }
-            });
-            if(closest) {
-                closest.classList.add('active');
-                if(type === 'date') activeDate.d = closest.getAttribute('data-val');
-                if(type === 'month') activeDate.m = closest.getAttribute('data-val');
-                if(type === 'year') activeDate.y = closest.getAttribute('data-val');
-            }
-        }
-        function applyDate() {
-            const input = document.getElementById('f-expired'); const monthIndex = months.indexOf(activeDate.m) + 1;
-            const monthFormatted = String(monthIndex).padStart(2, '0');
-            input.value = `${activeDate.d}/${monthFormatted}/${activeDate.y}`; closeDatePicker();
-        }
+
     </script>
 </body>
 </html>
