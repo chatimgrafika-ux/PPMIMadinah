@@ -8,10 +8,10 @@
     <meta name="theme-color" content="#16a34a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="PPMI Thaibah">
+    <meta name="apple-mobile-web-app-title" content="PPMI Taibah">
     <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E">
 
-    <title>PPMI Madinah (Thaibah) Dashboard</title>
+    <title>PPMI Madinah (Taibah) Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -58,7 +58,7 @@
         <div class="flex items-center justify-center gap-4 mb-6 animate-pulse drop-shadow-xl">
             <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" alt="Logo PPMI" class="w-24 h-24 object-contain rounded-full shadow-sm" onerror="this.style.display='none'">
             <i class="fas fa-times text-gray-300 text-lg"></i>
-            <img src="https://drive.google.com/thumbnail?id=1aHinMWm60KxaVSUzrgF-mU1skk5BxsHA" alt="Logo Thaibah" class="w-24 h-24 object-contain rounded-full shadow-sm bg-white" onerror="this.style.display='none'">
+            <img src="https://drive.google.com/thumbnail?id=1aHinMWm60KxaVSUzrgF-mU1skk5BxsHA" alt="Logo Taibah" class="w-24 h-24 object-contain rounded-full shadow-sm bg-white" onerror="this.style.display='none'">
         </div>
         <h1 class="text-2xl font-bold text-green-600 tracking-wide">PPMI MADINAH</h1>
         <p class="text-sm text-gray-500 mt-2 font-medium">جامعة طيبة</p>
@@ -71,7 +71,7 @@
                 <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" class="w-9 h-9 object-contain bg-white rounded-full p-1 shadow z-10" alt="Logo" onerror="this.style.display='none'">
                 <img src="https://drive.google.com/thumbnail?id=1aHinMWm60KxaVSUzrgF-mU1skk5BxsHA" class="w-9 h-9 object-contain bg-white rounded-full p-1 shadow z-0" alt="Logo" onerror="this.style.display='none'">
             </div>
-            <h1 class="text-sm font-bold text-white truncate" id="header-title">Portal Thaibah</h1>
+            <h1 class="text-sm font-bold text-white truncate" id="header-title">Portal Taibah</h1>
         </div>
         
         <button id="btn-back-dashboard" onclick="closeEditor()" class="hidden items-center gap-2 text-white font-bold text-sm bg-white/20 px-4 py-1.5 rounded-lg hover:bg-white/30 transition-colors whitespace-nowrap w-max shrink-0">
@@ -162,7 +162,7 @@
                 </div>
             </div>
         </div>
-        <p class="text-white/80 text-xs mt-8 z-10 font-medium">© 2026 PPMI Madinah (Thaibah)</p>
+        <p class="text-white/80 text-xs mt-8 z-10 font-medium">© 2026 PPMI Madinah (Taibah)</p>
     </div>
 
     <!-- SCREEN 2: DASHBOARD UTAMA -->
@@ -190,7 +190,7 @@
                     <h3 class="text-sm font-bold text-gray-800">Kelengkapan Data</h3>
                 </div>
                 <p id="completeness-status" class="text-[11px] font-bold px-2 py-1 rounded-md inline-block mt-1 bg-gray-100 text-gray-600">Menghitung...</p>
-                <p class="text-[10px] text-gray-400 mt-2 leading-tight pr-2">Lengkapi profil Anda untuk kepentingan administrasi terpadu Thaibah.</p>
+                <p class="text-[10px] text-gray-400 mt-2 leading-tight pr-2">Lengkapi profil Anda untuk kepentingan administrasi terpadu Taibah.</p>
             </div>
             
             <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
@@ -812,39 +812,37 @@
             }
         }
 
+        function checkLocalLogin() {
+            const savedEmail = localStorage.getItem('Taibah_email');
+            const savedIdVal = localStorage.getItem('Taibah_idval');
+            const savedIdType = localStorage.getItem('Taibah_idtype');
+
+            if (savedEmail) {
+                document.getElementById('login-email').value = savedEmail;
+                if(savedIdVal) {
+                    document.getElementById('login-id-val').value = savedIdVal;
+                }
+                if(savedIdType) {
+                    document.getElementById('login-id-type').value = savedIdType;
+                }
+                
+                // Jika data lengkap, sistem otomatis mengeksekusi fungsi Login
+                if (savedEmail && savedIdVal) {
+                    processLogin(); 
+                }
+            }
+        }
+
         window.onload = async () => {
             setTimeout(() => {
                 document.getElementById('splash-screen').style.opacity = '0';
-                setTimeout(() => document.getElementById('splash-screen').classList.add('hidden'), 500);
+                setTimeout(() => {
+                    document.getElementById('splash-screen').classList.add('hidden');
+                    // Jalankan fungsi auto-login setelah splash screen hilang
+                    checkLocalLogin();
+                }, 500);
             }, 1500);
             initDatePicker();
-
-            // Auto-Login
-            const savedEmail = localStorage.getItem('thaibah_email');
-            const savedIdVal = localStorage.getItem('thaibah_idval');
-            
-            if (savedEmail) {
-                document.getElementById('login-email').value = savedEmail;
-                if(savedIdVal) document.getElementById('login-id-val').value = savedIdVal;
-                
-                // Silently attempt to login
-                currentEmail = savedEmail;
-                currentIdVal = savedIdVal;
-                try {
-                    const res = await serverCall('getData', { email: currentEmail });
-                    if (res) {
-                        const data = JSON.parse(res);
-                        populateForm(data);
-                        
-                        document.getElementById('dash-nama').innerHTML = (data["Nama Lengkap (Indonesia)"] || 'Tanpa Nama') + (data["Status"]?.toLowerCase() === 'blokir' ? ' <span id="badge-blokir" class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase">Blokir</span>' : '');
-                        document.getElementById('dash-id').textContent = "ID: " + currentEmail;
-                        updateCompleteness();
-                        showScreen('screen-dashboard');
-                    } else {
-                        localStorage.removeItem('thaibah_email');
-                    }
-                } catch (err) {}
-            }
         };
 
         function showScreen(id) {
@@ -906,7 +904,7 @@
             document.getElementById('btn-back-dashboard').classList.add('hidden');
             document.getElementById('btn-back-dashboard').style.display = 'none';
             document.getElementById('btn-hamburger').classList.remove('hidden');
-            document.getElementById('header-title').textContent = "Portal Thaibah";
+            document.getElementById('header-title').textContent = "Portal Taibah";
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -1006,6 +1004,9 @@
 
                     if (!isValid) {
                         showDynamicIsland('Nomor Identitas tidak cocok dengan Email ini!', 'error');
+                        // Hapus penyimpanan lokal jika kredensial salah / diubah di perangkat lain
+                        localStorage.removeItem('Taibah_email'); 
+                        localStorage.removeItem('Taibah_idval');
                         return;
                     }
 
@@ -1015,8 +1016,11 @@
                     document.getElementById('dash-nama').innerHTML = (data["Nama Lengkap (Indonesia)"] || 'Tanpa Nama') + (data["Status"]?.toLowerCase() === 'blokir' ? ' <span id="badge-blokir" class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase">Blokir</span>' : '');
                     document.getElementById('dash-id').textContent = "ID: " + currentEmail;
                     
-                    localStorage.setItem('thaibah_email', currentEmail);
-                    localStorage.setItem('thaibah_idval', idVal);
+                    // Simpan ke Local Storage untuk Auto-Login selanjutnya
+                    localStorage.setItem('Taibah_email', currentEmail);
+                    localStorage.setItem('Taibah_idval', idVal);
+                    localStorage.setItem('Taibah_idtype', idType);
+                    
                     updateCompleteness();
                     checkPassportAlert();
                     showScreen('screen-dashboard');
@@ -1096,7 +1100,15 @@
                 document.getElementById('dash-nama').textContent = 'Pengguna Baru';
                 document.getElementById('dash-id').textContent = "ID: " + currentEmail;
                 
-                localStorage.setItem('thaibah_email', currentEmail);
+                // Simpan ke Local Storage
+                localStorage.setItem('Taibah_email', currentEmail);
+                const idType = document.getElementById('login-id-type').value;
+                const idVal = document.getElementById('login-id-val').value.trim();
+                if(idVal) {
+                    localStorage.setItem('Taibah_idval', idVal);
+                    localStorage.setItem('Taibah_idtype', idType);
+                }
+
                 showDynamicIsland('Berhasil! Silakan Lengkapi Data.', 'success');
                 updateCompleteness();
                 showScreen('screen-dashboard');
@@ -1275,7 +1287,12 @@
                 await serverCall('updateAccount', { oldEmail: currentEmail, oldThalib: oldThalib, newEmail: nEmail, newThalib: nThalib, otp: otpCode });
                 showDynamicIsland("Berhasil Diubah!", "success");
                 currentEmail = nEmail; currentIdVal = nThalib;
-                localStorage.setItem('thaibah_email', nEmail); localStorage.setItem('thaibah_idval', nThalib);
+                
+                // Update Local Storage
+                localStorage.setItem('Taibah_email', nEmail); 
+                localStorage.setItem('Taibah_idval', nThalib);
+                localStorage.setItem('Taibah_idtype', 'thalib'); // Default ke Raqm Thalib
+                
                 document.getElementById('f-email').value = nEmail; document.getElementById('f-thalib').value = nThalib;
                 document.getElementById('dash-id').textContent = "ID: " + nEmail;
                 closeAccountModal();
@@ -1326,8 +1343,16 @@
         }
 
         function logout() { 
-            toggleMenu(); localStorage.removeItem('thaibah_email'); localStorage.removeItem('thaibah_idval');
-            currentEmail = ''; currentIdVal = ''; document.getElementById('login-email').value = ''; document.getElementById('login-id-val').value = ''; 
+            toggleMenu(); 
+            
+            // Hapus Kredensial dari Memori Browser saat Keluar
+            localStorage.removeItem('Taibah_email'); 
+            localStorage.removeItem('Taibah_idval');
+            localStorage.removeItem('Taibah_idtype');
+            
+            currentEmail = ''; currentIdVal = ''; 
+            document.getElementById('login-email').value = ''; 
+            document.getElementById('login-id-val').value = ''; 
             showScreen('screen-email'); 
         }
 
