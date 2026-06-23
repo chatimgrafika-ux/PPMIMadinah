@@ -1,0 +1,832 @@
+html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Expo PPMI Madinah 2026</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7', 500: '#10b981', 600: '#059669', 700: '#047857', 900: '#064e3b' }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'bounce-slow': 'bounce 3s infinite',
+                        'blob': 'blob 7s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(30px) scale(0.95)' }, '100%': { opacity: '1', transform: 'translateY(0) scale(1)' } },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #f0fdf4; color: #1e293b; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
+        
+        /* Animated Background Utility */
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed; inset: 0; background: white; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+        }
+        .splash-hidden { opacity: 0; visibility: hidden; }
+
+        /* Custom Inputs */
+        .input-field {
+            width: 100%; padding: 0.875rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(203, 213, 225, 0.6);
+            background-color: rgba(255, 255, 255, 0.8); color: #0f172a; transition: all 0.3s ease; font-size: 0.95rem;
+        }
+        .input-field:focus { outline: none; border-color: #059669; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15); background-color: white; }
+        .label-text { display: block; margin-bottom: 0.4rem; font-size: 0.875rem; font-weight: 700; color: #334155; }
+
+        /* Wizard Cards */
+        .selection-card {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+            padding: 1.5rem; border: 2px solid rgba(226, 232, 240, 0.8); border-radius: 1rem; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); background: rgba(255, 255, 255, 0.7);
+        }
+        .selection-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); }
+        .selection-card:active { transform: scale(0.97); }
+        .selection-card.selected { border-color: #059669; background-color: #ecfdf5; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2); }
+        
+        /* Linear Scale Emoji Radio */
+        .linear-radio:checked + label { 
+            background-color: #ecfdf5; 
+            border-color: #059669; 
+            transform: scale(1.25); 
+            box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.2); 
+            z-index: 20;
+        }
+        .emoji-label {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            filter: grayscale(100%);
+            opacity: 0.6;
+        }
+        .linear-radio:checked + label .emoji-label {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+        
+        /* Glassmorphism Container */
+        .glass-panel { 
+            background: rgba(255, 255, 255, 0.75); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5); 
+        }
+        
+        /* Spinner */
+        .loader { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid white; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* View Management */
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center pb-10 relative">
+
+    <!-- ANIMATED BACKGROUND GRAPHICS -->
+    <div class="fixed inset-0 overflow-hidden -z-20 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand-300 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob"></div>
+        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-brand-200 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- SPLASH SCREEN -->
+    <div id="splash-screen">
+        <div class="relative animate-bounce-slow">
+            <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" alt="PPMI Madinah Logo" class="w-40 h-40 object-contain drop-shadow-xl rounded-full">
+            <div class="absolute -inset-4 border-4 border-brand-500 rounded-full border-t-transparent animate-spin opacity-20"></div>
+        </div>
+        <h1 class="mt-6 text-2xl font-bold text-brand-900 tracking-wide">PPMI MADINAH</h1>
+        <p class="text-sm text-brand-600 font-medium mt-1">Expo & Edufair 2026</p>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="w-full max-w-lg mx-auto px-4 sm:px-6 pt-6 mt-4 opacity-0 transition-opacity duration-1000 z-10" id="main-app">
+        
+        <!-- HEADER -->
+        <div class="text-center mb-8 view-header relative">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-xl shadow-brand-500/30 mb-4 transform rotate-3 transition-transform hover:rotate-6">
+                <i class="fa-solid fa-kaaba text-3xl -rotate-3"></i>
+            </div>
+            <h2 class="text-2xl font-extrabold text-gray-900 leading-tight">Expo PPMI Madinah</h2>
+            <p id="header-subtitle" class="text-sm text-gray-600 mt-2 font-medium">Silakan lengkapi data Anda</p>
+        </div>
+
+        <!-- ERROR MESSAGE BOX -->
+        <div id="error-box" class="hidden mb-6 bg-red-50/90 backdrop-blur-sm border-l-4 border-red-500 p-4 rounded-r-xl flex items-start shadow-sm">
+            <i class="fa-solid fa-circle-exclamation text-red-500 mt-0.5 mr-3"></i>
+            <p id="error-text" class="text-sm text-red-700 font-medium"></p>
+        </div>
+
+        <!-- MAIN CARD -->
+        <div class="glass-panel rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden pb-6">
+            
+            <!-- VIEW 1: GENDER -->
+            <div id="view-gender" class="view-section active p-6 sm:p-8">
+                <h3 class="text-lg font-bold text-center mb-6 text-gray-800">Anda adalah seorang?</h3>
+                <div class="grid grid-cols-2 gap-5">
+                    <div class="selection-card" onclick="selectOption('gender', 'Ikhwan')">
+                        <div class="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-3 shadow-inner">
+                            <i class="fa-solid fa-person text-3xl"></i>
+                        </div>
+                        <span class="font-bold text-gray-800">Ikhwan</span>
+                        <span class="text-xs text-gray-500 mt-1">(Laki-laki)</span>
+                    </div>
+                    <div class="selection-card" onclick="selectOption('gender', 'Akhwat')">
+                        <div class="w-14 h-14 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center mb-3 shadow-inner">
+                            <i class="fa-solid fa-person-dress text-3xl"></i>
+                        </div>
+                        <span class="font-bold text-gray-800">Akhwat</span>
+                        <span class="text-xs text-gray-500 mt-1">(Perempuan)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: ROLE -->
+            <div id="view-role" class="view-section p-6 sm:p-8">
+                <button onclick="goBack('gender')" class="text-brand-600 text-sm font-bold mb-4 flex items-center hover:text-brand-800 transition-colors">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+                </button>
+                <h3 class="text-lg font-bold text-center mb-6 text-gray-800">Status Anda saat ini?</h3>
+                <div class="space-y-4">
+                    <div class="selection-card flex-row justify-start text-left p-4" onclick="selectOption('role', 'Calon Mahasiswa')">
+                        <div class="w-12 h-12 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center mr-4 shrink-0 shadow-inner">
+                            <i class="fa-solid fa-user-graduate text-xl"></i>
+                        </div>
+                        <div>
+                            <span class="font-bold text-gray-800 block text-md">Calon Mahasiswa</span>
+                            <span class="text-xs text-gray-500">Pelajar/Mahasiswa aktif yang ingin melanjutkan studi.</span>
+                        </div>
+                    </div>
+                    <div class="selection-card flex-row justify-start text-left p-4" onclick="selectOption('role', 'Orang Tua / Wali')">
+                        <div class="w-12 h-12 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center mr-4 shrink-0 shadow-inner">
+                            <i class="fa-solid fa-users text-xl"></i>
+                        </div>
+                        <div>
+                            <span class="font-bold text-gray-800 block text-md">Orang Tua / Wali</span>
+                            <span class="text-xs text-gray-500">Mewakili anak atau anggota keluarga.</span>
+                        </div>
+                    </div>
+                    <div class="selection-card flex-row justify-start text-left p-4" onclick="selectOption('role', 'Guru / Sekolah')">
+                        <div class="w-12 h-12 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center mr-4 shrink-0 shadow-inner">
+                            <i class="fa-solid fa-chalkboard-user text-xl"></i>
+                        </div>
+                        <div>
+                            <span class="font-bold text-gray-800 block text-md">Guru / Perwakilan Sekolah</span>
+                            <span class="text-xs text-gray-500">Mewakili instansi, pesantren, atau sekolah.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 3: PATH (Absensi / Kepuasan) -->
+            <div id="view-path" class="view-section p-6 sm:p-8">
+                <button onclick="goBack('role')" class="text-brand-600 text-sm font-bold mb-4 flex items-center hover:text-brand-800 transition-colors">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+                </button>
+                <h3 class="text-lg font-bold text-center mb-2 text-gray-800">Pilih Layanan</h3>
+                <p class="text-center text-sm text-gray-500 mb-6">Silakan pilih form yang ingin Anda isi.</p>
+                
+                <div class="space-y-4">
+                    <!-- Absensi Option (Can be locked) -->
+                    <div id="btn-path-absensi" class="relative group">
+                        <div class="selection-card flex-row justify-start text-left p-5 border-brand-200 hover:border-brand-500" onclick="selectOption('path', 'Absensi')">
+                            <div class="w-14 h-14 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mr-5 shrink-0 shadow-inner">
+                                <i class="fa-solid fa-clipboard-list text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <span class="font-bold text-gray-800 text-lg block">Form Absensi</span>
+                                <span class="text-sm text-gray-500">Isi data diri & minat pendaftaran kampus.</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-brand-500 transition-transform transform group-hover:translate-x-1"></i>
+                        </div>
+                        <!-- Overlay Lock -->
+                        <div id="lock-absensi" class="hidden absolute inset-0 bg-gray-50/80 backdrop-blur-[2px] rounded-xl flex items-center justify-center border border-gray-200 z-10 cursor-not-allowed">
+                            <div class="bg-white px-4 py-2 rounded-full shadow-md flex items-center text-gray-600 font-bold text-sm">
+                                <i class="fa-solid fa-lock mr-2 text-gray-400"></i> Sudah Diisi
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kepuasan Option -->
+                    <div class="selection-card flex-row justify-start text-left p-5 border-brand-200 hover:border-brand-500 group" onclick="selectOption('path', 'Kepuasan')">
+                        <div class="w-14 h-14 rounded-xl bg-yellow-100 text-yellow-600 flex items-center justify-center mr-5 shrink-0 shadow-inner">
+                            <i class="fa-solid fa-face-smile text-2xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <span class="font-bold text-gray-800 text-lg block">Survei Kepuasan</span>
+                            <span class="text-sm text-gray-500">Berikan penilaian & feedback acara.</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-brand-500 transition-transform transform group-hover:translate-x-1"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 4: DYNAMIC FORM -->
+            <div id="view-form" class="view-section px-6 sm:px-8 pt-4">
+                <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200/60">
+                    <button onclick="goBack('path')" class="text-brand-600 text-sm font-bold flex items-center hover:text-brand-800 transition-colors">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+                    </button>
+                    <span id="form-badge" class="bg-brand-100 text-brand-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide shadow-sm"></span>
+                </div>
+
+                <form id="main-form">
+                    <!-- ================= BAGIAN 1: IDENTITAS (Muncul di semua path) ================= -->
+                    <div id="section-identitas" class="space-y-5 mb-8">
+                        <div>
+                            <label class="label-text">Nama Lengkap <span class="text-red-500">*</span></label>
+                            <input type="text" id="namaLengkap" name="namaLengkap" class="input-field" placeholder="Masukkan nama lengkap" required>
+                        </div>
+                        <div>
+                            <label class="label-text">Nomor WhatsApp <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500 font-bold">+62</span>
+                                <input type="tel" id="noWa" name="noWa" class="input-field pl-12" placeholder="81234567890" pattern="[0-9]*" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ================= BAGIAN 2: DATA ORTU/GURU (Dinamis Absensi) ================= -->
+                    <div id="section-peran-spesifik" class="space-y-5 mb-8 hidden bg-blue-50/50 p-5 rounded-2xl border border-blue-100 shadow-sm">
+                        <div>
+                            <label id="labelNamaAnak" class="label-text">Nama Calon Mahasiswa/Siswa <span class="text-red-500">*</span></label>
+                            <input type="text" id="namaCalonMahasiswa" name="namaCalonMahasiswa" class="input-field bg-white" placeholder="Nama yang diwakilkan">
+                        </div>
+                        <div>
+                            <label id="labelPeranSpesifik" class="label-text">Peran Spesifik <span class="text-red-500">*</span></label>
+                            <select id="peranSpesifik" name="peranSpesifik" class="input-field bg-white">
+                                <!-- JS -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ================= BAGIAN 3: AKADEMIK (Khusus Absensi) ================= -->
+                    <div id="section-akademik" class="space-y-5 mb-8 hidden">
+                        <div>
+                            <label id="labelAsalSekolah" class="label-text">Asal Sekolah / Instansi <span class="text-red-500">*</span></label>
+                            <input type="text" id="asalSekolah" name="asalSekolah" class="input-field" placeholder="Contoh: SMA N 1 Jakarta">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label id="labelJenjangSaatIni" class="label-text">Jenjang Saat Ini <span class="text-red-500">*</span></label>
+                                <select id="jenjangSaatIni" name="jenjangSaatIni" class="input-field">
+                                    <option value="" disabled selected>Pilih Jenjang</option>
+                                    <option value="SMP/Sederajat">SMP/Sederajat</option>
+                                    <option value="SMA/Sederajat">SMA/Sederajat</option>
+                                    <option value="Lulus SMA">Lulus SMA</option>
+                                    <option value="Mahasiswa">Mahasiswa</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="label-text">Target Pendidikan <span class="text-red-500">*</span></label>
+                                <select id="targetJenjang" name="targetJenjang" class="input-field">
+                                    <option value="" disabled selected>Pilih Target</option>
+                                    <option value="S1">S1 (Sarjana)</option>
+                                    <option value="S2">S2 (Magister)</option>
+                                    <option value="S3">S3 (Doktoral)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- KAMPUS DAN JURUSAN -->
+                        <div class="bg-gradient-to-br from-brand-50/80 to-white p-5 rounded-2xl border border-brand-200 shadow-sm">
+                            <h4 class="font-bold text-brand-900 mb-4 flex items-center"><i class="fa-solid fa-building-columns mr-2 text-brand-600"></i> Peminatan Studi</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="label-text">Minat Kampus <span class="text-red-500">*</span></label>
+                                    <select id="pilihanKampus" name="pilihanKampus" class="input-field bg-white" onchange="updateJurusan()">
+                                        <!-- JS Dinamis Berdasarkan Gender -->
+                                    </select>
+                                </div>
+                                <div id="containerJurusan" class="hidden">
+                                    <label class="label-text">Jurusan yang Diminati <span class="text-red-500">*</span></label>
+                                    <select id="jurusanDiminati" name="jurusanDiminati" class="input-field bg-white">
+                                        <option value="" disabled selected>Pilih Kampus Dahulu</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="label-text">Provinsi Domisili <span class="text-red-500">*</span></label>
+                                <select id="provinsi" name="provinsi" class="input-field">
+                                    <option value="" disabled selected>Pilih Provinsi</option>
+                                    <!-- JS -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="label-text">Kabupaten/Kota <span class="text-red-500">*</span></label>
+                                <input type="text" id="kabupaten" name="kabupaten" class="input-field" placeholder="Nama Kota/Kab">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="label-text">Jumlah Rombongan Hadir <span class="text-red-500">*</span></label>
+                            <select id="jumlahRombongan" name="jumlahRombongan" class="input-field">
+                                <option value="" disabled selected>Pilih Rombongan</option>
+                                <option value="Sendiri">Sendiri</option>
+                                <option value="2 Orang">2 Orang</option>
+                                <option value="3 Orang">3 Orang</option>
+                                <option value=">3 Orang">> 3 Orang</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ================= BAGIAN 4: SURVEI KEPUASAN (Khusus Kepuasan) ================= -->
+                    <div id="section-kepuasan" class="space-y-6 mb-8 hidden">
+                        <div>
+                            <label class="label-text">Apa yang Anda ketahui tentang PPMI Madinah? <span class="text-gray-400 font-normal">(Opsional)</span></label>
+                            <textarea id="pengetahuanPPMI" name="pengetahuanPPMI" rows="2" class="input-field" placeholder="Tuliskan singkat..."></textarea>
+                        </div>
+
+                        <!-- Linear Scale Emoji Kejelasan Informasi -->
+                        <div class="bg-white/80 p-5 rounded-2xl border border-gray-200/80 shadow-sm">
+                            <label class="label-text text-center block mb-4">Kejelasan Informasi <span class="text-red-500">*</span></label>
+                            <div class="flex justify-between max-w-xs mx-auto relative pt-1 pb-2">
+                                <div class="absolute top-1/2 left-4 right-4 h-1 bg-gray-200 -translate-y-1/2 -z-10 rounded"></div>
+                                
+                                <div class="flex flex-col items-center z-10">
+                                    <input type="radio" id="kj1" name="skorKejelasan" value="1" class="linear-radio sr-only" required>
+                                    <label for="kj1" class="w-11 h-11 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center cursor-pointer transition-all shadow-sm">
+                                        <span class="text-2xl emoji-label">😠</span>
+                                    </label>
+                                </div>
+                                <div class="flex flex-col items-center z-10">
+                                    <input type="radio" id="kj2" name="skorKejelasan" value="2" class="linear-radio sr-only">
+                                    <label for="kj2" class="w-11 h-11 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center cursor-pointer transition-all shadow-sm">
+                                        <span class="text-2xl emoji-label">🙁</span>
+                                    </label>
+                                </div>
+                                <div class="flex flex-col items-center z-10">
+                                    <input type="radio" id="kj3" name="skorKejelasan" value="3" class="linear-radio sr-only">
+                                    <label for="kj3" class="w-11 h-11 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center cursor-pointer transition-all shadow-sm">
+                                        <span class="text-2xl emoji-label">😐</span>
+                                    </label>
+                                </div>
+                                <div class="flex flex-col items-center z-10">
+                                    <input type="radio" id="kj4" name="skorKejelasan" value="4" class="linear-radio sr-only">
+                                    <label for="kj4" class="w-11 h-11 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center cursor-pointer transition-all shadow-sm">
+                                        <span class="text-2xl emoji-label">🙂</span>
+                                    </label>
+                                </div>
+                                <div class="flex flex-col items-center z-10">
+                                    <input type="radio" id="kj5" name="skorKejelasan" value="5" class="linear-radio sr-only">
+                                    <label for="kj5" class="w-11 h-11 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center cursor-pointer transition-all shadow-sm">
+                                        <span class="text-2xl emoji-label">😍</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="flex justify-between max-w-xs mx-auto mt-1 px-1"><span class="text-[11px] text-gray-500 font-bold">Buruk</span><span class="text-[11px] text-brand-600 font-bold">Sangat Baik</span></div>
+                        </div>
+
+                        <!-- Linear Scale Emoji Keramahan Tim -->
+                        <div class="bg-white/80 p-5 rounded-2xl border border-gray-200/80 shadow-sm">
+                            <label class="label-text text-center block mb-4">Keramahan Tim <span class="text-red-500">*</span></label>
+                            <div class="flex justify-between max-w-xs mx-auto relative pt-1 pb-2">
+                                <div class="absolute top-1/2 left-4 right-4 h-1 bg-gray-200 -translate-y-1/2 -z-10 rounded"></div>
+                                
+                                <div class="flex flex-col items-center z-10">
+                                    <input type="radio" id="kr1" name="skorKeramahan" value="1" class="linear-radio sr-only" required>
+                                    <label for="kr1" class="w-11 h-11 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center cursor-pointer transition-all shadow-sm">
+                                        <span class="text-2xl emoji-label">😠</span>
+                                    </label>
+                                </div>
+                                <div class="flex flex-col items-center z-10">
+                                    <input type="radio" id="kr2" name="skorKeramahan" value="2" class="linear-radio sr-only">
+                                    <label for="kr2" class="w-11 h-11 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center cursor-pointer transition-all shadow-sm">
+                                        <span class="text-2xl emoji-label">🙁</span>
+                                    </label>
+                                </div>
+                                <div class="flex flex-col items-center z-10">
+                                    <input type="radio" id="kr3" name="skorKeramahan" value="3" class="linear-radio sr-only">
+                                    <label for="kr3" class="w-11 h-11 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center cursor-pointer transition-all shadow-sm">
+                                        <span class="text-2xl emoji-label">😐</span>
+                                    </label>
+                                </div>
+                                <div class="flex flex-col items-center z-10">
+                                    <input type="radio" id="kr4" name="skorKeramahan" value="4" class="linear-radio sr-only">
+                                    <label for="kr4" class="w-11 h-11 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center cursor-pointer transition-all shadow-sm">
+                                        <span class="text-2xl emoji-label">🙂</span>
+                                    </label>
+                                </div>
+                                <div class="flex flex-col items-center z-10">
+                                    <input type="radio" id="kr5" name="skorKeramahan" value="5" class="linear-radio sr-only">
+                                    <label for="kr5" class="w-11 h-11 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center cursor-pointer transition-all shadow-sm">
+                                        <span class="text-2xl emoji-label">😍</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="flex justify-between max-w-xs mx-auto mt-1 px-1"><span class="text-[11px] text-gray-500 font-bold">Buruk</span><span class="text-[11px] text-brand-600 font-bold">Sangat Baik</span></div>
+                        </div>
+
+                        <div>
+                            <label class="label-text mb-2">Informasi Paling Bermanfaat</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center p-3 border rounded-xl bg-white/80 cursor-pointer hover:bg-brand-50 border-gray-200 transition-colors"><input type="checkbox" name="infoBermanfaat" value="Pendaftaran" class="mr-3 text-brand-600 w-4 h-4"><span class="text-sm font-medium">Info Pendaftaran</span></label>
+                                <label class="flex items-center p-3 border rounded-xl bg-white/80 cursor-pointer hover:bg-brand-50 border-gray-200 transition-colors"><input type="checkbox" name="infoBermanfaat" value="Pengalaman" class="mr-3 text-brand-600 w-4 h-4"><span class="text-sm font-medium">Sharing Alumni</span></label>
+                                <label class="flex items-center p-3 border rounded-xl bg-white/80 cursor-pointer hover:bg-brand-50 border-gray-200 transition-colors"><input type="checkbox" name="infoBermanfaat" value="Fasilitas" class="mr-3 text-brand-600 w-4 h-4"><span class="text-sm font-medium">Info Beasiswa</span></label>
+                                <label class="flex items-center p-3 border rounded-xl bg-white/80 cursor-pointer hover:bg-brand-50 border-gray-200 transition-colors"><input type="checkbox" name="infoBermanfaat" value="Modul" class="mr-3 text-brand-600 w-4 h-4"><span class="text-sm font-medium">Brosur/Modul</span></label>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-50/80 p-5 rounded-2xl border border-yellow-200 shadow-sm">
+                            <label id="labelFeedbackKhusus" class="label-text text-yellow-900">Pertanyaan Khusus</label>
+                            <select id="feedbackKhusus" name="feedbackKhusus" class="input-field bg-white mt-1">
+                                <option value="" disabled selected>Pilih Jawaban</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="label-text">Kesan & Pesan <span class="text-gray-400 font-normal">(Opsional)</span></label>
+                            <textarea id="kesanPesan" name="kesanPesan" rows="3" class="input-field" placeholder="Kritik atau saran Anda sangat berharga bagi kami..."></textarea>
+                        </div>
+
+                        <div>
+                            <label class="label-text mb-2">Bersedia dihubungi tim PPMI? <span class="text-red-500">*</span></label>
+                            <div class="flex gap-3">
+                                <label class="flex-1 flex items-center justify-center p-3 border border-gray-200 rounded-xl bg-white cursor-pointer hover:border-brand-500 has-[:checked]:bg-brand-50 has-[:checked]:border-brand-500 transition-all shadow-sm"><input type="radio" name="ketersediaan" value="Ya" class="sr-only" required><span class="font-bold text-gray-700">Ya</span></label>
+                                <label class="flex-1 flex items-center justify-center p-3 border border-gray-200 rounded-xl bg-white cursor-pointer hover:border-brand-500 has-[:checked]:bg-brand-50 has-[:checked]:border-brand-500 transition-all shadow-sm"><input type="radio" name="ketersediaan" value="Tidak" class="sr-only"><span class="font-bold text-gray-700">Tidak</span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SUBMIT BUTTON -->
+                    <button type="submit" id="btn-submit" class="w-full bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-brand-500/30 transition-all flex justify-center items-center text-lg mt-4 transform hover:-translate-y-1">
+                        <span id="btn-text">Kirim Formulir <i class="fa-solid fa-paper-plane ml-2"></i></span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- VIEW 5: SUCCESS -->
+            <div id="view-success" class="view-section text-center p-8">
+                <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner relative">
+                    <div class="absolute inset-0 bg-brand-400 rounded-full animate-ping opacity-20"></div>
+                    <i class="fa-solid fa-check text-5xl text-brand-500 relative z-10"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-3">Jazakumullah Khairan!</h2>
+                <p class="text-gray-600 mb-8 leading-relaxed">Data Anda telah berhasil direkam. Terima kasih atas partisipasi dan antusiasme Anda pada Expo PPMI Madinah.</p>
+                <button onclick="resetApp()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-4 rounded-xl transition-colors shadow-sm">
+                    Kembali ke Beranda
+                </button>
+            </div>
+
+        </div>
+        
+        <div class="text-center mt-6 mb-10 text-sm font-medium text-brand-700/60 z-10">
+            &copy; 2026 PPMI Madinah
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION
+        // GANTI URL INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxH36Ivvb_NLVxgTp4UV4JF6KwqYND5Q3u0gr1DGGDe01AqvOoRKyWGJUZT_yc50Yc/exec'; 
+        const LOCK_KEY = 'ppmi_absensi_done_2026';
+
+        // STATE
+        let appState = {
+            gender: '',
+            role: '',
+            path: ''
+        };
+
+        // DATA REFERENSI
+        const provinsiIndonesia = [
+            "Aceh", "Sumatera Utara", "Sumatera Barat", "Riau", "Kepulauan Riau", "Jambi", "Bengkulu", "Sumatera Selatan", "Bangka Belitung", "Lampung",
+            "Banten", "DKI Jakarta", "Jawa Barat", "Jawa Tengah", "DI Yogyakarta", "Jawa Timur",
+            "Bali", "Nusa Tenggara Barat", "Nusa Tenggara Timur",
+            "Kalimantan Barat", "Kalimantan Tengah", "Kalimantan Selatan", "Kalimantan Timur", "Kalimantan Utara",
+            "Sulawesi Utara", "Gorontalo", "Sulawesi Tengah", "Sulawesi Barat", "Sulawesi Selatan", "Sulawesi Tenggara",
+            "Maluku", "Maluku Utara",
+            "Papua", "Papua Barat", "Papua Barat Daya", "Papua Selatan", "Papua Tengah", "Papua Pegunungan"
+        ];
+
+        const jurusanUIM = [
+            "Dakwah", "AL-Qur'an", "Syariah", "Bahasa Arab", "Hadits", "Ekonomi", "Bisnis", "Komputer", "Kimia", "Fisika"
+        ];
+
+        const jurusanThaibah = [
+            "Kedokteran dan Bedah", "Kedokteran Gigi dan Bedah", "Teknik Telekomunikasi", "Teknik Elektro", 
+            "Teknik Sipil", "Teknik Energi", "Ilmu Komputer", "Sistem Informasi", "Teknik Komputer", 
+            "Artificial Intelligence (Kecerdasan Buatan)", "Cybersecurity (Keamanan Siber)", "Data Science", 
+            "Matematika", "Kimia", "Geologi Pertambangan", "Geologi", "Biologi", "Bahasa Arab", 
+            "Arkeologi dan Museum", "Bimbingan Pariwisata (Tourism Guidance)", "Hukum", "Pemasaran", 
+            "Manajemen", "Manajemen Sumber Daya Manusia", "Finance", "Akuntansi", "Sistem Informasi Manajemen"
+        ];
+
+        // INITIALIZATION
+        document.addEventListener('DOMContentLoaded', () => {
+            // Splash Screen Logic
+            setTimeout(() => {
+                document.getElementById('splash-screen').classList.add('splash-hidden');
+                setTimeout(() => {
+                    document.getElementById('splash-screen').style.display = 'none';
+                    const mainApp = document.getElementById('main-app');
+                    mainApp.classList.remove('opacity-0');
+                    mainApp.classList.add('animate-slide-up');
+                }, 800);
+            }, 2500);
+
+            // Populate Dropdowns
+            populateSelect('provinsi', provinsiIndonesia);
+
+            // Check Lock
+            checkLock();
+        });
+
+        // WIZARD NAVIGATION
+        function selectOption(key, value) {
+            appState[key] = value;
+            
+            if(key === 'gender') {
+                transitionView('view-gender', 'view-role');
+            } else if (key === 'role') {
+                transitionView('view-role', 'view-path');
+            } else if (key === 'path') {
+                // Prevent if locked
+                if(value === 'Absensi' && localStorage.getItem(LOCK_KEY) === 'true') return;
+                
+                prepareForm();
+                transitionView('view-path', 'view-form');
+            }
+        }
+
+        function goBack(toView) {
+            hideAllViews();
+            document.getElementById(`view-${toView}`).classList.add('active');
+            document.getElementById('error-box').classList.add('hidden');
+        }
+
+        function transitionView(fromId, toId) {
+            document.getElementById(fromId).classList.remove('active');
+            document.getElementById(toId).classList.add('active');
+            document.getElementById('error-box').classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function hideAllViews() {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+        }
+
+        // FORM LOGIC
+        function prepareForm() {
+            const formBadge = document.getElementById('form-badge');
+            const secAkademik = document.getElementById('section-akademik');
+            const secKepuasan = document.getElementById('section-kepuasan');
+            const secPeran = document.getElementById('section-peran-spesifik');
+            
+            // Reset Requirement first
+            resetRequirements();
+
+            if (appState.path === 'Absensi') {
+                formBadge.innerText = 'Form Absensi';
+                formBadge.className = 'bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide shadow-sm';
+                secAkademik.classList.remove('hidden');
+                secKepuasan.classList.add('hidden');
+                
+                // Set requirements for Absensi
+                setRequired(['asalSekolah', 'jenjangSaatIni', 'targetJenjang', 'pilihanKampus', 'provinsi', 'kabupaten', 'jumlahRombongan'], true);
+                
+                // Logic Kampus Berdasarkan Gender
+                setupKampusOptions();
+
+            } else {
+                formBadge.innerText = 'Survei Kepuasan';
+                formBadge.className = 'bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide shadow-sm';
+                secAkademik.classList.add('hidden');
+                secKepuasan.classList.remove('hidden');
+                
+                // Radio buttons in Survey need custom validation on submit, set text fields
+                // Emojis radios are already set to required in HTML natively
+            }
+
+            // Logic Role (Ortu / Guru)
+            if (appState.role === 'Orang Tua / Wali' || appState.role === 'Guru / Sekolah') {
+                secPeran.classList.remove('hidden');
+                setRequired(['namaCalonMahasiswa', 'peranSpesifik'], true);
+                
+                if (appState.role === 'Orang Tua / Wali') {
+                    document.getElementById('labelNamaAnak').innerHTML = 'Nama Anak <span class="text-red-500">*</span>';
+                    document.getElementById('labelPeranSpesifik').innerHTML = 'Hubungan dengan Anak <span class="text-red-500">*</span>';
+                    populateSelect('peranSpesifik', ['Ayah', 'Ibu', 'Wali', 'Keluarga Lainnya']);
+                    if(appState.path === 'Absensi') document.getElementById('labelAsalSekolah').innerHTML = 'Asal Sekolah Anak <span class="text-red-500">*</span>';
+                    
+                    document.getElementById('labelFeedbackKhusus').innerText = "Apakah pemaparan keamanan menenangkan Anda?";
+                    populateSelect('feedbackKhusus', ['Sangat menenangkan', 'Cukup', 'Belum menenangkan']);
+                } else {
+                    document.getElementById('labelNamaAnak').innerHTML = 'Nama Siswa/Santri Perwakilan <span class="text-red-500">*</span>';
+                    document.getElementById('labelPeranSpesifik').innerHTML = 'Jabatan Anda <span class="text-red-500">*</span>';
+                    populateSelect('peranSpesifik', ['Kepala Sekolah', 'Wakil Kepala Sekolah', 'Guru BK / Konseling', 'Guru Mata Pelajaran', 'Staf / Lainnya']);
+                    if(appState.path === 'Absensi') document.getElementById('labelAsalSekolah').innerHTML = 'Nama Instansi / Sekolah <span class="text-red-500">*</span>';
+                    
+                    document.getElementById('labelFeedbackKhusus').innerText = "Siap disosialisasikan ke instansi Anda?";
+                    populateSelect('feedbackKhusus', ['Siap disosialisasikan', 'Butuh info lebih lanjut', 'Tidak']);
+                }
+            } else {
+                secPeran.classList.add('hidden');
+                setRequired(['namaCalonMahasiswa', 'peranSpesifik'], false);
+                if(appState.path === 'Absensi') document.getElementById('labelAsalSekolah').innerHTML = 'Asal Sekolah <span class="text-red-500">*</span>';
+                
+                document.getElementById('labelFeedbackKhusus').innerText = "Makin yakin mendaftar ke Madinah?";
+                populateSelect('feedbackKhusus', ['Ya, sangat yakin', 'Masih ragu-ragu', 'Tidak']);
+            }
+        }
+
+        function setupKampusOptions() {
+            const kampusSelect = document.getElementById('pilihanKampus');
+            kampusSelect.innerHTML = '<option value="" disabled selected>Pilih Kampus Tujuan</option>';
+            
+            if (appState.gender === 'Akhwat') {
+                kampusSelect.innerHTML += '<option value="Universitas Thaibah">Universitas Thaibah</option>';
+            } else {
+                kampusSelect.innerHTML += '<option value="Universitas Islam Madinah">Universitas Islam Madinah (UIM)</option>';
+                kampusSelect.innerHTML += '<option value="Universitas Thaibah">Universitas Thaibah</option>';
+            }
+            updateJurusan(); // reset jurusan
+        }
+
+        function updateJurusan() {
+            const kampus = document.getElementById('pilihanKampus').value;
+            const containerJurusan = document.getElementById('containerJurusan');
+            const selectJurusan = document.getElementById('jurusanDiminati');
+
+            if (kampus === "Universitas Islam Madinah") {
+                populateSelect('jurusanDiminati', jurusanUIM);
+                containerJurusan.classList.remove('hidden');
+                selectJurusan.required = true;
+            } else if (kampus === "Universitas Thaibah") {
+                populateSelect('jurusanDiminati', jurusanThaibah);
+                containerJurusan.classList.remove('hidden');
+                selectJurusan.required = true;
+            } else {
+                containerJurusan.classList.add('hidden');
+                selectJurusan.required = false;
+                selectJurusan.value = "";
+            }
+        }
+
+        function populateSelect(id, arrayData) {
+            const select = document.getElementById(id);
+            if(!select) return;
+            
+            let firstOption = null;
+            if (select.options.length > 0) {
+                firstOption = select.options[0].cloneNode(true);
+            } else {
+                firstOption = document.createElement('option');
+                firstOption.value = ""; firstOption.text = "Pilih"; firstOption.disabled = true; firstOption.selected = true;
+            }
+            
+            select.innerHTML = '';
+            select.appendChild(firstOption);
+            
+            arrayData.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item; opt.text = item;
+                select.appendChild(opt);
+            });
+        }
+
+        function setRequired(ids, isRequired) {
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.required = isRequired;
+            });
+        }
+
+        function resetRequirements() {
+            const inputs = document.querySelectorAll('#main-form input, #main-form select, #main-form textarea');
+            inputs.forEach(el => {
+                if(el.id !== 'namaLengkap' && el.id !== 'noWa') el.required = false;
+            });
+        }
+
+        // SUBMISSION & LOCKING
+        function checkLock() {
+            if(localStorage.getItem(LOCK_KEY) === 'true') {
+                const card = document.getElementById('btn-path-absensi');
+                const lock = document.getElementById('lock-absensi');
+                card.classList.add('opacity-60', 'hover:border-brand-200');
+                lock.classList.remove('hidden');
+            }
+        }
+
+        function showError(msg) {
+            const box = document.getElementById('error-box');
+            document.getElementById('error-text').innerText = msg;
+            box.classList.remove('hidden');
+            box.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+
+        const setupHeaders = () => {
+            return { 'Content-Type': 'text/plain;charset=utf-8' };
+        };
+
+        document.getElementById('main-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // UI Loading state
+            const btnSubmit = document.getElementById('btn-submit');
+            const btnText = document.getElementById('btn-text');
+            btnSubmit.disabled = true;
+            btnSubmit.classList.add('opacity-80', 'cursor-not-allowed', 'transform', 'none');
+            btnText.innerHTML = '<span class="loader mr-2"></span> Menyimpan...';
+            document.getElementById('error-box').classList.add('hidden');
+
+            // Gather Data
+            const formData = new FormData(this);
+            const dataObj = {
+                jenisForm: appState.path,
+                gender: appState.gender,
+                statusPengunjung: appState.role,
+                timestamp: new Date().toISOString()
+            };
+
+            formData.forEach((value, key) => {
+                if (dataObj[key]) {
+                    if(Array.isArray(dataObj[key])) dataObj[key].push(value);
+                    else dataObj[key] = [dataObj[key], value];
+                } else {
+                    dataObj[key] = value;
+                }
+            });
+
+            // Format Checkbox Array
+            if(Array.isArray(dataObj['infoBermanfaat'])) {
+                dataObj['infoBermanfaat'] = dataObj['infoBermanfaat'].join(', ');
+            }
+
+            // Fill Missing Keys for Backend Consistency
+            const keys = ["peranSpesifik", "namaCalonMahasiswa", "asalSekolah", "jenjangSaatIni", "targetJenjang", "pilihanKampus", "jurusanDiminati", "provinsi", "kabupaten", "jumlahRombongan", "pengetahuanPPMI", "skorKejelasan", "skorKeramahan", "infoBermanfaat", "feedbackKhusus", "kesanPesan", "ketersediaan"];
+            keys.forEach(k => { if(!dataObj[k]) dataObj[k] = "-"; });
+
+            // Fetch to Google Apps Script
+            fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                headers: setupHeaders(),
+                body: JSON.stringify(dataObj)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Berhasil, Kunci jika form absensi
+                    if(appState.path === 'Absensi') {
+                        localStorage.setItem(LOCK_KEY, 'true');
+                        checkLock();
+                    }
+                    
+                    document.getElementById('main-form').reset();
+                    transitionView('view-form', 'view-success');
+                } else {
+                    throw new Error(data.message || "Server Error");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError("Gagal terhubung ke server. Periksa koneksi internet Anda atau coba lagi.");
+            })
+            .finally(() => {
+                btnSubmit.disabled = false;
+                btnSubmit.classList.remove('opacity-80', 'cursor-not-allowed', 'transform', 'none');
+                btnText.innerHTML = 'Kirim Formulir <i class="fa-solid fa-paper-plane ml-2"></i>';
+            });
+        });
+
+        function resetApp() {
+            // Reset state except lock
+            appState = { gender: '', role: '', path: '' };
+            hideAllViews();
+            document.getElementById('view-gender').classList.add('active');
+            window.scrollTo(0,0);
+        }
+    </script>
+</body>
+</html>
