@@ -179,7 +179,7 @@
                             <i class="fa-solid fa-user-graduate text-xl"></i>
                         </div>
                         <div>
-                            <span class="font-bold text-gray-800 block text-md">Calon Mahasiswa</span>
+                            <span id="label-role-mhs" class="font-bold text-gray-800 block text-md">Calon Mahasiswa</span>
                             <span class="text-xs text-gray-500">Pelajar/Mahasiswa aktif yang ingin melanjutkan studi.</span>
                         </div>
                     </div>
@@ -305,7 +305,7 @@
                             </div>
                             <div>
                                 <label class="label-text">Target Pendidikan <span class="text-red-500">*</span></label>
-                                <select id="targetJenjang" name="targetJenjang" class="input-field">
+                                <select id="targetJenjang" name="targetJenjang" class="input-field" onchange="checkTargetJenjang()">
                                     <option value="" disabled selected>Pilih Target</option>
                                     <option value="S1">S1 (Sarjana)</option>
                                     <option value="S2">S2 (Magister)</option>
@@ -314,21 +314,36 @@
                             </div>
                         </div>
 
-                        <!-- KAMPUS DAN JURUSAN -->
-                        <div class="bg-gradient-to-br from-brand-50/80 to-white p-5 rounded-2xl border border-brand-200 shadow-sm">
+                        <!-- KAMPUS DAN JURUSAN (CHECKBOX MULTI-SELECT) -->
+                        <div id="container-peminatan-studi" class="bg-gradient-to-br from-brand-50/80 to-white p-5 rounded-2xl border border-brand-200 shadow-sm hidden">
                             <h4 class="font-bold text-brand-900 mb-4 flex items-center"><i class="fa-solid fa-building-columns mr-2 text-brand-600"></i> Peminatan Studi</h4>
                             <div class="space-y-4">
                                 <div>
-                                    <label class="label-text">Minat Kampus <span class="text-red-500">*</span></label>
-                                    <select id="pilihanKampus" name="pilihanKampus" class="input-field bg-white" onchange="updateJurusan()">
-                                        <!-- JS Dinamis Berdasarkan Gender -->
-                                    </select>
+                                    <label class="label-text">Minat Kampus (Bisa >1) <span class="text-red-500">*</span></label>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                                        <label id="wrapper-kampus-uim" class="flex items-center p-3 border rounded-xl bg-white/80 cursor-pointer hover:bg-brand-50 border-gray-200 transition-colors has-[:checked]:bg-brand-50 has-[:checked]:border-brand-500 shadow-sm">
+                                            <input type="checkbox" name="pilihanKampusArr" value="Universitas Islam Madinah" class="mr-3 w-5 h-5 accent-brand-600 rounded" onchange="toggleJurusanUI()">
+                                            <span class="font-bold text-gray-800 text-sm">UIM</span>
+                                        </label>
+                                        <label id="wrapper-kampus-thaibah" class="flex items-center p-3 border rounded-xl bg-white/80 cursor-pointer hover:bg-brand-50 border-gray-200 transition-colors has-[:checked]:bg-brand-50 has-[:checked]:border-brand-500 shadow-sm">
+                                            <input type="checkbox" name="pilihanKampusArr" value="Universitas Thaibah" class="mr-3 w-5 h-5 accent-brand-600 rounded" onchange="toggleJurusanUI()">
+                                            <span class="font-bold text-gray-800 text-sm">Universitas Thaibah</span>
+                                        </label>
+                                    </div>
                                 </div>
-                                <div id="containerJurusan" class="hidden">
-                                    <label class="label-text">Jurusan yang Diminati <span class="text-red-500">*</span></label>
-                                    <select id="jurusanDiminati" name="jurusanDiminati" class="input-field bg-white">
-                                        <option value="" disabled selected>Pilih Kampus Dahulu</option>
-                                    </select>
+                                
+                                <div id="container-jurusan-uim" class="hidden pt-2">
+                                    <label class="label-text border-b border-brand-200 pb-2 mb-3 block"><span class="text-brand-700 font-bold">Jurusan UIM</span> (Pilih beberapa) <span class="text-red-500">*</span></label>
+                                    <div id="grid-jurusan-uim" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto pr-1 pb-1">
+                                        <!-- JS Dinamis -->
+                                    </div>
+                                </div>
+
+                                <div id="container-jurusan-thaibah" class="hidden pt-2">
+                                    <label class="label-text border-b border-brand-200 pb-2 mb-3 block"><span class="text-brand-700 font-bold">Jurusan Thaibah</span> (Pilih beberapa) <span class="text-red-500">*</span></label>
+                                    <div id="grid-jurusan-thaibah" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto pr-1 pb-1">
+                                        <!-- JS Dinamis -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -554,8 +569,10 @@
                 }, 800);
             }, 2500);
 
-            // Populate Dropdowns
+            // Populate Dropdowns & Checkboxes
             populateSelect('provinsi', provinsiIndonesia);
+            renderJurusanCheckboxes('grid-jurusan-uim', jurusanUIM);
+            renderJurusanCheckboxes('grid-jurusan-thaibah', jurusanThaibah);
 
             // Check Lock
             checkLock();
@@ -563,16 +580,27 @@
 
         // WIZARD NAVIGATION
         function selectOption(key, value) {
-            appState[key] = value;
-            
-            if(key === 'gender') {
+            if (key === 'gender') {
+                appState[key] = value;
+                const roleText = document.getElementById('label-role-mhs');
+                if (value === 'Akhwat') {
+                    roleText.innerText = 'Calon Mahasiswi';
+                } else {
+                    roleText.innerText = 'Calon Mahasiswa';
+                }
                 transitionView('view-gender', 'view-role');
             } else if (key === 'role') {
+                if (value === 'Calon Mahasiswa' && appState.gender === 'Akhwat') {
+                    appState[key] = 'Calon Mahasiswi';
+                } else {
+                    appState[key] = value;
+                }
                 transitionView('view-role', 'view-path');
             } else if (key === 'path') {
                 // Prevent if locked
                 if(value === 'Absensi' && localStorage.getItem(LOCK_KEY) === 'true') return;
                 
+                appState[key] = value;
                 prepareForm();
                 transitionView('view-path', 'view-form');
             }
@@ -612,22 +640,20 @@
                 secKepuasan.classList.add('hidden');
                 
                 // Set requirements for Absensi
-                setRequired(['asalSekolah', 'jenjangSaatIni', 'targetJenjang', 'pilihanKampus', 'provinsi', 'kabupaten', 'jumlahRombongan'], true);
+                setRequired(['asalSekolah', 'jenjangSaatIni', 'targetJenjang', 'provinsi', 'kabupaten', 'jumlahRombongan'], true);
                 
-                // Logic Kampus Berdasarkan Gender
-                setupKampusOptions();
+                // Reset Kampus UI default
+                document.getElementById('targetJenjang').value = ""; 
+                checkTargetJenjang();
 
             } else {
                 formBadge.innerText = 'Survei Kepuasan';
                 formBadge.className = 'bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide shadow-sm';
                 secAkademik.classList.add('hidden');
                 secKepuasan.classList.remove('hidden');
-                
-                // Radio buttons in Survey need custom validation on submit, set text fields
-                // Emojis radios are already set to required in HTML natively
             }
 
-            // Logic Role (Ortu / Guru)
+            // Logic Role (Ortu / Guru / Mhs)
             if (appState.role === 'Orang Tua / Wali' || appState.role === 'Guru / Sekolah') {
                 secPeran.classList.remove('hidden');
                 setRequired(['namaCalonMahasiswa', 'peranSpesifik'], true);
@@ -659,38 +685,61 @@
             }
         }
 
+        // ================= KAMPUS & JURUSAN MULTI-SELECT LOGIC =================
+        function checkTargetJenjang() {
+            const target = document.getElementById('targetJenjang').value;
+            const container = document.getElementById('container-peminatan-studi');
+            if (target === 'S1' || target === 'S2' || target === 'S3') {
+                container.classList.remove('hidden');
+                setupKampusOptions();
+            } else {
+                container.classList.add('hidden');
+                document.querySelectorAll('input[name="pilihanKampusArr"], input[name="jurusanDiminatiArr"]').forEach(cb => cb.checked = false);
+                toggleJurusanUI();
+            }
+        }
+
         function setupKampusOptions() {
-            const kampusSelect = document.getElementById('pilihanKampus');
-            kampusSelect.innerHTML = '<option value="" disabled selected>Pilih Kampus Tujuan</option>';
+            const uimWrapper = document.getElementById('wrapper-kampus-uim');
+            const thaibahCheckbox = document.getElementById('wrapper-kampus-thaibah').querySelector('input');
             
+            // Reset checked state
+            document.querySelectorAll('input[name="pilihanKampusArr"], input[name="jurusanDiminatiArr"]').forEach(cb => cb.checked = false);
+
             if (appState.gender === 'Akhwat') {
-                kampusSelect.innerHTML += '<option value="Universitas Thaibah">Universitas Thaibah</option>';
+                uimWrapper.classList.add('hidden'); // Sembunyikan UIM
+                thaibahCheckbox.checked = true; // Otomatis centang Thaibah
             } else {
-                kampusSelect.innerHTML += '<option value="Universitas Islam Madinah">Universitas Islam Madinah (UIM)</option>';
-                kampusSelect.innerHTML += '<option value="Universitas Thaibah">Universitas Thaibah</option>';
+                uimWrapper.classList.remove('hidden'); // Tampilkan keduanya untuk Ikhwan
             }
-            updateJurusan(); // reset jurusan
+            toggleJurusanUI();
         }
 
-        function updateJurusan() {
-            const kampus = document.getElementById('pilihanKampus').value;
-            const containerJurusan = document.getElementById('containerJurusan');
-            const selectJurusan = document.getElementById('jurusanDiminati');
+        function toggleJurusanUI() {
+            const isUIM = document.querySelector('input[value="Universitas Islam Madinah"]').checked;
+            const isThaibah = document.querySelector('input[value="Universitas Thaibah"]').checked;
+            
+            document.getElementById('container-jurusan-uim').classList.toggle('hidden', !isUIM);
+            document.getElementById('container-jurusan-thaibah').classList.toggle('hidden', !isThaibah);
 
-            if (kampus === "Universitas Islam Madinah") {
-                populateSelect('jurusanDiminati', jurusanUIM);
-                containerJurusan.classList.remove('hidden');
-                selectJurusan.required = true;
-            } else if (kampus === "Universitas Thaibah") {
-                populateSelect('jurusanDiminati', jurusanThaibah);
-                containerJurusan.classList.remove('hidden');
-                selectJurusan.required = true;
-            } else {
-                containerJurusan.classList.add('hidden');
-                selectJurusan.required = false;
-                selectJurusan.value = "";
-            }
+            // Bersihkan centang jika kampus di-uncheck
+            if(!isUIM) document.querySelectorAll('#container-jurusan-uim input').forEach(cb => cb.checked = false);
+            if(!isThaibah) document.querySelectorAll('#container-jurusan-thaibah input').forEach(cb => cb.checked = false);
         }
+
+        function renderJurusanCheckboxes(containerId, dataArray) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            dataArray.forEach(item => {
+                container.innerHTML += `
+                <label class="flex items-start p-3 border rounded-xl bg-white/60 cursor-pointer hover:bg-brand-50 border-gray-200 transition-colors has-[:checked]:bg-brand-50 has-[:checked]:border-brand-500 text-sm shadow-sm">
+                    <input type="checkbox" name="jurusanDiminatiArr" value="${item}" class="mt-0.5 mr-2 w-4 h-4 accent-brand-600 rounded">
+                    <span class="text-gray-700 font-medium leading-tight">${item}</span>
+                </label>
+                `;
+            });
+        }
+        // =====================================================================
 
         function populateSelect(id, arrayData) {
             const select = document.getElementById(id);
@@ -752,9 +801,31 @@
         document.getElementById('main-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // UI Loading state
             const btnSubmit = document.getElementById('btn-submit');
             const btnText = document.getElementById('btn-text');
+
+            // Validasi Khusus Minat Kampus (Hanya jika S1/S2/S3 & Absensi)
+            const currentTarget = document.getElementById('targetJenjang').value;
+            if (appState.path === 'Absensi' && (currentTarget === 'S1' || currentTarget === 'S2' || currentTarget === 'S3')) {
+                const checkedKampus = document.querySelectorAll('input[name="pilihanKampusArr"]:checked');
+                if (checkedKampus.length === 0) {
+                    showError("Silakan pilih minimal satu Minat Kampus.");
+                    return;
+                }
+                
+                let validJurusan = true;
+                checkedKampus.forEach(cb => {
+                    if (cb.value === 'Universitas Islam Madinah' && document.querySelectorAll('#container-jurusan-uim input:checked').length === 0) validJurusan = false;
+                    if (cb.value === 'Universitas Thaibah' && document.querySelectorAll('#container-jurusan-thaibah input:checked').length === 0) validJurusan = false;
+                });
+
+                if (!validJurusan) {
+                    showError("Silakan pilih minimal satu Jurusan untuk masing-masing kampus yang Anda minati.");
+                    return;
+                }
+            }
+
+            // Lanjut ke UI Loading state
             btnSubmit.disabled = true;
             btnSubmit.classList.add('opacity-80', 'cursor-not-allowed', 'transform', 'none');
             btnText.innerHTML = '<span class="loader mr-2"></span> Menyimpan...';
@@ -778,10 +849,21 @@
                 }
             });
 
-            // Format Checkbox Array
+            // Format Checkbox Arrays biasa (Info Bermanfaat)
             if(Array.isArray(dataObj['infoBermanfaat'])) {
                 dataObj['infoBermanfaat'] = dataObj['infoBermanfaat'].join(', ');
             }
+
+            // Proses Penggabungan Checkbox Multi-Select Kampus dan Jurusan agar terpisah dengan koma
+            const kampusArr = Array.from(document.querySelectorAll('input[name="pilihanKampusArr"]:checked')).map(el => el.value);
+            const jurusanArr = Array.from(document.querySelectorAll('input[name="jurusanDiminatiArr"]:checked')).map(el => el.value);
+            
+            dataObj['pilihanKampus'] = kampusArr.length > 0 ? kampusArr.join(', ') : '-';
+            dataObj['jurusanDiminati'] = jurusanArr.length > 0 ? jurusanArr.join(', ') : '-';
+
+            // Bersihkan data form array sementara dari Payload (karena sudah ditimpa string di atas)
+            delete dataObj['pilihanKampusArr'];
+            delete dataObj['jurusanDiminatiArr'];
 
             // Fill Missing Keys for Backend Consistency
             const keys = ["peranSpesifik", "namaCalonMahasiswa", "asalSekolah", "jenjangSaatIni", "targetJenjang", "pilihanKampus", "jurusanDiminati", "provinsi", "kabupaten", "jumlahRombongan", "pengetahuanPPMI", "skorKejelasan", "skorKeramahan", "infoBermanfaat", "feedbackKhusus", "kesanPesan", "ketersediaan"];
