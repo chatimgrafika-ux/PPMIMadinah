@@ -680,7 +680,7 @@
                     document.getElementById('labelFeedbackKhusus').innerText = "Apakah pemaparan secara umum menenangkan Anda?";
                     populateSelect('feedbackKhusus', ['Sangat menenangkan', 'Cukup', 'Belum menenangkan']);
                 } else {
-                    document.getElementById('labelNamaAnak').innerHTML = 'Nama sekolah, mahad atau instansi <span class="text-red-500">*</span>';
+                    document.getElementById('labelNamaAnak').innerHTML = 'Nama Santri atau Siswa yang diwakilkan <span class="text-red-500">*</span>';
                     document.getElementById('labelPeranSpesifik').innerHTML = 'Jabatan Anda <span class="text-red-500">*</span>';
                     populateSelect('peranSpesifik', ['Mudir Mahad','Wakil Mudir Mahad','Pembina Yayasan','Wakil Pembina Yayasan','Ketua Yayasan','Kepala Sekolah','Kepala Sekolah', 'Wakil Kepala Sekolah', 'Guru BK / Konseling', 'Guru Mata Pelajaran', 'Staf / Lainnya']);
                     if(appState.path === 'Absensi') document.getElementById('labelAsalSekolah').innerHTML = 'Nama Instansi / Sekolah <span class="text-red-500">*</span>';
