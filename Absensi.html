@@ -247,15 +247,23 @@
                     </div>
 
                     <!-- Kepuasan Option -->
-                    <div class="selection-card flex-row justify-start text-left p-5 border-brand-200 hover:border-brand-500 group" onclick="selectOption('path', 'Kepuasan')">
-                        <div class="w-14 h-14 rounded-xl bg-yellow-100 text-yellow-600 flex items-center justify-center mr-5 shrink-0 shadow-inner">
-                            <i class="fa-solid fa-face-smile text-2xl"></i>
+                    <div id="btn-path-kepuasan" class="relative group">
+                        <div class="selection-card flex-row justify-start text-left p-5 border-brand-200 hover:border-brand-500" onclick="selectOption('path', 'Kepuasan')">
+                            <div class="w-14 h-14 rounded-xl bg-yellow-100 text-yellow-600 flex items-center justify-center mr-5 shrink-0 shadow-inner">
+                                <i class="fa-solid fa-face-smile text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <span class="font-bold text-gray-800 text-lg block">Survei Kepuasan</span>
+                                <span class="text-sm text-gray-500">Berikan penilaian & feedback acara.</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-brand-500 transition-transform transform group-hover:translate-x-1"></i>
                         </div>
-                        <div class="flex-1">
-                            <span class="font-bold text-gray-800 text-lg block">Survei Kepuasan</span>
-                            <span class="text-sm text-gray-500">Berikan penilaian & feedback acara.</span>
+                        <!-- Overlay Lock -->
+                        <div id="lock-kepuasan" class="hidden absolute inset-0 bg-gray-50/80 backdrop-blur-[2px] rounded-xl flex items-center justify-center border border-gray-200 z-10 cursor-not-allowed">
+                            <div class="bg-white px-4 py-2 rounded-full shadow-md flex items-center text-gray-600 font-bold text-sm">
+                                <i class="fa-solid fa-lock mr-2 text-gray-400"></i> Sudah Diisi
+                            </div>
                         </div>
-                        <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-brand-500 transition-transform transform group-hover:translate-x-1"></i>
                     </div>
                 </div>
             </div>
@@ -519,7 +527,7 @@
                     <i class="fa-solid fa-check text-5xl text-brand-500 relative z-10"></i>
                 </div>
                 <h2 class="text-3xl font-extrabold text-gray-900 mb-3">Jazakumullah Khairan!</h2>
-                <p class="text-gray-600 mb-8 leading-relaxed">Data Anda telah berhasil direkam. Terima kasih atas partisipasi dan antusiasme Anda pada Expo PPMI Madinah.</p>
+                <p class="text-gray-600 mb-8 leading-relaxed">Terima kasih atas partisipasi dan antusiasme Antum pada Saudieduexpo26 Stand PPMI Madinah.</p>
                 <button onclick="resetApp()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-4 rounded-xl transition-colors shadow-sm">
                     Kembali ke Beranda
                 </button>
@@ -533,10 +541,9 @@
     </div>
 
     <script>
-        // CONFIGURATION
-        // GANTI URL INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxH36Ivvb_NLVxgTp4UV4JF6KwqYND5Q3u0gr1DGGDe01AqvOoRKyWGJUZT_yc50Yc/exec'; 
         const LOCK_KEY = 'ppmi_absensi_done_2026';
+        const LOCK_KEY_KEPUASAN = 'ppmi_kepuasan_done_2026';
 
         // STATE
         let appState = {
@@ -612,6 +619,7 @@
             } else if (key === 'path') {
                 // Prevent if locked
                 if(value === 'Absensi' && localStorage.getItem(LOCK_KEY) === 'true') return;
+                if(value === 'Kepuasan' && localStorage.getItem(LOCK_KEY_KEPUASAN) === 'true') return;
                 
                 appState[key] = value;
                 prepareForm();
@@ -798,6 +806,14 @@
                 card.classList.add('opacity-60', 'hover:border-brand-200');
                 lock.classList.remove('hidden');
             }
+            if(localStorage.getItem(LOCK_KEY_KEPUASAN) === 'true') {
+                const cardKepuasan = document.getElementById('btn-path-kepuasan');
+                const lockKepuasan = document.getElementById('lock-kepuasan');
+                if(cardKepuasan && lockKepuasan) {
+                    cardKepuasan.classList.add('opacity-60', 'hover:border-brand-200');
+                    lockKepuasan.classList.remove('hidden');
+                }
+            }
         }
 
         function showError(msg) {
@@ -891,11 +907,13 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    // Berhasil, Kunci jika form absensi
+                    // Berhasil, Kunci form yang dikerjakan
                     if(appState.path === 'Absensi') {
                         localStorage.setItem(LOCK_KEY, 'true');
-                        checkLock();
+                    } else if (appState.path === 'Kepuasan') {
+                        localStorage.setItem(LOCK_KEY_KEPUASAN, 'true');
                     }
+                    checkLock();
                     
                     document.getElementById('main-form').reset();
                     transitionView('view-form', 'view-success');
@@ -921,6 +939,149 @@
             document.getElementById('view-gender').classList.add('active');
             window.scrollTo(0,0);
         }
+
+        // =========================================================================
+        // PENAMBAHAN FITUR CACHE FORMULIR (TIDAK MERUBAH/MENGHAPUS FUNGSI ASLI)
+        // =========================================================================
+        const CACHE_KEY = 'ppmi_form_cache_2026';
+        const STATE_KEY = 'ppmi_app_state_2026';
+
+        function saveFormDataToCache() {
+            const form = document.getElementById('main-form');
+            const formData = new FormData(form);
+            const dataObj = {};
+            formData.forEach((value, key) => {
+                if (dataObj[key]) {
+                    if(Array.isArray(dataObj[key])) dataObj[key].push(value);
+                    else dataObj[key] = [dataObj[key], value];
+                } else {
+                    dataObj[key] = value;
+                }
+            });
+            localStorage.setItem(CACHE_KEY, JSON.stringify(dataObj));
+        }
+
+        function restoreFormDataFromCache() {
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (cached) {
+                try {
+                    const dataObj = JSON.parse(cached);
+                    const form = document.getElementById('main-form');
+                    
+                    Object.keys(dataObj).forEach(key => {
+                        const value = dataObj[key];
+                        const inputs = form.querySelectorAll(`[name="${key}"]`);
+                        
+                        if (inputs.length === 0) return;
+                        
+                        if (inputs[0].type === 'checkbox' || inputs[0].type === 'radio') {
+                            const valArray = Array.isArray(value) ? value : [value];
+                            inputs.forEach(input => {
+                                if (valArray.includes(input.value)) {
+                                    input.checked = true;
+                                }
+                            });
+                        } else {
+                            inputs[0].value = value;
+                        }
+                    });
+                    
+                    if(typeof checkTargetJenjang === 'function') checkTargetJenjang();
+                    if(typeof toggleJurusanUI === 'function') toggleJurusanUI();
+                    
+                } catch (e) {
+                    console.error('Gagal membaca memori perangkat:', e);
+                }
+            }
+        }
+
+        function saveAppStateToCache() {
+            localStorage.setItem(STATE_KEY, JSON.stringify(appState));
+        }
+
+        function restoreAppStateFromCache() {
+            const cachedState = localStorage.getItem(STATE_KEY);
+            if (cachedState) {
+                try {
+                    const parsedState = JSON.parse(cachedState);
+                    if (parsedState.gender) {
+                        appState.gender = parsedState.gender;
+                        if(appState.gender === 'Akhwat') {
+                            document.getElementById('label-role-mhs').innerText = 'Calon Mahasiswi';
+                        }
+                        if (parsedState.role) {
+                            appState.role = parsedState.role;
+                            if (parsedState.path) {
+                                appState.path = parsedState.path;
+                                // Kembalikan ke form jika belum terkunci
+                                if (!(parsedState.path === 'Absensi' && localStorage.getItem(LOCK_KEY) === 'true')) {
+                                    prepareForm();
+                                    hideAllViews();
+                                    document.getElementById('view-form').classList.add('active');
+                                } else {
+                                    hideAllViews();
+                                    document.getElementById('view-path').classList.add('active');
+                                }
+                            } else {
+                                hideAllViews();
+                                document.getElementById('view-path').classList.add('active');
+                            }
+                        } else {
+                            hideAllViews();
+                            document.getElementById('view-role').classList.add('active');
+                        }
+                    }
+                } catch (e) {
+                    console.error('State Cache Error:', e);
+                }
+            }
+        }
+
+        // Mem-bypass (Monkey-patch) fungsi navigasi bawaan untuk merekam *state* tanpa merubah kode asli
+        const originalSelectOption = selectOption;
+        selectOption = function(key, value) {
+            originalSelectOption(key, value);
+            saveAppStateToCache();
+        };
+
+        const originalGoBack = goBack;
+        goBack = function(toView) {
+            if (toView === 'gender') appState = { gender: '', role: '', path: '' };
+            else if (toView === 'role') appState = { gender: appState.gender, role: '', path: '' };
+            else if (toView === 'path') appState = { gender: appState.gender, role: appState.role, path: '' };
+            originalGoBack(toView);
+            saveAppStateToCache();
+        };
+        
+        const originalResetApp = resetApp;
+        resetApp = function() {
+            originalResetApp();
+            saveAppStateToCache();
+            // Data dikembalikan ke form (dari memori) segera setelah navigasi reset selesai
+            restoreFormDataFromCache(); 
+        };
+
+        // Pasang event listener untuk menyimpan ke memori saat mengetik/berubah
+        document.addEventListener('DOMContentLoaded', () => {
+            // Berikan sedikit jeda agar drop-down awal ter-render sebelum memuat ulang memori
+            setTimeout(() => {
+                restoreAppStateFromCache();
+                restoreFormDataFromCache();
+            }, 150);
+
+            const form = document.getElementById('main-form');
+            form.addEventListener('input', saveFormDataToCache);
+            form.addEventListener('change', saveFormDataToCache);
+            
+            // Cegah cache hilang saat sistem secara internal melakukan reset sesudah submit
+            form.addEventListener('reset', () => {
+                setTimeout(() => {
+                    restoreFormDataFromCache();
+                }, 50);
+            });
+        });
+        // =========================================================================
+
     </script>
 </body>
 </html>
