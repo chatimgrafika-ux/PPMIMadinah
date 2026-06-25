@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator PPMI Madinah</title>
+    <!-- Tailwind CSS untuk Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Amiri untuk Judul Arab/Indonesia -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom Scrollbar Emerald */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #02120c; }
+        ::-webkit-scrollbar-thumb { background: #065f46; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10b981; }
+
+        /* Loader Animation */
+        .spinner {
+            border: 3px solid rgba(16, 185, 129, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #10b981;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast Animation */
+        .toast-enter { transform: translateY(100%); opacity: 0; }
+        .toast-enter-active { transform: translateY(0); opacity: 1; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .toast-exit { transform: translateY(0); opacity: 1; }
+        .toast-exit-active { transform: translateY(100%); opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Background Islamic Hexos Grafitify Pattern */
+        .bg-hexos {
+            background-color: #02120c;
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='69.2820323027551' viewBox='0 0 40 69.2820323027551' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2310b981' fill-opacity='0.04' fill-rule='evenodd'%3E%3Cpath d='M0 34.641l20-11.547 20 11.547v23.094l-20 11.547L0 57.735V34.641zm20-8.083l-13 7.505v15.01l13 7.505 13-7.505v-15.01l-13-7.505z'/%3E%3Cpath d='M20 0l20 11.547v23.094l-20 11.547L0 34.641V11.547L20 0zm0 3.464L6 11.547v15.01l14 8.083 14-8.083v-15.01L20 3.464z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* Glow effect */
+        .glow-emerald {
+            box-shadow: 0 0 40px -10px rgba(16, 185, 129, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-hexos text-emerald-50 min-h-screen flex flex-col items-center py-10 px-4 sm:px-8 antialiased selection:bg-emerald-500/40 selection:text-emerald-100 overflow-y-auto relative">
+
+    <!-- SPLASH SCREEN -->
+    <div id="splashScreen" class="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-[#02120C] transition-all duration-1000 ease-in-out">
+        <div class="relative flex flex-col items-center">
+            <!-- Cinematic glowing effect behind logo -->
+            <div class="absolute inset-0 bg-emerald-500/20 blur-[80px] rounded-full animate-pulse"></div>
+            <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" alt="PPMI Madinah Logo" class="w-40 h-40 object-contain z-10 drop-shadow-[0_0_25px_rgba(16,185,129,0.7)] animate-bounce" style="animation-duration: 2s;">
+            <h1 class="mt-8 text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-emerald-100 to-emerald-300 tracking-wider text-center z-10 drop-shadow-lg">
+                QR CODE GENERATOR<br><span class="text-xl md:text-2xl text-emerald-500 font-medium tracking-[0.2em] mt-2 block">PPMI MADINAH</span>
+            </h1>
+        </div>
+        <!-- Loader bawah -->
+        <div class="absolute bottom-20 flex space-x-2">
+            <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" style="animation-delay: 0s;"></div>
+            <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+            <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
+        </div>
+    </div>
+
+    <!-- Radial Gradient Overlay Cinematic -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none bg-[radial-gradient(circle_at_50%_0%,rgba(16,185,129,0.1),transparent_70%)]"></div>
+
+    <!-- Container Utama untuk Aplikasi -->
+    <div class="w-full max-w-5xl flex flex-col mt-auto mb-auto space-y-8 z-10 opacity-0 transition-opacity duration-1000" id="mainAppContainer">
+        
+        <!-- MAIN APP -->
+        <main class="w-full bg-[#041F16]/70 backdrop-blur-2xl rounded-3xl glow-emerald overflow-hidden flex flex-col lg:flex-row border border-emerald-500/20 flex-shrink-0 relative">
+            <!-- Sweep line top -->
+            <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40"></div>
+
+            <!-- Kolom Pengaturan (Kiri) -->
+            <div class="w-full lg:w-5/12 p-6 sm:p-10 lg:border-r border-emerald-800/50 flex flex-col justify-center">
+                
+                <div class="flex items-center space-x-4 mb-8">
+                    <div class="bg-emerald-900/60 p-3 rounded-2xl shadow-lg border border-emerald-500/30 flex-shrink-0">
+                        <img src="https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E" alt="Logo PPMI" class="w-8 h-8 object-contain drop-shadow-[0_0_5px_rgba(16,185,129,0.8)]">
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold text-emerald-50 tracking-tight">QR Generator</h1>
+                        <p class="text-xs text-emerald-400 font-medium tracking-wide">PPMI MADINAH SERVER</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Input URL -->
+                    <div>
+                        <label for="urlInput" class="block text-sm font-semibold text-emerald-100 mb-2">Tautan atau Teks <span class="text-emerald-500">*</span></label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-emerald-500/70" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                            </div>
+                            <input type="text" id="urlInput" placeholder="https://website-anda.com" class="w-full pl-11 pr-4 py-3.5 border border-emerald-700/50 rounded-xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-400 outline-none transition-all text-emerald-50 bg-[#02120C]/80 focus:bg-[#031C13] placeholder-emerald-800/70 shadow-inner" required>
+                        </div>
+                    </div>
+
+                    <!-- Input Logo Drag & Drop -->
+                    <div>
+                        <label class="block text-sm font-semibold text-emerald-100 mb-2">Sisipkan Logo Kustom (Opsional)</label>
+                        <div id="uploadZone" class="relative flex flex-col items-center justify-center px-6 py-6 border-2 border-emerald-700/50 border-dashed rounded-xl hover:bg-emerald-900/30 transition-all cursor-pointer group bg-[#02120C]/50" onclick="document.getElementById('logoInput').click()">
+                            <svg class="w-10 h-10 text-emerald-600/70 group-hover:text-emerald-400 transition-colors mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            <p class="text-sm text-emerald-300/70 text-center"><span class="font-semibold text-emerald-400 group-hover:text-emerald-300">Klik upload</span> atau drag and drop</p>
+                            <p class="text-xs text-emerald-500/50 mt-1">PNG, JPG, JPEG (Maks. 2MB)</p>
+                            <input id="logoInput" type="file" accept="image/png, image/jpeg, image/jpg" class="hidden">
+                        </div>
+                        <p class="text-[11px] text-emerald-400/60 mt-2 text-center italic">*Logo PPMI Madinah otomatis dipakai jika Anda tidak mengunggah logo.</p>
+                        
+                        <!-- Preview Logo Terpilih -->
+                        <div id="logoPreviewContainer" class="hidden mt-3 flex items-center justify-between bg-emerald-900/40 border border-emerald-500/30 p-3 rounded-xl shadow-inner">
+                            <div class="flex items-center space-x-3 overflow-hidden">
+                                <div class="w-10 h-10 bg-white/10 rounded-lg p-1 border border-emerald-500/20 flex items-center justify-center backdrop-blur-sm">
+                                    <img id="logoThumbnail" src="" alt="Logo" class="max-w-full max-h-full object-contain">
+                                </div>
+                                <span id="logoFileName" class="text-sm font-medium text-emerald-100 truncate max-w-[150px] sm:max-w-[180px]">logo.png</span>
+                            </div>
+                            <button id="removeLogoBtn" class="p-2 text-rose-400 hover:bg-rose-500/20 rounded-lg transition-colors" title="Hapus Logo">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Input Judul Tambahan -->
+                    <div class="space-y-3 p-4 bg-emerald-900/20 border border-emerald-700/30 rounded-xl">
+                        <label for="titleInput" class="block text-sm font-semibold text-emerald-100">Judul Bawah QR (Arab / Indonesia)</label>
+                        <input type="text" id="titleInput" placeholder="Contoh: PPMI Madinah / جامعة الإسلامية" class="w-full px-4 py-3 border border-emerald-700/50 rounded-xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-400 outline-none transition-all text-emerald-50 bg-[#02120C]/80 focus:bg-[#031C13] placeholder-emerald-800/70 shadow-inner font-['Amiri'] text-lg" dir="auto">
+                        
+                        <div class="flex items-center space-x-4 mt-2">
+                            <!-- Toggle Bold -->
+                            <label class="flex items-center space-x-2 cursor-pointer group">
+                                <div class="relative flex items-center justify-center w-5 h-5 border-2 border-emerald-500/50 rounded-md group-hover:border-emerald-400 transition-colors">
+                                    <input type="checkbox" id="titleBold" class="peer appearance-none w-full h-full cursor-pointer rounded-md checked:bg-emerald-500 transition-all">
+                                    <svg class="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                                <span class="text-sm text-emerald-300 font-medium group-hover:text-emerald-200">Bold Teks</span>
+                            </label>
+
+                            <!-- Pilihan Warna -->
+                            <select id="titleColor" class="appearance-none bg-[#02120C]/80 border border-emerald-700/50 text-emerald-300 text-sm rounded-lg px-3 py-1.5 focus:ring-emerald-500/30 outline-none shadow-inner cursor-pointer font-medium">
+                                <option value="#000000">Warna: Hitam</option>
+                                <option value="#064e3b">Warna: Hijau Gelap</option>
+                                <option value="#1e3a8a">Warna: Biru Gelap</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Opsi Resolusi -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="col-span-2">
+                            <label class="block text-sm font-semibold text-emerald-100 mb-2">Resolusi Kualitas</label>
+                            <div class="relative">
+                                <select id="sizeInput" class="w-full appearance-none px-4 py-3.5 border border-emerald-700/50 rounded-xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-400 outline-none transition-all text-emerald-50 bg-[#02120C]/80 focus:bg-[#031C13] cursor-pointer font-medium shadow-inner">
+                                    <option value="1024">1024 x 1024 px (Ultra HD)</option>
+                                    <option value="512" selected>512 x 512 px (Standar HD)</option>
+                                    <option value="2048">2048 x 2048 px (Print Quality Max)</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-emerald-500">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Action -->
+                    <button id="generateBtn" class="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold py-4 px-4 rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] focus:ring-4 focus:ring-emerald-500/40 active:scale-[0.98] uppercase tracking-wide">
+                        <span class="spinner" id="btnSpinner"></span>
+                        <span id="btnText">Generate QR Code</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kolom Preview (Kanan) -->
+            <div class="w-full lg:w-7/12 p-6 sm:p-10 bg-[#02120C]/40 flex flex-col items-center justify-center relative backdrop-blur-sm">
+                
+                <div class="w-full max-w-[380px] flex flex-col items-center">
+                    <!-- Frame Canvas dengan gaya Kaca/Glassmorphism yang menonjolkan QR putih -->
+                    <div id="canvasContainer" class="bg-white/5 p-6 sm:p-8 rounded-3xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-emerald-500/20 w-full aspect-square flex flex-col items-center justify-center relative transition-all duration-500 backdrop-blur-md group hover:border-emerald-500/40">
+                        
+                        <!-- State Kosong -->
+                        <div id="emptyState" class="text-center">
+                            <div class="w-24 h-24 bg-emerald-900/30 rounded-2xl mx-auto mb-4 flex items-center justify-center border border-emerald-500/20 drop-shadow-md">
+                                <svg class="w-12 h-12 text-emerald-500/60 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                            </div>
+                            <h3 class="text-emerald-100 font-semibold mb-1 tracking-wide">Pratinjau Kosong</h3>
+                            <p class="text-emerald-500/70 text-sm px-4">QR Code futuristik Anda akan muncul di sini.</p>
+                        </div>
+                        
+                        <!-- Canvas (Awalnya tersembunyi) -->
+                        <!-- Canvas ini akan memiliki background putih murni dari JS agar mudah di scan -->
+                        <canvas id="qrCanvas" class="hidden w-full h-auto rounded-xl shadow-2xl transition-all duration-500"></canvas>
+                    </div>
+
+                    <!-- Tombol Download -->
+                    <button id="downloadBtn" class="mt-8 w-full hidden flex items-center justify-center space-x-2 bg-emerald-50/10 hover:bg-emerald-500 hover:text-white text-emerald-100 border border-emerald-500/50 font-semibold py-4 px-4 rounded-xl transition-all shadow-lg shadow-emerald-900/20 focus:ring-4 focus:ring-emerald-500/30 active:scale-[0.98] backdrop-blur-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>Unduh Resolusi Tinggi</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- HISTORY SECTION -->
+        <section id="historyContainer" class="w-full bg-[#041F16]/60 backdrop-blur-xl rounded-3xl glow-emerald overflow-hidden border border-emerald-500/20 flex-shrink-0 hidden transition-all duration-500 relative">
+            <div class="px-6 py-5 border-b border-emerald-500/20 flex justify-between items-center bg-[#02120C]/50">
+                <div class="flex items-center space-x-3">
+                    <div class="p-1.5 bg-emerald-900/50 rounded-lg border border-emerald-500/30">
+                        <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-emerald-50 tracking-wide">Riwayat Generate</h2>
+                </div>
+                <button onclick="clearHistory()" class="text-sm flex items-center space-x-1 text-rose-400 hover:text-white bg-rose-500/10 hover:bg-rose-500 font-medium px-4 py-2 rounded-xl transition-all border border-rose-500/20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    <span>Hapus Semua</span>
+                </button>
+            </div>
+            <div class="p-6">
+                <div id="historyList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                    <!-- Item riwayat akan dimasukkan melalui JavaScript -->
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Sistem Notifikasi (Toast) Cinematic Dark -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-[100] flex flex-col space-y-3 pointer-events-none"></div>
+
+    <script>
+        // --- DEKLARASI ELEMEN DOM ---
+        const urlInput = document.getElementById('urlInput');
+        const logoInput = document.getElementById('logoInput');
+        const uploadZone = document.getElementById('uploadZone');
+        const logoPreviewContainer = document.getElementById('logoPreviewContainer');
+        const logoThumbnail = document.getElementById('logoThumbnail');
+        const logoFileName = document.getElementById('logoFileName');
+        const removeLogoBtn = document.getElementById('removeLogoBtn');
+        const sizeInput = document.getElementById('sizeInput');
+        const titleInput = document.getElementById('titleInput');
+        const titleBold = document.getElementById('titleBold');
+        const titleColor = document.getElementById('titleColor');
+        const generateBtn = document.getElementById('generateBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const qrCanvas = document.getElementById('qrCanvas');
+        const emptyState = document.getElementById('emptyState');
+        const btnSpinner = document.getElementById('btnSpinner');
+        const btnText = document.getElementById('btnText');
+        const toastContainer = document.getElementById('toastContainer');
+        const splashScreen = document.getElementById('splashScreen');
+        const mainAppContainer = document.getElementById('mainAppContainer');
+        
+        let logoImageObj = null;
+        let defaultLogoObj = null;
+
+        // --- SISTEM SPLASH SCREEN & INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initHistory();
+            loadDefaultLogoPPMI();
+            
+            // Animasi transisi splash screen (2.5 Detik)
+            setTimeout(() => {
+                splashScreen.style.opacity = '0';
+                splashScreen.style.pointerEvents = 'none';
+                
+                // Fade in Main App
+                mainAppContainer.classList.remove('opacity-0');
+                
+                setTimeout(() => splashScreen.remove(), 1000);
+            }, 2500); 
+        });
+
+        // --- LOAD DEFAULT LOGO DENGAN AMAN (CORS BYPASS) ---
+        async function loadDefaultLogoPPMI() {
+            const targetUrl = 'https://drive.google.com/thumbnail?id=1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E';
+            
+            // Menggunakan beberapa opsi proxy publik bertingkat untuk mencegah kegagalan fetch (CORS / AdBlocker)
+            const proxyList = [
+                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+                `https://wsrv.nl/?url=${encodeURIComponent(targetUrl)}&output=png`,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
+            ];
+
+            for (const proxyUrl of proxyList) {
+                try {
+                    const response = await fetch(proxyUrl);
+                    if (!response.ok) continue; // Lanjut ke proxy berikutnya jika gagal
+                    
+                    const blob = await response.blob();
+                    const objectUrl = URL.createObjectURL(blob);
+                    
+                    const img = new Image();
+                    await new Promise((resolve, reject) => {
+                        img.onload = () => { 
+                            defaultLogoObj = img; 
+                            resolve(); 
+                        };
+                        img.onerror = reject;
+                        img.src = objectUrl;
+                    });
+                    
+                    return; // Jika berhasil, keluar dari loop fungsi
+                } catch (error) {
+                    // Gagal fetch (mungkin jaringan atau diblokir), coba proxy selanjutnya di background
+                }
+            }
+            
+            console.warn("Info: Koneksi ke server logo dibatasi oleh jaringan lokal/browser.");
+        }
+
+
+        // --- MANAJEMEN RIWAYAT (LOCAL STORAGE) ---
+        const HISTORY_KEY = 'qr_ppmi_history';
+        let historyData = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+
+        function initHistory() {
+            renderHistory();
+        }
+
+        function saveToHistory(text, dataUrl) {
+            const newItem = {
+                id: Date.now().toString(),
+                text: text,
+                date: new Date().toISOString(),
+                image: dataUrl
+            };
+            
+            // Tambahkan ke paling atas
+            historyData.unshift(newItem); 
+            // Batasi maksimal 30 riwayat
+            if (historyData.length > 30) historyData.pop(); 
+            
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyContainer');
+            const list = document.getElementById('historyList');
+
+            if (historyData.length === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            list.innerHTML = '';
+
+            historyData.forEach(item => {
+                const dateObj = new Date(item.date);
+                const dateStr = dateObj.toLocaleDateString('id-ID', { 
+                    day: 'numeric', month: 'short', year: 'numeric', 
+                    hour: '2-digit', minute: '2-digit' 
+                });
+
+                const card = document.createElement('div');
+                // Desain kartu history cinematic
+                card.className = 'flex items-center space-x-4 p-4 border border-emerald-700/30 rounded-2xl hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:border-emerald-500/50 transition-all bg-[#031811]/60 backdrop-blur-sm group';
+                card.innerHTML = `
+                    <div class="w-16 h-16 flex-shrink-0 bg-white rounded-xl border border-emerald-500/20 p-1 flex items-center justify-center overflow-hidden relative shadow-inner">
+                        <img src="${item.image}" class="w-full h-full object-contain rounded-lg">
+                        <div class="absolute inset-0 bg-[#02120C]/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center rounded-xl backdrop-blur-[1px]">
+                            <button onclick="downloadHistoryItem('${item.id}')" class="text-white transform scale-75 group-hover:scale-100 transition-all" title="Unduh">
+                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-emerald-50 truncate tracking-wide" title="${item.text}">${item.text}</p>
+                        <p class="text-xs text-emerald-500/80 mt-1">${dateStr}</p>
+                        <div class="flex space-x-3 mt-2.5">
+                            <button onclick="downloadHistoryItem('${item.id}')" class="text-xs text-emerald-400 hover:text-emerald-300 font-semibold flex items-center transition-colors">
+                                Unduh
+                            </button>
+                            <span class="text-emerald-800/50">|</span>
+                            <button onclick="deleteHistoryItem('${item.id}')" class="text-xs text-rose-500 hover:text-rose-400 font-semibold transition-colors">
+                                Hapus
+                            </button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        window.deleteHistoryItem = function(id) {
+            historyData = historyData.filter(item => item.id !== id);
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
+            renderHistory();
+            showToast('Dihapus', 'Satu riwayat QR berhasil dihapus.', 'success');
+        };
+
+        window.clearHistory = function() {
+            if(confirm('Apakah Anda yakin ingin menghapus SEMUA riwayat QR Code? Aksi ini tidak dapat dibatalkan.')) {
+                historyData = [];
+                localStorage.removeItem(HISTORY_KEY);
+                renderHistory();
+                showToast('Dibersihkan', 'Semua riwayat telah dikosongkan.', 'success');
+            }
+        };
+
+        window.downloadHistoryItem = function(id) {
+            const item = historyData.find(i => i.id === id);
+            if(item) {
+                const link = document.createElement('a');
+                link.download = `QR_PPMI_History_${item.id}.png`;
+                link.href = item.image;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast('Mengunduh', 'QR Code sedang diunduh.', 'success');
+            }
+        };
+
+
+        // --- SISTEM NOTIFIKASI TOAST (CINEMATIC DARK) ---
+        function showToast(title, message, type = 'error') {
+            const toast = document.createElement('div');
+            const isError = type === 'error';
+            
+            // Pewarnaan Dark Mode Mewah
+            toast.className = `pointer-events-auto w-80 bg-[#031A12]/95 backdrop-blur-xl border-l-4 ${isError ? 'border-rose-500 border-y-rose-900/30 border-r-rose-900/30' : 'border-emerald-500 border-y-emerald-900/30 border-r-emerald-900/30'} rounded-xl shadow-[0_15px_40px_rgba(0,0,0,0.6)] p-4 flex items-start space-x-4 toast-enter`;
+            
+            const icon = isError 
+                ? `<div class="bg-rose-500/10 p-1.5 rounded-lg border border-rose-500/20"><svg class="w-6 h-6 text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>`
+                : `<div class="bg-emerald-500/10 p-1.5 rounded-lg border border-emerald-500/20"><svg class="w-6 h-6 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>`;
+
+            toast.innerHTML = `
+                ${icon}
+                <div class="flex-1 mt-0.5">
+                    <h4 class="text-sm font-bold text-emerald-50 tracking-wide">${title}</h4>
+                    <p class="text-xs text-emerald-400/80 mt-1 leading-relaxed">${message}</p>
+                </div>
+                <button class="text-emerald-600 hover:text-emerald-400 transition-colors" onclick="this.parentElement.remove()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            `;
+
+            toastContainer.appendChild(toast);
+            
+            requestAnimationFrame(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-enter-active');
+            });
+
+            setTimeout(() => {
+                toast.classList.remove('toast-enter-active');
+                toast.classList.add('toast-exit-active');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // --- MANAJEMEN LOGO CUSTOM ---
+        function handleFile(file) {
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                showToast('Format Ditolak', 'Hanya menerima file gambar (PNG, JPG, JPEG).');
+                logoInput.value = '';
+                return;
+            }
+
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('Ukuran Ekstrem', 'Maksimal ukuran file logo adalah 2MB.');
+                logoInput.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    logoImageObj = img;
+                    logoThumbnail.src = e.target.result;
+                    logoFileName.textContent = file.name;
+                    uploadZone.classList.add('hidden');
+                    logoPreviewContainer.classList.remove('hidden');
+                };
+                img.onerror = () => showToast('File Korup', 'Gagal memproses file gambar.');
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        logoInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+        
+        removeLogoBtn.addEventListener('click', () => {
+            logoImageObj = null;
+            logoInput.value = '';
+            logoThumbnail.src = '';
+            uploadZone.classList.remove('hidden');
+            logoPreviewContainer.classList.add('hidden');
+            showToast('Logo Dihapus', 'Kembali menggunakan Logo PPMI Madinah secara default.', 'success');
+        });
+
+        // Drag & Drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, preventDefaults, false);
+        });
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, () => {
+                uploadZone.classList.add('border-emerald-400', 'bg-emerald-900/40');
+            }, false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, () => {
+                uploadZone.classList.remove('border-emerald-400', 'bg-emerald-900/40');
+            }, false);
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFile(files[0]);
+        });
+
+
+        // --- LOGIK GENERATE QR CODE VIA SERVER ---
+        generateBtn.addEventListener('click', async () => {
+            const url = urlInput.value.trim();
+            const size = parseInt(sizeInput.value);
+
+            if (!url) {
+                showToast('Tautan Kosong', 'Harap masukkan data tautan atau teks terlebih dahulu.');
+                urlInput.focus();
+                return;
+            }
+            if (url.length > 800) {
+                showToast('Data Berlebih', 'Teks terlalu panjang. Harap gunakan URL shortener.');
+                return;
+            }
+
+            btnSpinner.style.display = 'block';
+            btnText.textContent = 'Memproses Transmisi...';
+            generateBtn.disabled = true;
+            generateBtn.classList.add('opacity-80', 'cursor-not-allowed', 'from-emerald-800', 'to-teal-800');
+
+            try {
+                // Memanggil Server Eksternal (API QuickChart)
+                const apiUrl = `https://quickchart.io/qr?text=${encodeURIComponent(url)}&size=${size}&ecLevel=H&margin=2`;
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+                const response = await fetch(apiUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                if (!response.ok) throw new Error(`Server API fault: ${response.status}`);
+                
+                const blob = await response.blob();
+                const qrObjectURL = URL.createObjectURL(blob);
+
+                const qrImg = new Image();
+                await new Promise((resolve, reject) => {
+                    qrImg.onload = resolve;
+                    qrImg.onerror = () => reject(new Error('Render server grafis gagal.'));
+                    qrImg.src = qrObjectURL;
+                });
+
+                // Gambar hasil dengan logo custom ATAU logo default PPMI
+                drawFinalCanvas(qrImg, size);
+                
+                URL.revokeObjectURL(qrObjectURL);
+
+                // Update UI State
+                emptyState.classList.add('hidden');
+                qrCanvas.classList.remove('hidden');
+                downloadBtn.classList.remove('hidden');
+                
+                // Simpan ke Riwayat
+                const finalImage = qrCanvas.toDataURL("image/png", 1.0);
+                saveToHistory(url, finalImage);
+                
+                showToast('Sukses', 'QR Code resolusi tinggi berhasil digenerate!', 'success');
+
+            } catch (error) {
+                console.error("Proses Error:", error);
+                let errorMsg = 'Gagal menyambung ke server pemrosesan.';
+                if (error.name === 'AbortError') errorMsg = 'Waktu koneksi (Timeout). Silakan coba lagi.';
+                else if (error.message) errorMsg = error.message;
+                
+                showToast('Kegagalan Sistem', errorMsg);
+            } finally {
+                btnSpinner.style.display = 'none';
+                btnText.textContent = 'Generate QR Code';
+                generateBtn.disabled = false;
+                generateBtn.classList.remove('opacity-80', 'cursor-not-allowed', 'from-emerald-800', 'to-teal-800');
+            }
+        });
+
+        // --- FUNGSI PENGGAMBARAN KANVAS ---
+        function drawFinalCanvas(qrImg, canvasSize) {
+            const ctx = qrCanvas.getContext('2d');
+            
+            const titleText = titleInput.value.trim();
+            const isBold = titleBold.checked;
+            const tColor = titleColor.value;
+
+            // Jika ada judul, tambah tinggi canvas sebesar 15% dari ukuran QR
+            const extraHeight = titleText ? (canvasSize * 0.15) : 0;
+
+            qrCanvas.width = canvasSize;
+            qrCanvas.height = canvasSize + extraHeight;
+
+            // Dasar Kanvas harus Putih Murni agar QR gampang discan
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, qrCanvas.width, qrCanvas.height);
+            
+            // Gambar QR di bagian atas
+            ctx.drawImage(qrImg, 0, 0, canvasSize, canvasSize);
+
+            // LOGIKA DEFAULT LOGO: Gunakan logo kustom jika ada, kalau tidak gunakan logo PPMI
+            const activeLogoToDraw = logoImageObj || defaultLogoObj;
+
+            if (activeLogoToDraw) {
+                const maxLogoSize = canvasSize * 0.23; 
+                let drawWidth = maxLogoSize;
+                let drawHeight = maxLogoSize;
+                
+                const aspect = activeLogoToDraw.width / activeLogoToDraw.height;
+                if (aspect > 1) {
+                    drawHeight = maxLogoSize / aspect;
+                } else if (aspect < 1) {
+                    drawWidth = maxLogoSize * aspect;
+                }
+
+                const x = (canvasSize - drawWidth) / 2;
+                const y = (canvasSize - drawHeight) / 2;
+                const padding = canvasSize * 0.025; 
+
+                // Background logo rounded
+                ctx.fillStyle = '#ffffff';
+                if (ctx.roundRect) {
+                    ctx.beginPath();
+                    ctx.roundRect(x - padding, y - padding, drawWidth + (padding * 2), drawHeight + (padding * 2), canvasSize * 0.02);
+                    ctx.fill();
+                } else {
+                    ctx.fillRect(x - padding, y - padding, drawWidth + (padding * 2), drawHeight + (padding * 2));
+                }
+
+                ctx.drawImage(activeLogoToDraw, x, y, drawWidth, drawHeight);
+            }
+
+            // GAMBAR JUDUL JIKA ADA
+            if (titleText) {
+                const fontSize = canvasSize * 0.055; // Ukuran font proporsional 5.5% dari lebar
+                const fontWeight = isBold ? 'bold' : 'normal';
+                
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = `${fontWeight} ${fontSize}px 'Amiri', serif`;
+                
+                // Efek shadow bayangan elegan yang tipis
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+                ctx.shadowBlur = 4;
+                ctx.shadowOffsetX = 1;
+                ctx.shadowOffsetY = 1;
+                
+                ctx.fillStyle = tColor;
+                
+                // Posisi teks pas di tengah ruang ekstra bawah
+                const textY = canvasSize + (extraHeight / 2);
+                ctx.fillText(titleText, canvasSize / 2, textY);
+                
+                // Reset shadow agar aman
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+            }
+        }
+
+        // --- FUNGSI DOWNLOAD UTAMA ---
+        downloadBtn.addEventListener('click', () => {
+            try {
+                const imageStr = qrCanvas.toDataURL("image/png", 1.0);
+                const link = document.createElement('a');
+                link.download = `QR_PPMI_Madinah_${new Date().getTime()}.png`;
+                link.href = imageStr;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast('Terkonfirmasi', 'Gambar berhasil diunduh ke perangkat Anda.', 'success');
+            } catch (err) {
+                showToast('Gagal Unduh', 'Terjadi kesalahan sistem saat ekstrak gambar.', 'error');
+                console.error(err);
+            }
+        });
+    </script>
+</body>
+</html>
