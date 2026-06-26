@@ -1181,14 +1181,22 @@
 
         function confirmSave() {
             const data = getFormData();
+            const nim = data.nim.trim();
             
             // Validasi NIM ketat sebelum masuk modal
             if (data.lupa_nim === 'Tidak') {
-            if (nim.length !== 5 && nim.length !== 9) {
-            showDynamicIsland('NIM harus berisi 5 atau 9 digit!', 'error');
-            return;
-            }}
+                if (nim.length !== 5 && nim.length !== 9) {
+                    showDynamicIsland('NIM harus berisi 5 atau 9 digit!', 'error');
+                    return;
+                }
+                
+                // Opsional: Pastikan NIM hanya berisi angka
+                if (!/^\d+$/.test(nim)) {
+                    showDynamicIsland('NIM hanya boleh berisi angka!', 'error');
+                    return;
+                }
             }
+            
             if(data.lupa_nim === 'Ya' && !data.verif_tipe) {
                 showDynamicIsland('Pilih metode verifikasi!', 'error'); return;
             }
