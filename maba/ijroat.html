@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+    <title>Administrasi Mahasiswa Baru UIM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            overflow-x: hidden !important;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #f8fafc;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        * { box-sizing: border-box !important; }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked { right: 0; border-color: #22c55e; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #22c55e; }
+        .toggle-checkbox { right: 0; z-index: 1; border-color: #e2e8f0; transition: all 0.3s; }
+        .toggle-label { background-color: #e2e8f0; transition: all 0.3s; }
+
+        /* Package Card selection */
+        .package-card { transition: all 0.2s ease-in-out; }
+        .package-radio:checked + .package-card {
+            border-color: #22c55e;
+            background-color: #f0fdf4;
+            box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.2), 0 2px 4px -1px rgba(34, 197, 94, 0.1);
+        }
+        .package-radio:checked + .package-card .check-icon { display: flex; }
+        .package-radio:checked + .package-card .radio-ring { border-color: #22c55e; background-color: #22c55e; }
+        .package-radio:checked + .package-card .radio-ring::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; border-radius: 50%; background: white; }
+    </style>
+</head>
+<body class="w-full max-w-md mx-auto min-h-screen relative shadow-2xl bg-white overflow-y-auto">
+
+    <!-- Background Decor -->
+    <div class="fixed top-0 left-0 w-full h-56 bg-gradient-to-b from-green-600 to-green-700 rounded-b-[40px] -z-10"></div>
+
+    <!-- Dynamic Island / Toast -->
+    <div id="dynamic-island" class="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-[9999] bg-black text-white px-5 py-3 rounded-full flex items-center justify-center gap-3 transition-all duration-300 opacity-0 scale-90 pointer-events-none shadow-2xl font-medium">
+        <i id="di-icon" class="fas fa-spinner fa-spin text-sm"></i>
+        <span id="di-text" class="text-sm truncate">Memuat...</span>
+    </div>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="fixed inset-0 z-[100] bg-green-600 flex flex-col items-center justify-center transition-opacity duration-500 w-full max-w-md mx-auto">
+        <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-xl animate-bounce mb-6">
+            <i class="fas fa-university text-4xl text-green-600"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-white tracking-wide">Portal Maba UIM</h1>
+        <p class="text-sm text-green-200 mt-2 font-medium">Sinkronisasi Data Cache...</p>
+    </div>
+
+    <!-- HEADER -->
+    <header id="main-header" class="hidden sticky top-0 z-30 bg-green-700/90 backdrop-blur-md px-5 py-4 flex items-center justify-between w-full max-w-md mx-auto shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-inner">
+                <i class="fas fa-graduation-cap text-green-600 text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-sm font-bold text-white leading-tight">Administrasi Maba</h1>
+                <p class="text-[10px] text-green-200" id="user-email-display">Memuat email...</p>
+            </div>
+        </div>
+        <button onclick="logout()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 text-white hover:bg-red-500 transition-colors">
+            <i class="fas fa-sign-out-alt text-xs"></i>
+        </button>
+    </header>
+
+    <!-- LOGIN SCREEN (Fallback if no cache) -->
+    <div id="screen-login" class="hidden min-h-screen flex-col items-center justify-center p-6 w-full max-w-md mx-auto relative z-10 mt-10">
+        <div class="w-full bg-white/95 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-gray-100">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Masuk Portal</h2>
+            <p class="text-xs text-center text-gray-500 mb-8">Data cache tidak ditemukan. Silakan login kembali.</p>
+            
+            <div class="space-y-4 mb-6">
+                <div class="w-full relative">
+                    <label class="text-xs font-semibold text-gray-700 mb-1.5 block">Alamat Email</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-3.5 text-gray-400"></i>
+                        <input type="email" id="login-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 transition-all font-medium" placeholder="Email terdaftar...">
+                    </div>
+                </div>
+                <div class="w-full relative">
+                    <label class="text-xs font-semibold text-gray-700 mb-1.5 block">No Tasjil (Password)</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-3.5 text-gray-400"></i>
+                        <input type="password" id="login-password" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-green-500 transition-all font-medium" placeholder="Nomor Tasjil SIS...">
+                    </div>
+                </div>
+            </div>
+            <button onclick="manualLogin()" class="w-full bg-green-600 text-white font-bold rounded-xl py-4 shadow-lg hover:bg-green-700 transition-all text-sm flex items-center justify-center gap-2">
+                <span>Login Aplikasi</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="screen-main" class="hidden w-full max-w-md mx-auto pb-32 pt-4 px-4 relative z-10">
+        
+        <!-- Tab Navigation -->
+        <div class="flex bg-white shadow-sm border border-gray-100 p-1.5 rounded-2xl mb-6 backdrop-blur-md gap-1">
+            <button id="tab-btn-paket" onclick="switchTab('paket')" class="flex-1 py-3 text-xs font-bold rounded-xl bg-green-600 text-white shadow transition-all flex justify-center items-center gap-2">
+                <i class="fas fa-box-open"></i> Paket Ijroat
+            </button>
+            <button id="tab-btn-atsas" onclick="switchTab('atsas')" class="flex-1 py-3 text-xs font-bold rounded-xl text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all flex justify-center items-center gap-2">
+                <i class="fas fa-clipboard-check"></i> Penerimaan
+            </button>
+        </div>
+
+        <!-- ======================= TAB 1: PAKET IJROAT ======================= -->
+        <div id="tab-paket" class="tab-content space-y-5 animate-fade-in">
+            
+            <div class="bg-white rounded-3xl shadow-md border border-gray-100 p-5">
+                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
+                    <i class="fas fa-user-circle text-green-500"></i> Data Diri
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 block mb-1">Nama Lengkap (Sesuai Paspor) <span class="text-red-500">*</span></label>
+                        <input type="text" id="f-nama" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-500 font-medium" placeholder="Masukkan nama...">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 block mb-1">Nomor WA Aktif <span class="text-red-500">*</span></label>
+                        <div class="flex gap-2">
+                            <input type="tel" id="f-phone" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, ''); resetWaVerification();" class="w-full flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-500 font-medium" placeholder="628...">
+                            <button type="button" id="btn-verify-wa" onclick="sendWaOtp()" class="shrink-0 bg-green-100 text-green-700 hover:bg-green-200 px-4 rounded-xl text-xs font-bold transition-colors shadow-sm">Verifikasi</button>
+                        </div>
+                        <p id="wa-verified-badge" class="hidden text-[10px] text-green-600 font-bold mt-1"><i class="fas fa-check-circle"></i> Nomor WhatsApp Terverifikasi</p>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 block mb-1">Tanggal Transfer <span class="text-red-500">*</span></label>
+                        <input type="date" id="f-date" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-green-500 font-medium text-gray-700">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-md border border-gray-100 p-5">
+                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
+                    <i class="fas fa-layer-group text-green-500"></i> Pilihan Paket Layanan
+                </h3>
+                
+                <div class="space-y-3">
+                    <!-- Kategori 1 -->
+                    <label class="block relative cursor-pointer group">
+                        <input type="radio" name="paket" value="4250000" class="peer package-radio sr-only" onchange="calculateTotal()" checked>
+                        <div class="package-card border-2 border-gray-200 rounded-2xl p-4 flex items-start gap-3">
+                            <div class="radio-ring w-5 h-5 rounded-full border-2 border-gray-300 relative mt-0.5 shrink-0 transition-colors"></div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start mb-1">
+                                    <h4 class="font-bold text-gray-800 text-sm">Kategori 1</h4>
+                                    <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-md">Rp 4.250.000</span>
+                                </div>
+                                <p class="text-[10px] text-gray-500 leading-relaxed">MCU, Terjemah Ijazah & Apostille, Apostille SKCK Mabes, Psikologi, Ops (Jkt&Med), Penyambutan, Kas</p>
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- Kategori 2 -->
+                    <label class="block relative cursor-pointer group">
+                        <input type="radio" name="paket" value="4150000" class="peer package-radio sr-only" onchange="calculateTotal()">
+                        <div class="package-card border-2 border-gray-200 rounded-2xl p-4 flex items-start gap-3">
+                            <div class="radio-ring w-5 h-5 rounded-full border-2 border-gray-300 relative mt-0.5 shrink-0 transition-colors"></div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start mb-1">
+                                    <h4 class="font-bold text-gray-800 text-sm">Kategori 2</h4>
+                                    <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-md">Rp 4.150.000</span>
+                                </div>
+                                <p class="text-[10px] text-gray-500 leading-relaxed">MCU, Upgrade Terjemah & Apostille, Apostille SKCK Mabes, Psikologi, Ops, Penyambutan, Kas</p>
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- Kategori 3 -->
+                    <label class="block relative cursor-pointer group">
+                        <input type="radio" name="paket" value="4100000" class="peer package-radio sr-only" onchange="calculateTotal()">
+                        <div class="package-card border-2 border-gray-200 rounded-2xl p-4 flex items-start gap-3">
+                            <div class="radio-ring w-5 h-5 rounded-full border-2 border-gray-300 relative mt-0.5 shrink-0 transition-colors"></div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start mb-1">
+                                    <h4 class="font-bold text-gray-800 text-sm">Kategori 3</h4>
+                                    <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-md">Rp 4.100.000</span>
+                                </div>
+                                <p class="text-[10px] text-gray-500 leading-relaxed">MCU, Legalisasi Apostille Ijazah, Apostille SKCK Mabes, Psikologi, Ops, Penyambutan, Kas</p>
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- Kategori 4 -->
+                    <label class="block relative cursor-pointer group">
+                        <input type="radio" name="paket" value="4200000" class="peer package-radio sr-only" onchange="calculateTotal()">
+                        <div class="package-card border-2 border-gray-200 rounded-2xl p-4 flex items-start gap-3">
+                            <div class="radio-ring w-5 h-5 rounded-full border-2 border-gray-300 relative mt-0.5 shrink-0 transition-colors"></div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start mb-1">
+                                    <h4 class="font-bold text-gray-800 text-sm">Kategori 4</h4>
+                                    <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-md">Rp 4.200.000</span>
+                                </div>
+                                <p class="text-[10px] text-gray-500 leading-relaxed">MCU, Endorse Notaris & Apostille, Apostille SKCK Mabes, Psikologi, Ops, Penyambutan, Kas</p>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-md border border-gray-100 p-5">
+                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
+                    <i class="fas fa-plus-circle text-green-500"></i> Tambahan & Catatan
+                </h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 block mb-1">Belum Terjemah? (Isi jml halaman)</label>
+                        <div class="flex items-center gap-3">
+                            <input type="number" id="f-terjemah" min="0" value="0" oninput="calculateTotal(); toggleTerjemahDetail();" class="w-24 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-center outline-none focus:border-green-500 font-bold">
+                            <span class="text-[10px] text-gray-500 flex-1">@ Rp 200.000,- / halaman</span>
+                        </div>
+                        
+                        <!-- Textarea Rincian Berkas (Otomatis Muncul) -->
+                        <div id="wrapper-terjemah-detail" class="hidden mt-3 animate-fade-in">
+                            <label class="text-xs font-semibold text-gray-600 block mb-1">Rincian Dokumen Terjemahan <span class="text-red-500">*</span></label>
+                            <textarea id="f-terjemah-detail" rows="2" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs outline-none focus:border-green-500 font-medium resize-none" placeholder="Contoh: Ijazah 1 hal, Transkrip Nilai 2 hal..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-blue-50 border border-blue-100 rounded-xl">
+                        <div>
+                            <h4 class="text-xs font-bold text-blue-800">SKCK dari Polres/Polda?</h4>
+                            <p class="text-[10px] text-blue-600 mt-0.5">Selisih apostille (+ Rp 100.000)</p>
+                        </div>
+                        <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" id="f-skck" onchange="calculateTotal()" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="f-skck" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 bg-yellow-50 rounded-xl border border-yellow-100 flex gap-3 items-start">
+                        <i class="fas fa-info-circle text-yellow-600 mt-0.5"></i>
+                        <p class="text-[10px] text-yellow-700 leading-relaxed font-medium">Total biaya di atas <b>belum termasuk</b> Visa Pelajar (235 USD). Saya mengerti dan setuju dengan ketentuan Lajnah Istiqbal.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-md border border-gray-100 p-5 overflow-hidden relative">
+                <!-- Dekorasi -->
+                <div class="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-bl-full -z-10 opacity-50"></div>
+                
+                <h3 class="text-sm font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
+                    <i class="fas fa-receipt text-green-500"></i> Rincian Akumulasi Biaya
+                </h3>
+                
+                <div id="rincian-biaya-list" class="space-y-1 mb-3">
+                    <!-- Rincian akan dirender disini via Javascript -->
+                </div>
+
+                <div class="border-t border-dashed border-gray-300 pt-3 flex justify-between items-center">
+                    <span class="text-xs font-bold text-gray-800">Total Akumulasi</span>
+                    <span id="rincian-total" class="text-sm font-extrabold text-green-700">Rp 0</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-md border border-gray-100 p-5">
+                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
+                    <i class="fas fa-file-upload text-green-500"></i> Bukti Pembayaran
+                </h3>
+                <div class="mb-4">
+                    <p class="text-[11px] text-gray-500 font-medium mb-1">Transfer ke Bank Syariah Indonesia (BSI)</p>
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-xl border border-gray-200">
+                        <div>
+                            <p class="text-[10px] text-gray-500">a/n PPMI Madinah</p>
+                            <p class="font-bold text-gray-800 tracking-wider">6666 788 007</p>
+                        </div>
+                        <button onclick="copyRekening()" class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-200"><i class="fas fa-copy text-sm"></i></button>
+                    </div>
+                </div>
+                
+                <div class="w-full">
+                    <label class="text-xs font-semibold text-gray-600 block mb-2">Unggah Struk (Screenshot/Foto) <span class="text-red-500">*</span></label>
+                    <div class="relative w-full h-32 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors">
+                        <input type="file" id="f-file" accept="image/*" onchange="previewFile(this)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                        <i class="fas fa-cloud-upload-alt text-2xl text-green-500 mb-2"></i>
+                        <p class="text-[10px] text-gray-500 text-center px-4" id="file-name">Tap disini untuk memilih file<br>(Max 5MB)</p>
+                    </div>
+                </div>
+                
+                <div class="mt-5 border-t border-gray-100 pt-4">
+                    <label class="text-xs font-semibold text-gray-600 block mb-2">Berikan Rating Formulir Ini</label>
+                    <div class="flex justify-between items-center gap-2">
+                        <span class="text-[10px] text-gray-400">Sulit</span>
+                        <div class="flex gap-1" id="rating-container">
+                            <button class="rating-btn w-8 h-8 rounded-full bg-gray-100 text-gray-400 text-xs font-bold hover:bg-green-100" data-val="1">1</button>
+                            <button class="rating-btn w-8 h-8 rounded-full bg-gray-100 text-gray-400 text-xs font-bold hover:bg-green-100" data-val="2">2</button>
+                            <button class="rating-btn w-8 h-8 rounded-full bg-gray-100 text-gray-400 text-xs font-bold hover:bg-green-100" data-val="3">3</button>
+                            <button class="rating-btn w-8 h-8 rounded-full bg-gray-100 text-gray-400 text-xs font-bold hover:bg-green-100" data-val="4">4</button>
+                            <button class="rating-btn w-8 h-8 rounded-full bg-gray-100 text-gray-400 text-xs font-bold hover:bg-green-100" data-val="5">5</button>
+                        </div>
+                        <span class="text-[10px] text-gray-400">Mudah</span>
+                    </div>
+                    <input type="hidden" id="f-rating" value="5">
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================= TAB 2: PENERIMAAN ATSAS ======================= -->
+        <div id="tab-atsas" class="tab-content hidden space-y-4 animate-fade-in">
+            <div class="bg-white rounded-3xl shadow-md border border-gray-100 p-5 mb-4">
+                <h2 class="text-lg font-bold text-gray-800 text-center mb-1">Konfirmasi Penerimaan</h2>
+                <p class="text-[11px] text-gray-500 text-center mb-6">Geser tombol ke kanan jika Anda sudah menerima/melakukan item di bawah ini.</p>
+                
+                <div class="space-y-4">
+                    <!-- Generator loop manual for Atsas items -->
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 border border-gray-100 rounded-xl hover:bg-gray-100 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center"><i class="fas fa-bed text-sm"></i></div>
+                            <span class="text-sm font-semibold text-gray-700">Kasur (Sakan)</span>
+                        </div>
+                        <div class="relative inline-block w-12 align-middle select-none">
+                            <input type="checkbox" id="a-kasur" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="a-kasur" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 border border-gray-100 rounded-xl hover:bg-gray-100 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center"><i class="fas fa-money-bill-wave text-sm"></i></div>
+                            <span class="text-sm font-semibold text-gray-700">Uang Sulfah (Muka)</span>
+                        </div>
+                        <div class="relative inline-block w-12 align-middle select-none">
+                            <input type="checkbox" id="a-sulfah" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="a-sulfah" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 border border-gray-100 rounded-xl hover:bg-gray-100 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fas fa-folder-open text-sm"></i></div>
+                            <span class="text-sm font-semibold text-gray-700">Penyerahan Berkas Asli</span>
+                        </div>
+                        <div class="relative inline-block w-12 align-middle select-none">
+                            <input type="checkbox" id="a-berkas" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="a-berkas" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 border border-gray-100 rounded-xl hover:bg-gray-100 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center"><i class="fas fa-stethoscope text-sm"></i></div>
+                            <span class="text-sm font-semibold text-gray-700">MCU (Med. Check Up)</span>
+                        </div>
+                        <div class="relative inline-block w-12 align-middle select-none">
+                            <input type="checkbox" id="a-mcu" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="a-mcu" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 border border-gray-100 rounded-xl hover:bg-gray-100 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center"><i class="fas fa-fingerprint text-sm"></i></div>
+                            <span class="text-sm font-semibold text-gray-700">Biometrik Bashaer</span>
+                        </div>
+                        <div class="relative inline-block w-12 align-middle select-none">
+                            <input type="checkbox" id="a-biometrik" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="a-biometrik" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 border border-gray-100 rounded-xl hover:bg-gray-100 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center"><i class="fas fa-brain text-sm"></i></div>
+                            <span class="text-sm font-semibold text-gray-700">Tes IQ / Psikologi</span>
+                        </div>
+                        <div class="relative inline-block w-12 align-middle select-none">
+                            <input type="checkbox" id="a-iq" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="a-iq" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 border border-gray-100 rounded-xl hover:bg-gray-100 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center"><i class="fas fa-door-open text-sm"></i></div>
+                            <span class="text-sm font-semibold text-gray-700">Terima Kunci Kamar</span>
+                        </div>
+                        <div class="relative inline-block w-12 align-middle select-none">
+                            <input type="checkbox" id="a-kamar" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="a-kamar" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="saveAtsas()" class="w-full mt-6 bg-green-600 text-white font-bold rounded-xl py-4 shadow-lg shadow-green-600/30 hover:bg-green-700 transition-all text-sm flex items-center justify-center gap-2">
+                    <i class="fas fa-save"></i>
+                    <span>Simpan Penerimaan</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Floating Bottom Bar (Only visible on Tab Paket) -->
+    <div id="floating-total" class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-200 p-4 pb-6 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-40 hidden animate-fade-in">
+        <div class="flex items-center justify-between mb-3">
+            <div>
+                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Total Pembayaran</p>
+                <p class="text-xl font-extrabold text-green-700" id="total-display">Rp 0</p>
+            </div>
+        </div>
+        <button onclick="submitPembayaran()" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-xl py-3.5 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 active:scale-95 transition-all text-sm flex items-center justify-center gap-2">
+            <i class="fas fa-paper-plane"></i>
+            <span>Kirim Konfirmasi</span>
+        </button>
+    </div>
+
+    <!-- Modal OTP WhatsApp -->
+    <div id="wa-otp-modal" class="hidden fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm w-full max-w-md mx-auto flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 w-full shadow-2xl scale-95 opacity-0 transition-all duration-300" id="wa-otp-box">
+            <div class="w-16 h-16 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-3xl mx-auto mb-4">
+                <i class="fab fa-whatsapp"></i>
+            </div>
+            <h3 class="text-lg font-bold text-center text-gray-800 mb-2">Verifikasi WhatsApp</h3>
+            <p class="text-xs text-center text-gray-600 mb-4">Masukkan 6 digit OTP yang baru saja dikirim ke WhatsApp Anda.</p>
+            <input type="text" id="wa-otp-input" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-2xl tracking-[0.5em] text-center outline-none focus:ring-2 focus:ring-green-500 font-bold mb-4" placeholder="------">
+            <div class="flex gap-3">
+                <button onclick="closeWaModal()" class="flex-[0.5] py-3 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm hover:bg-gray-200 transition-all">Batal</button>
+                <button onclick="verifyWaOtp()" class="flex-1 py-3 rounded-xl bg-green-600 text-white font-bold text-sm shadow-lg shadow-green-600/30 hover:bg-green-700 transition-all">Verifikasi</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // GANTI URL INI DENGAN URL DEPLOYMENT GAS 
+        // ==========================================
+        const API_URL = "https://script.google.com/macros/s/AKfycbxRUd89DiRWP522iXftT0NnJJkVkgG9oBhav8roqElXCRipjrpn3LHDAZZn4ONf5DGL1w/exec";
+        
+        let currentUserEmail = '';
+        let currentTasjil = '';
+        let base64File = '';
+        let fileMimeType = '';
+        let fileName = '';
+        
+        let isWaVerified = false; // Status verifikasi WA
+        let currentRincianList = []; // Untuk kebutuhan invoice email
+
+        window.onload = () => {
+            // Check local storage for cache
+            const cacheEmail = localStorage.getItem('ppmi_email');
+            const cachePwd = localStorage.getItem('ppmi_pwd');
+
+            setTimeout(() => {
+                if(cacheEmail && cachePwd) {
+                    currentUserEmail = cacheEmail;
+                    currentTasjil = cachePwd;
+                    document.getElementById('user-email-display').textContent = cacheEmail;
+                    
+                    document.getElementById('splash-screen').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('splash-screen').classList.add('hidden');
+                        document.getElementById('main-header').classList.remove('hidden');
+                        document.getElementById('screen-main').classList.remove('hidden');
+                        switchTab('paket');
+                        calculateTotal();
+                        initRating();
+                        fetchAtsasData(); // Get existing atsas data if any
+                    }, 500);
+                } else {
+                    document.getElementById('splash-screen').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('splash-screen').classList.add('hidden');
+                        document.getElementById('screen-login').classList.remove('hidden');
+                        document.getElementById('screen-login').classList.add('flex');
+                    }, 500);
+                }
+            }, 1000);
+        };
+
+        // UI Toast Logic
+        function showToast(text, type = 'process') {
+            const di = document.getElementById('dynamic-island');
+            const icon = document.getElementById('di-icon');
+            const txt = document.getElementById('di-text');
+            txt.textContent = text;
+            di.classList.remove('opacity-0', 'scale-90');
+            di.classList.add('opacity-100', 'scale-100');
+            
+            if (type === 'process') {
+                di.className = 'fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-[9999] bg-black text-white px-5 py-3 rounded-full flex items-center justify-center gap-3 transition-all duration-300 shadow-xl font-medium opacity-100 scale-100';
+                icon.className = 'fas fa-spinner fa-spin text-sm';
+            } else if (type === 'success') {
+                di.className = 'fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-[9999] bg-green-600 text-white px-5 py-3 rounded-full flex items-center justify-center gap-3 transition-all duration-300 shadow-xl font-medium opacity-100 scale-100';
+                icon.className = 'fas fa-check-circle text-sm';
+            } else if (type === 'error') {
+                di.className = 'fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-[9999] bg-red-600 text-white px-5 py-3 rounded-full flex items-center justify-center gap-3 transition-all duration-300 shadow-xl font-medium opacity-100 scale-100';
+                icon.className = 'fas fa-times-circle text-sm';
+            }
+            
+            if (type !== 'process') {
+                setTimeout(() => hideToast(), 3000);
+            }
+        }
+
+        function hideToast() {
+            const di = document.getElementById('dynamic-island');
+            di.classList.remove('opacity-100', 'scale-100');
+            di.classList.add('opacity-0', 'scale-90');
+        }
+
+        // Login Manual
+        function manualLogin() {
+            const em = document.getElementById('login-email').value.trim();
+            const pw = document.getElementById('login-password').value.trim();
+            if(!em || !pw) { showToast('Masukkan Email dan Password', 'error'); return; }
+            
+            showToast('Memverifikasi...', 'process');
+            // Normally you would fetch to verify. For cache simulation:
+            setTimeout(() => {
+                localStorage.setItem('ppmi_email', em);
+                localStorage.setItem('ppmi_pwd', pw);
+                currentUserEmail = em;
+                currentTasjil = pw;
+                
+                showToast('Berhasil Login', 'success');
+                document.getElementById('screen-login').classList.add('hidden');
+                document.getElementById('screen-login').classList.remove('flex');
+                
+                document.getElementById('user-email-display').textContent = em;
+                document.getElementById('main-header').classList.remove('hidden');
+                document.getElementById('screen-main').classList.remove('hidden');
+                
+                switchTab('paket');
+                calculateTotal();
+                initRating();
+                fetchAtsasData();
+            }, 1000);
+        }
+
+        function logout() {
+            localStorage.removeItem('ppmi_email');
+            localStorage.removeItem('ppmi_pwd');
+            location.reload();
+        }
+
+        // Tabs Logic
+        function switchTab(tab) {
+            const tPaket = document.getElementById('tab-paket');
+            const tAtsas = document.getElementById('tab-atsas');
+            const bPaket = document.getElementById('tab-btn-paket');
+            const bAtsas = document.getElementById('tab-btn-atsas');
+            const floatTotal = document.getElementById('floating-total');
+
+            if(tab === 'paket') {
+                tPaket.classList.remove('hidden');
+                tAtsas.classList.add('hidden');
+                floatTotal.classList.remove('hidden');
+                
+                bPaket.className = 'flex-1 py-3 text-xs font-bold rounded-xl bg-green-600 text-white shadow transition-all flex justify-center items-center gap-2';
+                bAtsas.className = 'flex-1 py-3 text-xs font-bold rounded-xl text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all flex justify-center items-center gap-2';
+            } else {
+                tPaket.classList.add('hidden');
+                tAtsas.classList.remove('hidden');
+                floatTotal.classList.add('hidden');
+                
+                bAtsas.className = 'flex-1 py-3 text-xs font-bold rounded-xl bg-green-600 text-white shadow transition-all flex justify-center items-center gap-2';
+                bPaket.className = 'flex-1 py-3 text-xs font-bold rounded-xl text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all flex justify-center items-center gap-2';
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Calculation Logic
+        function calculateTotal() {
+            // Komponen Biaya Dasar (Wajib untuk semua kategori)
+            const baseItems = [
+                { name: 'Medical Check Up (Fit)', price: 2150000 },
+                { name: 'Tes Psikologi', price: 400000 },
+                { name: 'Biaya Ops (Jkt&Med)', price: 150000 },
+                { name: 'Biaya Penyambutan', price: 150000 },
+                { name: 'Kas PPMI Madinah', price: 150000 }
+            ];
+
+            let ijazahItem = {};
+            let basePrice = 0; // Digunakan untuk keperluan validasi total
+
+            const radios = document.getElementsByName('paket');
+            for(let i=0; i<radios.length; i++){
+                if(radios[i].checked) { 
+                    basePrice = parseInt(radios[i].value); 
+                    if(basePrice === 4250000) {
+                        ijazahItem = { name: 'Terjemah Ijazah + Apostille', price: 700000 };
+                    } else if(basePrice === 4150000) {
+                        ijazahItem = { name: 'Upgrade Terjemah + Apostille', price: 600000 };
+                    } else if(basePrice === 4100000) {
+                        ijazahItem = { name: 'Legalisasi Apostille Ijazah', price: 550000 };
+                    } else if(basePrice === 4200000) {
+                        ijazahItem = { name: 'Endorse Notaris + Apostille', price: 650000 };
+                    }
+                    break; 
+                }
+            }
+            
+            // Logika SKCK
+            const isSkck = document.getElementById('f-skck').checked;
+            const skckItem = {
+                name: isSkck ? 'Apostille SKCK Asli Polda/Polres' : 'Apostille SKCK Asli Mabes Polri',
+                price: isSkck ? 650000 : 550000
+            };
+            
+            // Menggabungkan list rincian
+            const rincianList = [...baseItems, ijazahItem, skckItem];
+
+            // Tambahan halaman terjemah (Opsional)
+            const terjemahPages = parseInt(document.getElementById('f-terjemah').value) || 0;
+            const terjemahCost = terjemahPages * 200000;
+            if(terjemahCost > 0) {
+                rincianList.push({ name: `Tambahan Terjemah (${terjemahPages} hal)`, price: terjemahCost });
+            }
+
+            // Render ke HTML dan Hitung Ulang Total Akurat
+            let totalAkurat = 0;
+            let htmlStr = '';
+            currentRincianList = []; // Reset global state
+            
+            rincianList.forEach(item => {
+                totalAkurat += item.price;
+                currentRincianList.push(item);
+                htmlStr += `
+                    <div class="flex justify-between items-center py-1.5 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors px-1 rounded">
+                        <span class="text-[11px] text-gray-600">${item.name}</span>
+                        <span class="text-[11px] font-semibold text-gray-800 tracking-tight">Rp ${item.price.toLocaleString('id-ID')}</span>
+                    </div>
+                `;
+            });
+
+            // Update DOM
+            const containerRincian = document.getElementById('rincian-biaya-list');
+            if(containerRincian) containerRincian.innerHTML = htmlStr;
+            
+            const txtRincianTotal = document.getElementById('rincian-total');
+            if(txtRincianTotal) txtRincianTotal.textContent = 'Rp ' + totalAkurat.toLocaleString('id-ID');
+            
+            document.getElementById('total-display').textContent = 'Rp ' + totalAkurat.toLocaleString('id-ID');
+        }
+
+        // Toggle Rincian Terjemahan
+        function toggleTerjemahDetail() {
+            const qty = parseInt(document.getElementById('f-terjemah').value) || 0;
+            const wrapper = document.getElementById('wrapper-terjemah-detail');
+            if (qty > 0) {
+                wrapper.classList.remove('hidden');
+            } else {
+                wrapper.classList.add('hidden');
+                document.getElementById('f-terjemah-detail').value = ''; // Reset
+            }
+        }
+
+        // --- SISTEM VERIFIKASI WA OTP ---
+        function resetWaVerification() {
+            isWaVerified = false;
+            document.getElementById('btn-verify-wa').classList.remove('hidden');
+            document.getElementById('wa-verified-badge').classList.add('hidden');
+        }
+
+        async function sendWaOtp() {
+            const phone = document.getElementById('f-phone').value.trim();
+            if(!phone || phone.length < 9) { showToast('Masukkan nomor WA yang valid (Min 9 digit)', 'error'); return; }
+            
+            showToast('Mengirim OTP via WA...', 'process');
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'send_wa_otp', phone: phone })
+                });
+                const res = await response.json();
+                if(res.status === 'success') {
+                    showToast('OTP Berhasil Dikirim', 'success');
+                    
+                    // Show modal
+                    const modal = document.getElementById('wa-otp-modal');
+                    const box = document.getElementById('wa-otp-box');
+                    document.getElementById('wa-otp-input').value = '';
+                    modal.classList.remove('hidden');
+                    setTimeout(() => { box.classList.remove('scale-95', 'opacity-0'); }, 10);
+                } else {
+                    showToast(res.message || 'Gagal mengirim OTP', 'error');
+                }
+            } catch(e) {
+                showToast('Gagal Terhubung Server', 'error');
+            }
+        }
+
+        async function verifyWaOtp() {
+            const phone = document.getElementById('f-phone').value.trim();
+            const otp = document.getElementById('wa-otp-input').value.trim();
+            if(!otp || otp.length !== 6) { showToast('Masukkan 6 digit OTP', 'error'); return; }
+
+            showToast('Memverifikasi OTP...', 'process');
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'verify_wa_otp', phone: phone, otp: otp })
+                });
+                const res = await response.json();
+                if(res.status === 'success') {
+                    showToast('WhatsApp Terverifikasi!', 'success');
+                    isWaVerified = true;
+                    document.getElementById('btn-verify-wa').classList.add('hidden');
+                    document.getElementById('wa-verified-badge').classList.remove('hidden');
+                    closeWaModal();
+                } else {
+                    showToast(res.message || 'OTP Salah atau Kadaluarsa', 'error');
+                }
+            } catch(e) {
+                showToast('Gagal Terhubung Server', 'error');
+            }
+        }
+
+        function closeWaModal() {
+            const modal = document.getElementById('wa-otp-modal');
+            const box = document.getElementById('wa-otp-box');
+            box.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        // File handling
+        function previewFile(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if(file.size > 5 * 1024 * 1024) { // 5MB limit
+                    showToast('Ukuran file maks 5MB!', 'error');
+                    input.value = '';
+                    return;
+                }
+                fileName = file.name;
+                fileMimeType = file.type;
+                document.getElementById('file-name').innerHTML = `<span class="text-green-600 font-bold">${file.name}</span><br>Telah dipilih`;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64File = e.target.result.split(',')[1];
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Copy Rekening
+        function copyRekening() {
+            const el = document.createElement('textarea');
+            el.value = '6666788007';
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast('Nomor Rekening Disalin', 'success');
+        }
+
+        // Rating Logic
+        function initRating() {
+            const btns = document.querySelectorAll('.rating-btn');
+            const inputVal = document.getElementById('f-rating');
+            
+            btns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const val = parseInt(btn.getAttribute('data-val'));
+                    inputVal.value = val;
+                    btns.forEach(b => {
+                        if(parseInt(b.getAttribute('data-val')) <= val) {
+                            b.classList.remove('bg-gray-100', 'text-gray-400');
+                            b.classList.add('bg-yellow-400', 'text-white', 'shadow-sm');
+                        } else {
+                            b.classList.add('bg-gray-100', 'text-gray-400');
+                            b.classList.remove('bg-yellow-400', 'text-white', 'shadow-sm');
+                        }
+                    });
+                });
+            });
+            // trigger rating 5 by default
+            btns[4].click();
+        }
+
+        // API Calls
+        async function fetchAtsasData() {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'get_atsas', email: currentUserEmail })
+                });
+                const res = await response.json();
+                if(res.status === 'success' && res.data) {
+                    const d = JSON.parse(res.data);
+                    document.getElementById('a-kasur').checked = d.kasur;
+                    document.getElementById('a-sulfah').checked = d.sulfah;
+                    document.getElementById('a-berkas').checked = d.berkas;
+                    document.getElementById('a-mcu').checked = d.mcu;
+                    document.getElementById('a-biometrik').checked = d.biometrik;
+                    document.getElementById('a-iq').checked = d.iq;
+                    document.getElementById('a-kamar').checked = d.kamar;
+                }
+            } catch(e) {
+                console.log('No existing atsas data found or API issue');
+            }
+        }
+
+        async function submitPembayaran() {
+            const nama = document.getElementById('f-nama').value.trim();
+            const phone = document.getElementById('f-phone').value.trim();
+            const date = document.getElementById('f-date').value;
+            const terjemahQty = parseInt(document.getElementById('f-terjemah').value) || 0;
+            const terjemahDetail = document.getElementById('f-terjemah-detail').value.trim();
+            
+            if(!nama || !phone || !date) { showToast('Lengkapi Data Diri!', 'error'); return; }
+            if(!isWaVerified) { showToast('Harap Verifikasi Nomor WA Anda!', 'error'); return; }
+            if(terjemahQty > 0 && !terjemahDetail) { showToast('Rincian Berkas Terjemahan Wajib Diisi!', 'error'); return; }
+            if(!base64File) { showToast('Upload Bukti Transfer wajib!', 'error'); return; }
+
+            // gather data
+            let pkt = "Kategori 1";
+            const radios = document.getElementsByName('paket');
+            for(let i=0; i<radios.length; i++){
+                if(radios[i].checked) { pkt = "Kategori " + (i+1); break; }
+            }
+
+            const payload = {
+                action: 'save_pembayaran',
+                email: currentUserEmail,
+                tasjil: currentTasjil,
+                nama: nama,
+                phone: phone,
+                date: date,
+                paket: pkt,
+                terjemah_qty: terjemahQty,
+                terjemah_detail: terjemahDetail,
+                skck_polda: document.getElementById('f-skck').checked,
+                total: document.getElementById('total-display').textContent,
+                rincian_lengkap: currentRincianList, // Data rincian untuk Invoice via Apps Script
+                rating: document.getElementById('f-rating').value,
+                fileName: fileName,
+                mimeType: fileMimeType,
+                fileBase64: base64File
+            };
+
+            showToast('Memproses Konfirmasi & Mengirim Invoice...', 'process');
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const res = await response.json();
+                if(res.status === 'success') {
+                    showToast('Berhasil! Invoice dikirim ke Email & WA.', 'success');
+                    // Reset file
+                    base64File = '';
+                    document.getElementById('file-name').innerHTML = 'Tap disini untuk memilih file<br>(Max 5MB)';
+                } else {
+                    showToast(res.message || 'Gagal Mengirim', 'error');
+                }
+            } catch(err) {
+                showToast('Gagal Terhubung Server', 'error');
+            }
+        }
+
+        async function saveAtsas() {
+            const payload = {
+                action: 'save_atsas',
+                email: currentUserEmail,
+                kasur: document.getElementById('a-kasur').checked,
+                sulfah: document.getElementById('a-sulfah').checked,
+                berkas: document.getElementById('a-berkas').checked,
+                mcu: document.getElementById('a-mcu').checked,
+                biometrik: document.getElementById('a-biometrik').checked,
+                iq: document.getElementById('a-iq').checked,
+                kamar: document.getElementById('a-kamar').checked,
+            };
+
+            showToast('Menyimpan Status...', 'process');
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const res = await response.json();
+                if(res.status === 'success') {
+                    showToast('Status Disimpan!', 'success');
+                } else {
+                    showToast('Gagal Menyimpan', 'error');
+                }
+            } catch(err) {
+                showToast('Gagal Terhubung Server', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
