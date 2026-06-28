@@ -82,6 +82,10 @@
                         <span class="text-xs font-semibold text-gray-600" id="conn-text">Terputus</span>
                     </div>
                 </div>
+                <button onclick="openChangeCred()" class="w-full flex items-center gap-3 p-4 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors bg-blue-50 rounded-xl mt-2 mb-2 shadow-sm">
+                    <i class="fas fa-user-edit"></i>
+                    <span class="text-sm font-semibold">Ubah Email / Tasjil SIS</span>
+                </button>
                 <button onclick="logout()" class="w-full flex items-center gap-3 p-4 text-red-600 hover:bg-red-600 hover:text-white transition-colors bg-red-50 rounded-xl mt-auto shadow-sm">
                     <i class="fas fa-sign-out-alt"></i>
                     <span class="text-sm font-semibold">Ganti Akun / Keluar</span>
@@ -120,7 +124,7 @@
             </div>
         </div>
 
-        <button onclick="loginApp()" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-xl py-4 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2">
+        <button onclick="loginApp(false)" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-xl py-4 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 active:scale-[0.98] transition-all text-sm flex items-center justify-center gap-2">
                 <span>Masuk Aplikasi</span>
                 <i class="fas fa-sign-in-alt"></i>
             </button>
@@ -149,7 +153,7 @@
                     <select id="reg-kampus" onchange="handleKampusChange()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-medium">
                         <option value="" disabled selected>Pilih Kampus...</option>
                         <option value="UIM">Universitas Islam Madinah (UIM)</option>
-                        <option value="Thaibah">Universitas Thaibah</option>
+                        <option value="Taibah">Universitas Taibah</option>
                     </select>
                 </div>
                 <div class="w-full hidden" id="wrapper-jalur">
@@ -233,7 +237,7 @@
             <div class="flex-1 overflow-hidden">
                 <h2 class="text-sm font-bold text-gray-800 truncate flex items-center gap-2" id="display-nama">
                     PPMI Madinah 2026 
-                    <span id="badge-blokir" class="hidden bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase">Blokir</span>
+                    <span id="badge-blokir" class="hidden bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase">Belum Diverifikasi</span>
                 </h2>
                 <p class="text-xs text-gray-500 truncate" id="display-email-header">Email: -</p>
                 <p class="text-[10px] text-green-600 font-medium mt-1 italic" id="last-updated-text">Memuat status...</p>
@@ -293,7 +297,11 @@
                     </div>
                     <div class="w-full">
                         <label class="text-xs font-semibold text-gray-700 mb-1 block">Nomor Whatsapp</label>
-                        <input type="text" id="f-wa" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="628..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                        <div class="flex gap-2">
+                            <input type="text" id="f-wa" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, ''); waInputChanged()" placeholder="628..." class="w-full flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                            <button type="button" id="btn-verify-wa" onclick="requestWaOtpVerification()" class="hidden shrink-0 bg-green-100 text-green-700 hover:bg-green-200 px-3 rounded-xl text-xs font-bold transition-colors shadow-sm">Verifikasi</button>
+                        </div>
+                        <p id="wa-verified-badge" class="hidden text-[10px] text-green-600 font-bold mt-1"><i class="fas fa-check-circle"></i> Terverifikasi</p>
                     </div>
                 </div>
 
@@ -405,7 +413,7 @@
                 
                 <div class="w-full">
                     <label class="text-xs font-semibold text-gray-700 mb-1 block">Raqm Thalib</label>
-                    <input type="text" id="f-thalib" inputmode="numeric" pattern="[0-9]*" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="9 Digit Angka">
+                    <input type="text" id="f-thalib" inputmode="numeric" pattern="[0-9]*" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="5, 7, atau 9 Digit Angka">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -416,6 +424,7 @@
                             <option value="Aktif">Aktif</option>
                             <option value="Lulus">Alumni</option>
                             <option value="Cuti">Cuti</option>
+                            <option value="Maba">Maba</option>
                         </select>
                     </div>
                     <div class="w-full">
@@ -423,6 +432,8 @@
                         <select id="f-angkatan-select" onchange="toggleLainnya('f-angkatan')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 appearance-none">
                             <option value="" disabled selected>Pilih</option>
                             <option value="481">481</option>
+                            <option value="482">482</option>
+                            <option value="4">4 Taibah</option>
                             <option value="Lainnya">Lainnya...</option>
                         </select>
                         <input type="text" id="f-angkatan-lainnya" inputmode="numeric" pattern="[0-9]*" maxlength="3" oninput="document.getElementById('f-angkatan').value = this.value" placeholder="3 digit" class="hidden mt-2 w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
@@ -436,6 +447,8 @@
                       <option value="" disabled selected>Pilih Jenjang</option>
                       <option value="Diplom Mutawasith">Ma'had</option>
                       <option value="Sarjana">Sarjana</option>
+                      <option value="Magister">Magister</option>
+                      <option value="Doktoral">Doktoral</option>
                   </select>
                 </div>
 
@@ -525,7 +538,7 @@
                         <label class="text-xs font-semibold text-gray-700 mb-1 block">Tahun Daftar</label>
                         <input type="text" id="f-tahun-daftar" inputmode="numeric" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="YYYY" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
                     </div>
-                    <div class="w-full">
+                    <div class="w-full" id="wrapper-tauiyah">
                         <label class="text-xs font-semibold text-gray-700 mb-1 block">Tauiyah</label>
                         <input type="text" id="f-tauiyah" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
                     </div>
@@ -565,7 +578,7 @@
                 </div>
                 
                 <div class="w-full mt-4" id="wrapper-iqamah">
-                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Raqm Iqamah</label>
+                    <label class="text-xs font-semibold text-gray-700 mb-1 block">Raqm Iqomah atau Visa Ta'limiyah (Absyir)</label>
                     <input type="text" id="f-iqamah" inputmode="numeric" pattern="[0-9]*" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400 font-bold tracking-widest text-center" placeholder="XXXXXXXXXX (10 digit)">
                 </div>
 
@@ -763,7 +776,7 @@
                 <!-- Section: Sosial Media PPMI -->
                 <div>
                     <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
-                        <i class="fas fa-hashtag text-green-500"></i> Sosial Media PPMI Madinah
+                        <i class="fas fa-hashtag text-green-500"></i> Sosial Media PPMI Madinah & Taibahu
                     </h3>
                     <div class="flex flex-wrap gap-4 justify-center">
                         <a href="https://www.instagram.com/ppmimadinah" target="_blank" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-yellow-400 via-pink-500 to-green-600 text-white flex items-center justify-center text-xl shadow-lg shadow-pink-500/30 hover:-translate-y-1 hover:shadow-xl transition-all">
@@ -771,6 +784,16 @@
                         </a>
                         <a href="https://www.facebook.com/ppmimadinah" target="_blank" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-500 to-blue-700 text-white flex items-center justify-center text-xl shadow-lg shadow-blue-500/30 hover:-translate-y-1 hover:shadow-xl transition-all">
                             <i class="fab fa-facebook-f"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
+                        <i class="fas fa-hashtag text-green-500"></i> Sosial Media PPMI Madinah
+                    </h3>
+                    <div class="flex flex-wrap gap-4 justify-center">
+                        <a href="https://www.instagram.com/taibahu.idn" target="_blank" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-yellow-400 via-pink-500 to-green-600 text-white flex items-center justify-center text-xl shadow-lg shadow-pink-500/30 hover:-translate-y-1 hover:shadow-xl transition-all">
+                            <i class="fab fa-instagram"></i>
                         </a>
                     </div>
                 </div>
@@ -826,13 +849,70 @@
         </div>
     </div>
 
+    <!-- Change Credential Modal -->
+    <div id="change-cred-modal" class="hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm w-full max-w-md mx-auto flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 w-full shadow-2xl scale-95 opacity-0 transition-all duration-300" id="change-cred-box">
+            <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-3xl mx-auto mb-4">
+                <i class="fas fa-user-lock"></i>
+            </div>
+            <h3 class="text-lg font-bold text-center text-gray-800 mb-2">Ubah Data Login</h3>
+            
+            <div id="cred-step-1">
+                <p class="text-xs text-center text-gray-600 mb-4">Masukkan Email dan No Tasjil SIS baru Anda.</p>
+                <div class="space-y-3 mb-4">
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">Email Baru</label>
+                        <input type="email" id="new-cred-email" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                    </div>
+                    <div class="w-full">
+                        <label class="text-xs font-semibold text-gray-700 mb-1 block">No Tasjil SIS Baru</label>
+                        <input type="text" id="new-cred-tasjil" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                    </div>
+                </div>
+                <p class="text-[10px] text-center text-gray-500 mb-3">Pilih metode pengiriman OTP untuk verifikasi diri:</p>
+                <div class="flex gap-2">
+                    <button onclick="closeChangeCred()" class="flex-[0.5] py-3 rounded-xl bg-gray-100 text-gray-700 font-bold text-xs hover:bg-gray-200 transition-all">Batal</button>
+                    <button onclick="requestChangeCredOtp('email')" class="flex-1 py-3 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-all"><i class="fas fa-envelope mr-1"></i> Via Email</button>
+                    <button onclick="requestChangeCredOtp('wa')" class="flex-1 py-3 rounded-xl bg-green-600 text-white font-bold text-xs shadow-lg shadow-green-600/30 hover:bg-green-700 transition-all"><i class="fab fa-whatsapp mr-1"></i> Via WA</button>
+                </div>
+            </div>
+
+            <div id="cred-step-2" class="hidden">
+                <p class="text-xs text-center text-gray-600 mb-4">Masukkan 6 digit OTP yang dikirimkan.</p>
+                <input type="text" id="cred-otp-input" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-2xl tracking-[0.5em] text-center outline-none focus:ring-2 focus:ring-blue-500 font-bold mb-4" placeholder="------">
+                <div class="flex gap-3">
+                    <button onclick="resetChangeCred()" class="flex-[0.5] py-3 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm hover:bg-gray-200 transition-all">Kembali</button>
+                    <button onclick="submitChangeCred()" class="flex-1 py-3 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-all">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WA Verify Modal -->
+    <div id="wa-verify-modal" class="hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm w-full max-w-md mx-auto flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 w-full shadow-2xl scale-95 opacity-0 transition-all duration-300" id="wa-verify-box">
+            <div class="w-16 h-16 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-3xl mx-auto mb-4">
+                <i class="fab fa-whatsapp"></i>
+            </div>
+            <h3 class="text-lg font-bold text-center text-gray-800 mb-2">Verifikasi WhatsApp</h3>
+            <p class="text-xs text-center text-gray-600 mb-4">Masukkan 6 digit OTP yang dikirim ke WhatsApp Anda.</p>
+            <input type="text" id="wa-otp-input" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-2xl tracking-[0.5em] text-center outline-none focus:ring-2 focus:ring-green-500 font-bold mb-4" placeholder="------">
+            <div class="flex gap-3">
+                <button onclick="closeWaVerify()" class="flex-[0.5] py-3 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm hover:bg-gray-200 transition-all">Batal</button>
+                <button onclick="submitWaVerify()" class="flex-1 py-3 rounded-xl bg-green-600 text-white font-bold text-sm shadow-lg shadow-green-600/30 hover:bg-green-700 transition-all">Verifikasi</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // =========================================================
         // PENTING: ISI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
         // =========================================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbwoa0yglGlV5lkGdKv_sXwp8b4mAk8hp9l6oMCAiRkT35Pyd86oiW3-zIuBOko1tu1E7Q/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbygvHG5i6myh_itLRaOZX1mBteNi4TodwYp67YmIFTUfFLzI4IJlO54k-0PESiicCSMRw/exec"; 
 
         let currentUserEmail = '';
+        let originalWa = '';
+        let isWaVerified = true;
 
         // TABS LOGIC
         const tabs = ['diri', 'akademik', 'perjalanan', 'info'];
@@ -901,10 +981,9 @@
                 });
                 const result = await response.json();
                 
-                // PERBAIKAN: Mengizinkan status 'not_found' melewatinya dan mereturn object secara utuh
                 if (result.status === 'success' || result.status === 'not_found') {
                     setConnectionStatus(true);
-                    return result; // <- Mengembalikan seluruh object agar res.status dan res.data bisa dibaca frontend
+                    return result; 
                 } else {
                     setConnectionStatus(false); 
                     throw new Error(result.message || 'Terjadi kesalahan dari Server');
@@ -955,6 +1034,15 @@
                 document.getElementById('splash-screen').style.opacity = '0';
                 setTimeout(() => document.getElementById('splash-screen').classList.add('hidden'), 500);
             }, 1500);
+
+            // AUTO LOGIN VIA LOCAL STORAGE
+            const savedEmail = localStorage.getItem('ppmi_email');
+            const savedPwd = localStorage.getItem('ppmi_pwd');
+            if(savedEmail && savedPwd) {
+                document.getElementById('login-email').value = savedEmail;
+                document.getElementById('login-password').value = savedPwd;
+                loginApp(true);
+            }
         };
 
         function showScreen(id) {
@@ -973,35 +1061,45 @@
         }
 
         // LOGIN SYSTEM DENGAN EMAIL & PASSWORD (TASJIL SIS)
-        async function loginApp() {
+        async function loginApp(isAuto = false) {
             const emailInput = document.getElementById('login-email').value.trim();
             const passwordInput = document.getElementById('login-password').value.trim();
 
             if (!emailInput || !passwordInput) {
-                showDynamicIsland('Masukkan Email dan Password', 'error'); return;
+                if(!isAuto) showDynamicIsland('Masukkan Email dan Password', 'error'); 
+                return;
             }
 
-            showDynamicIsland('Verifikasi Akun...', 'process');
+            if(!isAuto) showDynamicIsland('Verifikasi Akun...', 'process');
 
             try {
                 const res = await serverCall('loginUser', { email: emailInput, password: passwordInput });
                 
                 if (res && res.status === 'success') {
-                    currentUserEmail = emailInput;
                     const data = JSON.parse(res.data);
+                    
+                    currentUserEmail = emailInput;
+                    if(!isAuto) {
+                        localStorage.setItem('ppmi_email', emailInput);
+                        localStorage.setItem('ppmi_pwd', passwordInput);
+                    }
                     populateForm(data);
-                    showDynamicIsland('Login Berhasil', 'success');
+                    if(!isAuto) showDynamicIsland('Login Berhasil', 'success');
                     document.getElementById('display-email-header').textContent = "Email: " + currentUserEmail;
                     showScreen('screen-form');
                 } else if (res && res.status === 'not_found') {
-                    // Pindah ke halaman daftar baru
+                    if(isAuto) {
+                        localStorage.removeItem('ppmi_email');
+                        localStorage.removeItem('ppmi_pwd');
+                        return;
+                    }
                     document.getElementById('reg-email').value = emailInput;
                     document.getElementById('reg-tasjil-sis').value = passwordInput;
                     showDynamicIsland('Akun Baru. Silakan lengkapi formulir', 'success');
                     showScreen('screen-register');
                 }
             } catch (err) {
-                showDynamicIsland(err.message || 'Gagal koneksi ke server', 'error');
+                if(!isAuto) showDynamicIsland(err.message || 'Gagal koneksi ke server', 'error');
             }
         }
 
@@ -1105,7 +1203,6 @@
                 showDynamicIsland('Verifikasi Berhasil', 'success');
                 document.getElementById('otp-step-2').classList.add('hidden');
                 document.getElementById('otp-step-3').classList.remove('hidden');
-                // PERBAIKAN: mengambil password dari object res.data (karena res sudah menjadi full object)
                 document.getElementById('otp-result-password').textContent = res.data.password; 
             } catch (err) {
                 showDynamicIsland(err.message || 'OTP Salah', 'error');
@@ -1136,6 +1233,70 @@
             }
         }
 
+        // WhatsApp Validation Logic
+        function waInputChanged() {
+            const currentWa = document.getElementById('f-wa').value;
+            const btn = document.getElementById('btn-verify-wa');
+            const badge = document.getElementById('wa-verified-badge');
+            
+            if(currentWa !== originalWa && currentWa.trim() !== '') {
+                isWaVerified = false;
+                btn.classList.remove('hidden');
+                badge.classList.add('hidden');
+            } else if (currentWa === originalWa && currentWa.trim() !== '') {
+                isWaVerified = true;
+                btn.classList.add('hidden');
+                badge.classList.remove('hidden');
+            } else {
+                isWaVerified = true; 
+                btn.classList.add('hidden');
+                badge.classList.add('hidden');
+            }
+        }
+
+        async function requestWaOtpVerification() {
+            const waNumber = document.getElementById('f-wa').value.trim();
+            if(!waNumber) return;
+            
+            showDynamicIsland('Mengirim OTP via WA...', 'process');
+            try {
+                await serverCall('sendWaOtp', { email: currentUserEmail, waNumber: waNumber });
+                showDynamicIsland('OTP terkirim ke WhatsApp!', 'success');
+                const m = document.getElementById('wa-verify-modal');
+                const b = document.getElementById('wa-verify-box');
+                document.getElementById('wa-otp-input').value = '';
+                m.classList.remove('hidden'); void m.offsetWidth;
+                b.classList.remove('scale-95', 'opacity-0'); b.classList.add('scale-100', 'opacity-100');
+            } catch(err) {
+                showDynamicIsland(err.message || 'Gagal mengirim OTP WA', 'error');
+            }
+        }
+
+        function closeWaVerify() {
+            const m = document.getElementById('wa-verify-modal');
+            const b = document.getElementById('wa-verify-box');
+            b.classList.remove('scale-100', 'opacity-100'); b.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 300);
+        }
+
+        async function submitWaVerify() {
+            const otp = document.getElementById('wa-otp-input').value;
+            if(!otp) { showDynamicIsland('Masukkan OTP', 'error'); return; }
+            
+            showDynamicIsland('Memverifikasi OTP...', 'process');
+            try {
+                await serverCall('verifyOTP', { email: currentUserEmail, otp: otp });
+                showDynamicIsland('WhatsApp Terverifikasi!', 'success');
+                isWaVerified = true;
+                originalWa = document.getElementById('f-wa').value; 
+                document.getElementById('btn-verify-wa').classList.add('hidden');
+                document.getElementById('wa-verified-badge').classList.remove('hidden');
+                closeWaVerify();
+            } catch(err) {
+                showDynamicIsland(err.message || 'OTP Salah', 'error');
+            }
+        }
+
         function populateForm(data) {
             const setDropdownAndLainnya = (baseId, val) => {
                 const finalInput = document.getElementById(baseId);
@@ -1149,7 +1310,7 @@
                 else { select.value = 'Lainnya'; if(inputLainnya) { inputLainnya.classList.remove('hidden'); inputLainnya.value = val; } }
             };
 
-            // LOGIKA BLOKIR (Termasuk jika status belum "Akses" secara default)
+            // LOGIKA BLOKIR (Tampilan Belum Diverifikasi)
             const isBlocked = data.akun && data.akun.toLowerCase() !== 'akses';
             const formElements = document.querySelectorAll('#screen-form input, #screen-form select');
             const saveBtn = document.getElementById('btn-save');
@@ -1157,14 +1318,15 @@
 
             if (isBlocked) {
                 badgeBlokir.classList.remove('hidden');
-                badgeBlokir.textContent = data.akun || "Pending";
+                badgeBlokir.textContent = "Belum Diverifikasi";
                 formElements.forEach(el => {
                     el.disabled = true;
                     el.classList.add('opacity-70', 'cursor-not-allowed', 'bg-gray-100');
                 });
                 saveBtn.disabled = true;
                 saveBtn.classList.add('opacity-50', 'cursor-not-allowed', 'hidden');
-                showDynamicIsland('Akun belum diverifikasi atau diblokir!', 'error');
+                document.getElementById('tab-btn-info').style.display = 'none'; // Sembunyikan Info Menu
+                showDynamicIsland('Akun anda belum diverifikasi', 'error');
             } else {
                 badgeBlokir.classList.add('hidden');
                 formElements.forEach(el => {
@@ -1172,10 +1334,10 @@
                     el.classList.remove('opacity-70', 'cursor-not-allowed', 'bg-gray-100');
                 });
                 saveBtn.disabled = false;
-                saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                saveBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'hidden');
+                document.getElementById('tab-btn-info').style.display = 'flex'; // Munculkan Info Menu
             }
             
-            // Set field yang selalu readonly
             document.getElementById('f-email').readOnly = true;
             document.getElementById('f-no-tasjil-sis').readOnly = true;
             document.getElementById('f-kampus').readOnly = true;
@@ -1184,11 +1346,15 @@
             document.getElementById('f-tanggal-lahir').readOnly = true;
             document.getElementById('f-expired').readOnly = true;
 
-            // ATURAN HIDE MINHATEE2 JIKA THAIBAH
-            if (data.kampus && data.kampus.toLowerCase() === 'thaibah') {
+            // ATURAN HIDE MINHATEE2 & TAUIYAH JIKA Taibah
+            if (data.kampus && data.kampus.toLowerCase() === 'Taibah') {
                 document.getElementById('wrapper-minhatee2').style.display = 'none';
+                const wt = document.getElementById('wrapper-tauiyah');
+                if(wt) wt.style.display = 'none';
             } else {
                 document.getElementById('wrapper-minhatee2').style.display = 'grid';
+                const wt = document.getElementById('wrapper-tauiyah');
+                if(wt) wt.style.display = 'block';
             }
 
             // POPULATE DATA
@@ -1200,7 +1366,6 @@
 
             document.getElementById('f-visa').value = data.visa || 'Program Online';
             
-            // Panggil fungsi sembunyikan fields jika 'Program Online'
             toggleOnlineFields();
 
             document.getElementById('f-nama-id').value = data.nama_id || '';
@@ -1210,18 +1375,24 @@
             document.getElementById('f-jen-k').value = data.jen_k || ''; 
             document.getElementById('f-paspor').value = data.paspor || '';
             
-            // Format Tanggal (Expired)
             let cleanExpired = data.expired || '';
             if (cleanExpired && typeof cleanExpired === 'string') cleanExpired = cleanExpired.split(/[\sT]+/)[0]; 
             document.getElementById('f-expired').value = cleanExpired;
 
-            // Format Tanggal (Tanggal Lahir)
             let cleanLahir = data.tanggal_lahir || '';
             if (cleanLahir && typeof cleanLahir === 'string') cleanLahir = cleanLahir.split(/[\sT]+/)[0]; 
             document.getElementById('f-tanggal-lahir').value = cleanLahir;
 
             document.getElementById('f-iqamah').value = data.iqamah || '';
-            document.getElementById('f-wa').value = data.wa || '';
+            
+            // WA State Initialization
+            originalWa = data.wa || '';
+            document.getElementById('f-wa').value = originalWa;
+            isWaVerified = true;
+            document.getElementById('btn-verify-wa').classList.add('hidden');
+            if(originalWa) document.getElementById('wa-verified-badge').classList.remove('hidden');
+            else document.getElementById('wa-verified-badge').classList.add('hidden');
+
             document.getElementById('f-saudi').value = data.saudi || '';
             document.getElementById('f-jenjang').value = data.jenjang || '';
             document.getElementById('f-dom-indo').value = data.dom_indo || '';
@@ -1244,7 +1415,6 @@
             document.getElementById('f-tahun-daftar').value = data.tahun_daftar || '';
             document.getElementById('f-tauiyah').value = data.tauiyah || '';
             
-            // Kolom Baru
             document.getElementById('f-kampus').value = data.kampus || '';
             document.getElementById('f-jalur-daftar').value = data.jalur_daftar || '';
 
@@ -1322,7 +1492,6 @@
                 'tiket', 'status_sis', 'status_minhatee2', 'akun', 'kampus', 'jalur_daftar'
             ];
 
-            // Abaikan validasi tempat tinggal & iqomah jika status Program Online
             if (isOnline) {
                 optionalFields.push('saudi', 'iqamah', 'wihdah', 'kamar', 'dom_madinah');
             }
@@ -1337,8 +1506,17 @@
                 }
             }
             
+            if(!isWaVerified) {
+                showDynamicIsland('Harap verifikasi Nomor WhatsApp Anda!', 'error');
+                switchTab('diri');
+                return;
+            }
+
             if (!isOnline && String(data.iqamah).length !== 10) { showDynamicIsland('Raqm Iqamah wajib 10 digit!', 'error'); switchTab('perjalanan'); return; }
-            if (String(data.thalib).length !== 9) { showDynamicIsland('Raqm Thalib wajib 9 digit!', 'error'); switchTab('akademik'); return; }
+            
+            const thalibLen = String(data.thalib).length;
+            if (thalibLen !== 5 && thalibLen !== 7 && thalibLen !== 9) { showDynamicIsland('Raqm Thalib wajib 5, 7, atau 9 digit!', 'error'); switchTab('akademik'); return; }
+            
             if (!String(data.kerabat_nomor).startsWith('628')) { showDynamicIsland('Nomor Kerabat harus diawali 628', 'error'); switchTab('diri'); return; }
 
             const m = document.getElementById('confirm-modal');
@@ -1378,6 +1556,8 @@
         function logout() { 
             toggleMenu(); 
             currentUserEmail = '';
+            localStorage.removeItem('ppmi_email');
+            localStorage.removeItem('ppmi_pwd');
             document.getElementById('login-email').value = ''; 
             document.getElementById('login-password').value = ''; 
             showScreen('screen-email'); 
@@ -1395,6 +1575,81 @@
                 inputLainnya.classList.add('hidden'); 
                 inputLainnya.value = ''; 
                 finalInput.value = select.value; 
+            }
+        }
+
+        // --- LOGIKA UBAH EMAIL / TASJIL SIS ---
+        function openChangeCred() {
+            toggleMenu();
+            const m = document.getElementById('change-cred-modal');
+            const b = document.getElementById('change-cred-box');
+            document.getElementById('cred-step-1').classList.remove('hidden');
+            document.getElementById('cred-step-2').classList.add('hidden');
+            
+            document.getElementById('new-cred-email').value = currentUserEmail;
+            const currentTasjil = document.getElementById('f-no-tasjil-sis').value;
+            document.getElementById('new-cred-tasjil').value = currentTasjil;
+            
+            m.classList.remove('hidden'); void m.offsetWidth;
+            b.classList.remove('scale-95', 'opacity-0'); b.classList.add('scale-100', 'opacity-100');
+        }
+
+        function closeChangeCred() {
+            const m = document.getElementById('change-cred-modal');
+            const b = document.getElementById('change-cred-box');
+            b.classList.remove('scale-100', 'opacity-100'); b.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 300);
+        }
+
+        function resetChangeCred() {
+            document.getElementById('cred-step-1').classList.remove('hidden');
+            document.getElementById('cred-step-2').classList.add('hidden');
+            document.getElementById('cred-otp-input').value = '';
+        }
+
+        async function requestChangeCredOtp(method) {
+            const newEmail = document.getElementById('new-cred-email').value.trim();
+            const newTasjil = document.getElementById('new-cred-tasjil').value.trim();
+            
+            if(!newEmail || !newTasjil) { showDynamicIsland('Lengkapi Email dan No Tasjil', 'error'); return; }
+            
+            showDynamicIsland(`Mengirim OTP via ${method.toUpperCase()}...`, 'process');
+            try {
+                if (method === 'email') {
+                    await serverCall('sendOTP', { email: currentUserEmail });
+                } else if (method === 'wa') {
+                    const savedWa = document.getElementById('f-wa').value;
+                    if(!savedWa || savedWa.trim() === '') { showDynamicIsland('Nomor WA belum tersimpan di Profil!', 'error'); return; }
+                    await serverCall('sendWaOtp', { email: currentUserEmail, waNumber: savedWa });
+                }
+                showDynamicIsland('OTP terkirim!', 'success');
+                document.getElementById('cred-step-1').classList.add('hidden');
+                document.getElementById('cred-step-2').classList.remove('hidden');
+            } catch (err) {
+                showDynamicIsland(err.message || 'Gagal mengirim OTP', 'error');
+            }
+        }
+
+        async function submitChangeCred() {
+            const newEmail = document.getElementById('new-cred-email').value.trim();
+            const newTasjil = document.getElementById('new-cred-tasjil').value.trim();
+            const otp = document.getElementById('cred-otp-input').value;
+            
+            if(!otp) { showDynamicIsland('Masukkan OTP', 'error'); return; }
+            
+            showDynamicIsland('Menyimpan perubahan...', 'process');
+            try {
+                await serverCall('updateCredentials', { 
+                    oldEmail: currentUserEmail, 
+                    newEmail: newEmail, 
+                    newTasjil: newTasjil, 
+                    otp: otp 
+                });
+                showDynamicIsland('Berhasil Diubah! Silakan login ulang.', 'success');
+                closeChangeCred();
+                setTimeout(() => logout(), 2000);
+            } catch(err) {
+                showDynamicIsland(err.message || 'OTP Salah / Gagal update', 'error');
             }
         }
 
