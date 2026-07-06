@@ -135,7 +135,7 @@
                 </div>
                 <div>
                     <label class="text-xs font-bold text-gray-700 block mb-1">Peran Anda <span class="text-red-500">*</span></label>
-                    <select id="f-peran" onchange="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                    <select id="f-peran" onchange="saveDraft(); renderKontingenProgress();" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
                         <option value="" disabled selected>Pilih...</option>
                         <option value="Koordinator Cabor">Koordinator Cabor (1 Cabang)</option>
                         <option value="Ketua Kontingen">Ketua Kontingen (Kolektif)</option>
@@ -214,6 +214,16 @@
                         <div class="lock-icon absolute top-2 right-2 text-red-500 text-xs hidden"><i class="fas fa-lock"></i></div>
                     </label>
                 </div>
+            </div>
+
+            <!-- Panel Progres Ketua Kontingen (hanya tampil untuk peran Ketua Kontingen) -->
+            <div id="kontingen-progress" class="hidden bg-white rounded-3xl shadow-sm border border-gray-100 p-6 space-y-3">
+                <h3 class="text-sm font-bold text-gray-800 border-b pb-2"><i class="fas fa-list-check text-green-500 mr-2"></i>Progres Pendaftaran Kontingen</h3>
+                <p class="text-[10px] text-gray-500">Sebagai Ketua Kontingen, seluruh cabang olahraga wajib diisi &amp; dikirim <b>sekaligus</b>. Cabang yang sudah didaftarkan oleh Koordinator Cabor otomatis terkunci dan tidak wajib diisi lagi.</p>
+                <div id="kontingen-list" class="space-y-2"></div>
+                <button onclick="finalizeKontingenSubmit()" id="btn-submit-kontingen" disabled class="w-full py-3.5 rounded-2xl bg-gray-300 text-gray-500 font-bold text-sm shadow-lg transition-all cursor-not-allowed flex items-center justify-center gap-2">
+                    <i class="fas fa-paper-plane"></i> Kirim Semua Pendaftaran Kontingen
+                </button>
             </div>
 
             <!-- Dynamic Form Area -->
@@ -305,6 +315,13 @@
             'Bola Basket': { min: 5, max: 10 },
             'Lari Estafet': { min: 4, max: 4 }
         };
+
+        // ================================================================
+        // STATE UNTUK ALUR PENDAFTARAN KOLEKTIF (role Ketua Kontingen)
+        // ================================================================
+        const CABOR_ALL_LIST = ['Sepak Bola', 'Bola Voli', 'Bola Basket', 'Bulutangkis', 'Tenis Meja', 'Lari Estafet'];
+        let kontingenEntries = {}; // { [cabor]: detailData } — terkumpul sebelum dikirim sekaligus
+        let lastLockedSports = []; // cache hasil check_locks terakhir
 
         // DOM Elements
         const elSplash = document.getElementById('splash-screen');
@@ -425,6 +442,7 @@
             const delegasi = document.getElementById('f-delegasi').value;
             if(!delegasi) return;
 
+            kontingenEntries = {}; // reset koleksi kolektif setiap kali delegasi berubah
             document.getElementById('lock-loading').classList.remove('hidden');
             
             // Reset semua radio & lock icon
@@ -444,6 +462,7 @@
                 
                 if(data.status === 'success') {
                     const lockedSports = data.lockedSports; // Array nama cabor
+                    lastLockedSports = lockedSports; // simpan untuk dipakai alur Ketua Kontingen
                     radios.forEach(r => {
                         if(lockedSports.includes(r.value)) {
                             r.disabled = true;
@@ -461,6 +480,7 @@
                 console.log("Error checking locks", e);
             }
             document.getElementById('lock-loading').classList.add('hidden');
+            renderKontingenProgress();
         }
 
         function saveDraft() {
@@ -492,7 +512,7 @@
                 });
                 
                 // Save dynamic players (Sepak Bola pakai struktur khusus, cabor lain teks bebas)
-                if (draft.cabor === 'Sepak Bola') {
+                if (STRUCTURED_CABOR.includes(draft.cabor)) {
                     currentCaborData.players = collectFootballPlayers();
                 } else {
                     document.querySelectorAll('.player-input-row input').forEach(inp => {
@@ -579,7 +599,7 @@
             } 
             else if (selected === 'Bola Voli' || selected === 'Bola Basket') {
                 isDynamic = true;
-                desc = selected === 'Bola Voli' ? "(Maks 11 pemain dari angkatan yang sama)." : "(Maks 10 pemain dari angkatan yang sama).";
+                desc = (selected === 'Bola Voli' ? "(Maks 11 pemain dari angkatan yang sama)." : "(Maks 10 pemain dari angkatan yang sama).") + " Isi Nama, Nomor Punggung, Posisi, dan tandai Pemain Inti untuk tiap pemain.";
                 staticHtml = `
                     <div><label class="text-xs font-bold text-gray-700">Nama Manajer/PJ & No. WA</label>
                     <input type="text" id="db-manajer" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm mt-1" placeholder="Nama - 0812..."></div>`;
@@ -655,13 +675,23 @@
 
             updatePlayerBadge();
             if(!draftData) setTimeout(() => container.scrollIntoView({behavior: 'smooth', block: 'center'}), 100);
+
+            // Label tombol kirim menyesuaikan peran: Ketua Kontingen menyimpan dulu ke koleksi,
+            // baru dikirim sekaligus lewat tombol "Kirim Semua Pendaftaran Kontingen".
+            const peranNow = document.getElementById('f-peran').value;
+            const finalBtn = document.getElementById('btn-submit-final');
+            if (peranNow === 'Ketua Kontingen') {
+                finalBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Data Cabang Ini';
+            } else {
+                finalBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Pendaftaran';
+            }
         }
 
         function addPlayerField(val = '') {
             const selected = document.querySelector('input[name="cabor"]:checked').value;
 
-            // Sepak Bola pakai baris pemain khusus (posisi, nomor punggung, status inti/cadangan)
-            if (selected === 'Sepak Bola') {
+            // Sepak Bola, Basket & Voli pakai baris pemain khusus (posisi, nomor punggung, status inti/cadangan)
+            if (STRUCTURED_CABOR.includes(selected)) {
                 addFootballPlayerRow(val);
                 return;
             }
@@ -690,7 +720,7 @@
         function removePlayerField() {
             const selected = document.querySelector('input[name="cabor"]:checked').value;
 
-            if (selected === 'Sepak Bola') {
+            if (STRUCTURED_CABOR.includes(selected)) {
                 removeFootballPlayerRow();
                 return;
             }
@@ -710,24 +740,37 @@
         }
 
         // =======================================================
-        // KHUSUS SEPAK BOLA: baris pemain dengan Nomor Punggung,
-        // Posisi (Kiper/Bek/Gelandang/Penyerang) & status Inti/Cadangan
+        // Cabang dengan input pemain terstruktur: Nomor Punggung,
+        // Posisi (sesuai cabang), & status Inti/Cadangan
         // =======================================================
-        const POSISI_SEPAKBOLA = ['Kiper', 'Bek', 'Gelandang', 'Penyerang'];
+        const STRUCTURED_CABOR = ['Sepak Bola', 'Bola Basket', 'Bola Voli'];
+
+        const POSISI_MAP = {
+            'Sepak Bola': ['Kiper', 'Bek', 'Gelandang', 'Penyerang'],
+            'Bola Basket': ['Point Guard', 'Shooting Guard', 'Small Forward', 'Power Forward', 'Center'],
+            'Bola Voli': ['Setter', 'Libero', 'Middle Blocker', 'Outside Hitter', 'Opposite Hitter']
+        };
+        // Alias lama, tetap disediakan untuk kompatibilitas
+        const POSISI_SEPAKBOLA = POSISI_MAP['Sepak Bola'];
+
+        const STARTER_DEFAULT_COUNT = { 'Sepak Bola': 11, 'Bola Basket': 5, 'Bola Voli': 6 };
 
         function addFootballPlayerRow(playerData = null) {
-            const max = configCabor['Sepak Bola'].max;
+            const selected = document.querySelector('input[name="cabor"]:checked').value;
+            const max = configCabor[selected].max;
             if (currentPlayerCount >= max) {
-                alert(`Maksimal pendaftaran pemain untuk Sepak Bola adalah ${max} orang.`);
+                alert(`Maksimal pendaftaran pemain untuk ${selected} adalah ${max} orang.`);
                 return;
             }
 
             currentPlayerCount++;
             const list = document.getElementById('dynamic-players-list');
-            const isStarter = playerData ? !!playerData.starter : (currentPlayerCount <= 11);
+            const starterDefault = STARTER_DEFAULT_COUNT[selected] || 11;
+            const isStarter = playerData ? !!playerData.starter : (currentPlayerCount <= starterDefault);
             const nama = playerData && playerData.nama ? playerData.nama : (typeof playerData === 'string' ? playerData : '');
             const nomor = playerData && playerData.nomor ? playerData.nomor : '';
             const posisi = playerData && playerData.posisi ? playerData.posisi : '';
+            const posisiOptions = POSISI_MAP[selected] || POSISI_MAP['Sepak Bola'];
 
             const div = document.createElement('div');
             div.className = "player-row-football bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-2";
@@ -740,7 +783,7 @@
                 <div class="flex gap-2 items-center pl-7">
                     <select onchange="saveDraft()" class="fb-posisi flex-1 bg-white border border-gray-200 rounded-lg px-2 py-2 text-xs focus:ring-2 focus:ring-green-400 outline-none">
                         <option value="" ${posisi === '' ? 'selected' : ''} disabled>Pilih Posisi...</option>
-                        ${POSISI_SEPAKBOLA.map(p => `<option value="${p}" ${p === posisi ? 'selected' : ''}>${p}</option>`).join('')}
+                        ${posisiOptions.map(p => `<option value="${p}" ${p === posisi ? 'selected' : ''}>${p}</option>`).join('')}
                     </select>
                     <label class="flex items-center gap-1.5 text-[11px] font-bold text-gray-600 whitespace-nowrap">
                         <input type="checkbox" onchange="saveDraft()" class="fb-starter w-4 h-4 accent-green-600" ${isStarter ? 'checked' : ''}>
@@ -754,9 +797,10 @@
         }
 
         function removeFootballPlayerRow() {
-            const min = configCabor['Sepak Bola'].min;
+            const selected = document.querySelector('input[name="cabor"]:checked').value;
+            const min = configCabor[selected].min;
             if (currentPlayerCount <= min) {
-                alert(`Minimal pendaftaran pemain untuk Sepak Bola adalah ${min} orang.`);
+                alert(`Minimal pendaftaran pemain untuk ${selected} adalah ${min} orang.`);
                 return;
             }
             const list = document.getElementById('dynamic-players-list');
@@ -787,6 +831,115 @@
             document.getElementById('player-count-badge').innerText = `${currentPlayerCount} / ${max} Pemain`;
         }
 
+        // ================================================================
+        // ALUR PENDAFTARAN KOLEKTIF — KHUSUS ROLE "Ketua Kontingen"
+        // ================================================================
+
+        function renderKontingenProgress() {
+            const panel = document.getElementById('kontingen-progress');
+            const peran = document.getElementById('f-peran').value;
+            const delegasi = document.getElementById('f-delegasi').value;
+
+            if (peran !== 'Ketua Kontingen' || !delegasi) {
+                panel.classList.add('hidden');
+                return;
+            }
+            panel.classList.remove('hidden');
+
+            const listEl = document.getElementById('kontingen-list');
+            let allDone = true;
+
+            listEl.innerHTML = CABOR_ALL_LIST.map(cabor => {
+                let label, cls, icon;
+                if (lastLockedSports.includes(cabor)) {
+                    label = 'Terkunci (sudah oleh Koordinator Cabor)';
+                    cls = 'bg-gray-50 text-gray-500 border-gray-200';
+                    icon = 'fa-lock';
+                } else if (kontingenEntries[cabor]) {
+                    label = 'Tersimpan';
+                    cls = 'bg-green-50 text-green-700 border-green-200';
+                    icon = 'fa-check-circle';
+                } else {
+                    label = 'Belum diisi';
+                    cls = 'bg-yellow-50 text-yellow-700 border-yellow-200';
+                    icon = 'fa-circle-exclamation';
+                    allDone = false;
+                }
+                return `
+                    <div class="flex items-center justify-between px-3 py-2 rounded-xl border ${cls}">
+                        <span class="text-xs font-bold">${cabor}</span>
+                        <span class="text-[10px] flex items-center gap-1"><i class="fas ${icon}"></i>${label}</span>
+                    </div>
+                `;
+            }).join('');
+
+            const btn = document.getElementById('btn-submit-kontingen');
+            btn.disabled = !allDone;
+            btn.className = allDone
+                ? "w-full py-3.5 rounded-2xl bg-gray-900 text-white font-bold text-sm shadow-xl active:scale-95 transition-all flex items-center justify-center gap-2"
+                : "w-full py-3.5 rounded-2xl bg-gray-300 text-gray-500 font-bold text-sm shadow-lg transition-all cursor-not-allowed flex items-center justify-center gap-2";
+        }
+
+        async function finalizeKontingenSubmit() {
+            const delegasi = document.getElementById('f-delegasi').value;
+            const nama = document.getElementById('f-nama').value;
+            const peran = document.getElementById('f-peran').value;
+            const namatim = document.getElementById('f-namatim').value.trim();
+            const wa = window.currentUserWA;
+
+            if (!delegasi || !nama || !peran) {
+                return alert("Mohon lengkapi seluruh isian Identitas terlebih dahulu.");
+            }
+            if(!document.getElementById('check-1').checked || !document.getElementById('check-2').checked) {
+                return alert("Anda WAJIB mencentang dua kotak Deklarasi & Komitmen sebelum mengirim data.");
+            }
+
+            const entries = Object.keys(kontingenEntries).map(cabor => ({ cabor, detailForm: kontingenEntries[cabor] }));
+            const totalRequired = CABOR_ALL_LIST.filter(c => !lastLockedSports.includes(c)).length;
+
+            if (entries.length < totalRequired) {
+                return alert("Masih ada cabang olahraga yang belum diisi. Lengkapi semua cabang yang belum terkunci sebelum mengirim.");
+            }
+
+            const payload = {
+                action: "submit_form",
+                wa: wa,
+                nama: nama,
+                peran: peran,
+                delegasi: delegasi,
+                namatim: namatim,
+                entries: entries
+            };
+
+            const btn = document.getElementById('btn-submit-kontingen');
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Mengirim Semua...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload)
+                });
+                const response = await res.json();
+
+                if (response.status === 'success') {
+                    document.getElementById('success-modal').classList.replace('hidden-fade', 'visible-fade');
+                    const box = document.getElementById('success-box');
+                    setTimeout(() => { box.classList.replace('scale-95', 'scale-100'); }, 50);
+                    kontingenEntries = {};
+                    handleDelegasiChange();
+                } else {
+                    alert("Error: " + response.message);
+                }
+            } catch (e) {
+                alert("Gagal koneksi ke server. Pastikan internet stabil.");
+            }
+
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Semua Pendaftaran Kontingen';
+            renderKontingenProgress();
+        }
+
         async function submitData() {
             const delegasi = document.getElementById('f-delegasi').value;
             const nama = document.getElementById('f-nama').value;
@@ -813,14 +966,14 @@
             // Collect & Combine Dynamic Player Inputs
             const isDynamic = ['Sepak Bola', 'Bola Voli', 'Bola Basket', 'Lari Estafet'].includes(cabor);
             if(isDynamic) {
-                if (cabor === 'Sepak Bola') {
+                if (STRUCTURED_CABOR.includes(cabor)) {
                     const pemain = collectFootballPlayers();
 
                     if(pemain.length < configCabor[cabor].min) {
                         return alert(`Harap isi minimal ${configCabor[cabor].min} nama pemain untuk ${cabor}.`);
                     }
                     if(pemain.some(p => !p.nama || !p.posisi)) {
-                        return alert("Mohon lengkapi Nama dan Posisi untuk setiap pemain Sepak Bola.");
+                        return alert(`Mohon lengkapi Nama dan Posisi untuk setiap pemain ${cabor}.`);
                     }
 
                     // Data terstruktur (posisi, nomor punggung, status inti/cadangan) untuk sinkron ke sheet Skuad
@@ -849,6 +1002,21 @@
             }
 
             const namatim = document.getElementById('f-namatim').value.trim();
+
+            // ================================================================
+            // KETUA KONTINGEN: tidak langsung kirim per-cabor. Data disimpan
+            // sementara di memori (kontingenEntries), baru dikirim SEKALIGUS
+            // untuk semua cabang lewat finalizeKontingenSubmit().
+            // ================================================================
+            if (peran === 'Ketua Kontingen') {
+                kontingenEntries[cabor] = detailData;
+                caborRadio.checked = false;
+                document.getElementById('dynamic-form-container').classList.add('hidden');
+                saveDraft();
+                renderKontingenProgress();
+                alert(`Data ${cabor} berhasil disimpan sementara.\n\nSilakan lanjutkan mengisi cabang lain yang belum terkunci, lalu klik tombol "Kirim Semua Pendaftaran Kontingen" setelah seluruh cabang lengkap.`);
+                return;
+            }
 
             const payload = {
                 action: "submit_form",
