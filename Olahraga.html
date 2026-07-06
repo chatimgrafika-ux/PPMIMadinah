@@ -104,6 +104,21 @@
         </header>
 
         <div class="p-5 space-y-6">
+            
+            <!-- Tombol Alih ke Menu Papan Skor -->
+            <a href="Papan%20Skor.html" class="flex items-center justify-between w-full bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-2xl active:bg-blue-100 transition-colors shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-chart-line text-blue-600"></i>
+                    </div>
+                    <div class="text-left">
+                        <h4 class="text-xs font-bold">Papan Skor Realtime</h4>
+                        <p class="text-[10px] text-blue-600/80">Pantau klasemen & tim terdaftar</p>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right text-xs text-blue-400"></i>
+            </a>
+
             <!-- Draft Indicator -->
             <div id="draft-indicator" class="hidden bg-blue-100 border border-blue-200 text-blue-800 text-[10px] px-3 py-2 rounded-xl flex items-center gap-2">
                 <i class="fas fa-save"></i> Terdapat data riwayat (draft) yang dimuat otomatis. Anda dapat melanjutkannya.
@@ -772,20 +787,22 @@
             const posisi = playerData && playerData.posisi ? playerData.posisi : '';
             const posisiOptions = POSISI_MAP[selected] || POSISI_MAP['Sepak Bola'];
 
+            // Terdapat penyesuaian min-w-0, shrink-0, dan w-full agar baris ini sangat responsive 
+            // pada tampilan layar sentuh yang lebih kecil (tidak ada yang tergencet)
             const div = document.createElement('div');
             div.className = "player-row-football bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-2";
             div.innerHTML = `
-                <div class="flex gap-2 items-center">
-                    <span class="text-xs font-bold text-gray-400 w-5 text-right">${currentPlayerCount}.</span>
-                    <input type="text" oninput="saveDraft()" class="fb-nama flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 outline-none" placeholder="Nama Lengkap - NIM" value="${nama}">
-                    <input type="number" oninput="saveDraft()" class="fb-nomor w-16 bg-white border border-gray-200 rounded-lg px-2 py-2 text-sm text-center focus:ring-2 focus:ring-green-400 outline-none" placeholder="No." value="${nomor}">
+                <div class="flex gap-2 items-center w-full">
+                    <span class="text-xs font-bold text-gray-400 w-5 shrink-0 text-right">${currentPlayerCount}.</span>
+                    <input type="text" oninput="saveDraft()" class="fb-nama w-full min-w-0 flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 outline-none" placeholder="Nama Lengkap - NIM" value="${nama}">
+                    <input type="number" oninput="saveDraft()" class="fb-nomor w-14 shrink-0 bg-white border border-gray-200 rounded-lg px-2 py-2 text-sm text-center focus:ring-2 focus:ring-green-400 outline-none" placeholder="No." value="${nomor}">
                 </div>
-                <div class="flex gap-2 items-center pl-7">
-                    <select onchange="saveDraft()" class="fb-posisi flex-1 bg-white border border-gray-200 rounded-lg px-2 py-2 text-xs focus:ring-2 focus:ring-green-400 outline-none">
+                <div class="flex gap-2 items-center pl-7 w-full">
+                    <select onchange="saveDraft()" class="fb-posisi w-full min-w-0 flex-1 bg-white border border-gray-200 rounded-lg px-2 py-2 text-xs focus:ring-2 focus:ring-green-400 outline-none">
                         <option value="" ${posisi === '' ? 'selected' : ''} disabled>Pilih Posisi...</option>
                         ${posisiOptions.map(p => `<option value="${p}" ${p === posisi ? 'selected' : ''}>${p}</option>`).join('')}
                     </select>
-                    <label class="flex items-center gap-1.5 text-[11px] font-bold text-gray-600 whitespace-nowrap">
+                    <label class="flex items-center gap-1.5 text-[11px] font-bold text-gray-600 whitespace-nowrap shrink-0">
                         <input type="checkbox" onchange="saveDraft()" class="fb-starter w-4 h-4 accent-green-600" ${isStarter ? 'checked' : ''}>
                         Pemain Inti
                     </label>
