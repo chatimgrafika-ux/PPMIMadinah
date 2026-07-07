@@ -2,18 +2,17 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<!-- STREAMING_CHUNK:Configuring Viewport and Theme -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <meta name="theme-color" content="#16a34a">
 <title>Papan Skor — Olimpiade PPMI Madinah</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%2316a34a%22/><circle cx=%2250%22 cy=%2250%22 r=%2222%22 fill=%22none%22 stroke=%22white%22 stroke-width=%228%22/></svg>">
+<!-- Logo PPMI sebagai Favicon / Splash Icon -->
+<link rel="icon" href="https://lh3.googleusercontent.com/d/1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E=s1100?authuser=0">
 
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-  /* STREAMING_CHUNK:Defining Global CSS Variables */
   :root{
     --live: #ef4444;
     --gold: #d97706;
@@ -33,7 +32,6 @@
   .mono{ font-family: 'Space Mono', monospace; }
 
   /* ---------- HERO ---------- */
-  /* STREAMING_CHUNK:Styling Hero Section */
   header.hero{
     background: linear-gradient(135deg, #16a34a 0%, #15803d 55%, #166534 100%);
     border-radius: 0 0 2.5rem 2.5rem;
@@ -76,7 +74,6 @@
   .wrap{ max-width: 880px; margin: 0 auto; padding: 22px 16px 60px; width: 100%; }
 
   /* ---------- SECTION NAV (DROPDOWN) ---------- */
-  /* STREAMING_CHUNK:Styling Navigation Dropdown */
   .section-dropdown-wrap {
     position: relative; margin: -40px auto 20px; max-width: 240px; z-index: 10;
   }
@@ -94,7 +91,6 @@
   }
 
   /* ---------- TABS CABANG (ICON GRID) ---------- */
-  /* STREAMING_CHUNK:Styling Icon Tabs */
   nav.tabs{ 
     display:flex; gap: 12px; justify-content:center; flex-wrap: wrap; margin-bottom: 24px;
   }
@@ -106,7 +102,7 @@
     box-shadow: 0 4px 10px -4px rgba(0,0,0,0.05);
   }
   .tab-btn svg{ width:26px; height:26px; }
-  .tab-btn span { font-size: 10px; font-weight: 600; font-family: 'Poppins', sans-serif; line-height: 1; text-align: center; }
+  .tab-btn span { font-size: 9px; font-weight: 600; font-family: 'Poppins', sans-serif; line-height: 1.1; text-align: center; }
   .tab-btn:hover{ border-color: #86efac; color: #16a34a; transform: translateY(-2px); }
   .tab-btn.active{ 
     background: #16a34a; border-color: #16a34a; color: #fff; 
@@ -133,7 +129,6 @@
   main#mainContent{ margin-top: 10px; width: 100%; }
 
   /* ---------- MATCH CARDS ---------- */
-  /* STREAMING_CHUNK:Styling Match Cards */
   #matchGrid, .match-list{ display: grid; gap: 14px; width: 100%; }
   .match-card{
     background: var(--surface); border: 1px solid #e5e7eb; border-radius: var(--radius); padding: 18px 20px;
@@ -182,7 +177,6 @@
   .status-segera{ color: #6b7280; border-color: #e5e7eb; background: #f9fafb; font-weight: 700;}
 
   /* ---------- KLASEMEN ---------- */
-  /* STREAMING_CHUNK:Styling Klasemen Table */
   .klasemen-group{ margin-bottom: 28px; width: 100%; }
   .klasemen-heading{
     font-family:'Space Mono', monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase;
@@ -214,8 +208,14 @@
   table.klasemen tr.qualify td { background: rgba(34, 197, 94, 0.05); }
   table.klasemen tr.qualify td:first-child{ box-shadow: inset 4px 0 0 #22c55e; font-weight: 700; color: #15803d; }
 
+  /* Style Tambahan Khusus untuk Auto Klasemen Bola & Lari Estafet */
+  .klasemen-group.auto-klasemen .klasemen-heading::before { background: #0ea5e9; }
+  table.klasemen-auto th { background: #e0f2fe; color: #0369a1; border-bottom: 2px solid #bae6fd; }
+  table.klasemen-auto td.pts { color: #0284c7; background: #f0f9ff; }
+  table.klasemen-auto tr.qualify td { background: rgba(14, 165, 233, 0.05); }
+  table.klasemen-auto tr.qualify td:first-child { box-shadow: inset 4px 0 0 #0ea5e9; color: #0369a1; }
+
   /* ---------- SKUAD & FORMASI ---------- */
-  /* STREAMING_CHUNK:Styling Squad and Formations */
   .formasi-hint{ text-align:center; color: #6b7280; font-family:'Space Mono', monospace; font-size:12.5px; padding: 40px 20px; background: #fff; border-radius: var(--radius); border: 1px dashed #cbd5e1; }
 
   .pitch{
@@ -256,6 +256,19 @@
   .voli-attack-line { position:absolute; top:33%; left:0; width:100%; height:2px; background:#fff; z-index:0;}
   .voli-net { position:absolute; top:-8px; left:-15px; right:-15px; height:12px; background:repeating-linear-gradient(90deg, #fff, #fff 6px, #1e293b 6px, #1e293b 12px); border:2px solid #fff; z-index:0; border-radius: 2px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
 
+  /* Lintasan Lari Estafet */
+  .pitch-estafet {
+    background: #9f1239; /* Merah bata lintasan lari */
+    padding: 30px 14px; box-shadow: 0 10px 25px -5px rgba(159,18,57,0.4);
+    border: 2px solid rgba(255,255,255,0.4); overflow: hidden;
+  }
+  .track-lines { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-evenly; pointer-events: none; z-index: 1;}
+  .lane-line { width: 100%; height: 2px; background: rgba(255,255,255,0.2); }
+  .relay-container { display: flex; justify-content: center; align-items: center; gap: 8px; position: relative; z-index: 2; flex-wrap: wrap; padding: 20px 0;}
+  .relay-runner-wrapper { display: flex; align-items: center; gap: 8px; }
+  .baton-arrow { color: #fcd34d; font-size: 16px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); animation: passBaton 1.5s infinite; margin-top: -15px;}
+  @keyframes passBaton { 0% { transform: translateX(0); } 50% { transform: translateX(5px); } 100% { transform: translateX(0); } }
+
   .pitch-line{ display:flex; justify-content:center; gap: 24px; margin: 18px 0; flex-wrap:wrap; position:relative; z-index:2; }
   .player-chip{ display:flex; flex-direction:column; align-items:center; gap:6px; width:66px; }
   .player-dot{
@@ -264,6 +277,7 @@
     display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     position:relative; z-index: 2;
   }
+  .pitch-estafet .player-dot { border-color: #9f1239; color: #9f1239; }
   .player-dot .cap{
     position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%; background: var(--gold);
     color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center; font-family:'Poppins',sans-serif; font-weight:800; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -285,12 +299,13 @@
     color: #15803d; background: #d1fae5; border:1px solid #86efac; padding:8px 16px;
     border-radius:999px; margin-bottom:16px; font-weight:800; box-shadow: 0 2px 8px rgba(34,197,94,0.15);
   }
+  .formasi-tag.tag-estafet { color: #9f1239; background: #ffe4e6; border-color: #fecdd3; box-shadow: 0 2px 8px rgba(159,18,57,0.15); }
 
   table.squad th{ text-align:left; background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569;}
   table.squad td{ font-size:13.5px; padding:12px 10px; border-bottom:1px solid #f1f5f9; color: #475569; }
   table.squad tr:last-child td{ border-bottom:none; }
   table.squad tr:hover td { background: #f8fafc; }
-  table.squad td.name{ color: #1e293b; font-weight:600; display:flex; align-items:center; gap:8px; }
+  table.squad td.name{ color: #1e293b; font-weight:600; display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
   table.squad td.num{ font-family:'Space Mono', monospace; color: #15803d; font-weight:800; width: 40px; font-size: 15px;}
   .badge-mini{ font-family:'Space Mono', monospace; font-size:9.5px; padding: 3px 8px; border-radius:999px; letter-spacing:0.04em; font-weight:700; }
   .badge-starter{ color: #15803d; background: #f0fdf4; border:1px solid #bbf7d0; }
@@ -315,7 +330,6 @@
   footer{ text-align:center; margin-top: 50px; color: #9ca3af; font-family:'Space Mono', monospace; font-size: 11px; letter-spacing: 0.03em; }
   footer span{ color: #15803d; font-weight:700; }
 
-  /* STREAMING_CHUNK:Responsive Media Queries */
   @media (max-width: 600px){
     .match-card{ 
       grid-template-columns: 1fr; 
@@ -344,12 +358,13 @@
 </head>
 <body>
 
-<!-- STREAMING_CHUNK:Rendering HTML Body Structure -->
 <header class="hero">
   <div class="hero-inner">
     <div class="eyebrow">PPMI Madinah &middot; 2026</div>
-    <h1 class="title"><i class="fas fa-trophy" style="font-size:0.75em; margin-right:10px;"></i>PPMI Olympics Madinah</h1>
-    <p class="subtitle">Live, klasemen, riwayat, skuad &amp; formasi — Sepak Bola, Basket, Voli, Tenis Meja &amp; Bulu Tangkis</p>
+    <!-- Logo Olympics di Header -->
+    <img src="https://lh3.googleusercontent.com/d/1H0tpVyWHHpp9PaHp9pnCP7fc9jcbErn5=s1100?authuser=0" alt="Olympics Logo" style="height: 64px; margin: 0 auto 12px; display: block; object-fit: contain;">
+    <h1 class="title">PPMI Olympics Madinah</h1>
+    <p class="subtitle">Live, klasemen, riwayat, skuad &amp; formasi — Berbagai Cabang Olahraga</p>
     <div class="hero-meta">
       <span class="clock mono" id="liveClock"><i class="far fa-clock"></i> --:-- WAS</span>
       <span class="dot-sep"></span>
@@ -385,23 +400,23 @@
 /* ============================================================
    KONFIGURASI 
 ============================================================ */
-/* STREAMING_CHUNK:Initializing Configuration and Utilities */
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbzRIQ5veOX9LOFOOGPK7DutJoN70myiMy-wmBNQWHEmH6yHIlCfJI5qmldd1cteeSE/exec",
-  REFRESH_MS: 5000
+  REFRESH_MS: 30000
 };
 
-/* ---------- Ikon cabang lomba (Diperbarui dengan ikon 'Semua') ---------- */
+/* ---------- Ikon cabang lomba ---------- */
 const ICONS = {
   "Semua": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>`,
   "Sepak Bola": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7l3.5 2.5-1.3 4.1H9.8L8.5 9.5 12 7z"/><path d="M12 7V3.5M15.5 9.5l3.3-1M8.5 9.5l-3.3-1M9.8 13.6l-2 3.3M14.2 13.6l2 3.3"/></svg>`,
   "Basket": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.2 5.2c3 3 3 10.6 0 13.6M18.8 5.2c-3 3-3 10.6 0 13.6"/></svg>`,
   "Voli": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 3c3 2.5 3 15 0 18M6 6.5c4 1 10 1 12 3.5M4 14c3.5-1.5 12.5-1.5 16 1"/></svg>`,
   "Tenis Meja": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9.5" cy="8.5" rx="5.2" ry="6" transform="rotate(-25 9.5 8.5)"/><path d="M13 12l6.5 7"/><circle cx="19" cy="20" r="1.4" fill="currentColor" stroke="none"/></svg>`,
-  "Bulu Tangkis": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14l6 6M14 14l-3-9 9 3-2 2M14 14l-3.5-3.5"/><path d="M6.5 6.5L4 4M8.5 4.5L5.5 2M4.5 8.5L2 6"/><circle cx="9.5" cy="9.5" r="1.6" fill="currentColor" stroke="none"/></svg>`
+  "Bulu Tangkis": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14l6 6M14 14l-3-9 9 3-2 2M14 14l-3.5-3.5"/><path d="M6.5 6.5L4 4M8.5 4.5L5.5 2M4.5 8.5L2 6"/><circle cx="9.5" cy="9.5" r="1.6" fill="currentColor" stroke="none"/></svg>`,
+  "Lari Estafet": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4v.01M14 8l3-3M9 8l2 5 2-2M11 13l-3 5M11 13l3 4M5 19l2-4"/></svg>`
 };
 
-const CABANG_LIST = ["Semua","Sepak Bola","Basket","Voli","Tenis Meja","Bulu Tangkis"];
+const CABANG_LIST = ["Semua","Sepak Bola","Basket","Voli","Tenis Meja","Bulu Tangkis", "Lari Estafet"];
 const SECTIONS = [
   { key:'live',     label:'Live & Jadwal' },
   { key:'klasemen', label:'Klasemen' },
@@ -428,14 +443,12 @@ function norm(v){ return (v ?? '').toString().trim(); }
 /* ============================================================
    NAV RENDERING (Dropdown & Grid Tabs)
 ============================================================ */
-/* STREAMING_CHUNK:Rendering Navigation Logics */
 function renderSectionsNav(){
   const dropdown = document.getElementById('sectionsNavDropdown');
   dropdown.innerHTML = SECTIONS.map(s =>
     `<option value="${s.key}" ${s.key === state.section ? 'selected' : ''}>${s.label}</option>`
   ).join('');
   
-  // Menggunakan onchange event untuk dropdown
   dropdown.addEventListener('change', (e) => {
     state.section = e.target.value;
     if(state.section === 'skuad' && state.cabang === 'Semua'){
@@ -452,7 +465,6 @@ function renderTabsNav(){
   nav.innerHTML = list.map(c => {
     const icon = ICONS[c] || '';
     const active = c === state.cabang ? 'active' : '';
-    // Format tombol kotak untuk sentuhan jari (mobile-friendly)
     return `<button class="tab-btn ${active}" data-cabang="${c}">${icon}<span>${c}</span></button>`;
   }).join('');
   
@@ -487,7 +499,6 @@ function renderTeamChips(teams){
 /* ============================================================
    STATUS BADGE + MATCH CARD
 ============================================================ */
-/* STREAMING_CHUNK:Rendering Match Cards Logic */
 function statusBadge(status){
   const s = norm(status).toUpperCase();
   if(s === 'LIVE') return `<span class="status-badge status-live"><span class="pulse-dot"></span>LIVE</span>`;
@@ -535,9 +546,8 @@ function matchCardHTML(m){
 }
 
 /* ============================================================
-   SECTION: LIVE & RIWAYAT & KLASEMEN
+   SECTION: LIVE & RIWAYAT
 ============================================================ */
-/* STREAMING_CHUNK:Rendering Section Core Features */
 function renderLive(){
   const list = state.matches.filter(m => {
     const s = norm(m.Status).toUpperCase();
@@ -572,68 +582,225 @@ function renderRiwayat(){
   grid.innerHTML = `<div class="match-list">${list.map(matchCardHTML).join('')}</div>`;
 }
 
-function renderKlasemen(){
-  const list = state.standings.filter(s => state.cabang === 'Semua' || norm(s.Cabang) === state.cabang);
-  const grid = document.getElementById('mainContent');
-  if(!list.length){
-    grid.innerHTML = `<div class="empty-state"><i class="fas fa-clipboard-list" style="font-size:2em; margin-bottom:10px; display:block; color:#94a3b8;"></i>Belum ada data klasemen untuk kategori ini.</div>`;
-    return;
-  }
+/* ============================================================
+   FUNGSI AUTO KLASEMEN BOLA DARI RIWAYAT PERTANDINGAN
+============================================================ */
+function calculateAutoKlasemenBola(matches) {
+  const teams = {};
+  matches.forEach(m => {
+    if (norm(m.Cabang) !== 'Sepak Bola') return;
+    const status = norm(m.Status).toUpperCase();
+    if (status !== 'SELESAI' && status !== 'FT') return;
 
-  const groups = {};
-  list.forEach(s => {
-    const key = (state.cabang === 'Semua' ? norm(s.Cabang) + ' — ' : '') + (norm(s.Grup) || 'Klasemen');
-    (groups[key] = groups[key] || []).push(s);
+    const grup = norm(m.Babak) || 'Grup Utama';
+    const tA = norm(m.TimA);
+    const tB = norm(m.TimB);
+    if (!tA || !tB) return;
+
+    if (!teams[grup]) teams[grup] = {};
+    if (!teams[grup][tA]) teams[grup][tA] = { Tim: tA, Grup: grup, Main:0, Menang:0, Seri:0, Kalah:0, SkorMasuk:0, SkorKeluar:0 };
+    if (!teams[grup][tB]) teams[grup][tB] = { Tim: tB, Grup: grup, Main:0, Menang:0, Seri:0, Kalah:0, SkorMasuk:0, SkorKeluar:0 };
+
+    const sA = Number(m.SkorA) || 0;
+    const sB = Number(m.SkorB) || 0;
+
+    teams[grup][tA].Main++;
+    teams[grup][tB].Main++;
+    teams[grup][tA].SkorMasuk += sA;
+    teams[grup][tA].SkorKeluar += sB;
+    teams[grup][tB].SkorMasuk += sB;
+    teams[grup][tB].SkorKeluar += sA;
+
+    if (sA > sB) {
+      teams[grup][tA].Menang++;
+      teams[grup][tB].Kalah++;
+    } else if (sA < sB) {
+      teams[grup][tB].Menang++;
+      teams[grup][tA].Kalah++;
+    } else {
+      teams[grup][tA].Seri++;
+      teams[grup][tB].Seri++;
+    }
   });
 
-  grid.innerHTML = Object.keys(groups).map(key => {
-    const rows = groups[key].map(s => {
-      const main = Number(s.Main) || 0;
-      const menang = Number(s.Menang) || 0;
-      const seri = Number(s.Seri) || 0;
-      const kalah = Number(s.Kalah) || 0;
-      const sm = Number(s.SkorMasuk) || 0;
-      const sk = Number(s.SkorKeluar) || 0;
-      const poin = s.Poin !== undefined && s.Poin !== '' ? Number(s.Poin) : (menang*3 + seri);
-      return { ...s, main, menang, seri, kalah, sm, sk, poin, selisih: sm - sk };
-    }).sort((a,b) => b.poin - a.poin || b.selisih - a.selisih || b.sm - a.sm);
+  const result = [];
+  for (let g in teams) {
+    for (let t in teams[g]) {
+      const r = teams[g][t];
+      r.Poin = (r.Menang * 3) + (r.Seri * 1);
+      r.Selisih = r.SkorMasuk - r.SkorKeluar;
+      result.push(r);
+    }
+  }
+  return result;
+}
 
-    const tableRows = rows.map((r, i) => `
-      <tr class="${i < 2 ? 'qualify' : ''}">
-        <td>${i+1}</td>
-        <td>${r.Tim || '-'}</td>
-        <td>${r.main}</td>
-        <td>${r.menang}</td>
-        <td>${r.seri}</td>
-        <td>${r.kalah}</td>
-        <td>${r.sm}-${r.sk}</td>
-        <td>${r.selisih > 0 ? '+' + r.selisih : r.selisih}</td>
-        <td class="pts">${r.poin}</td>
-      </tr>
-    `).join('');
+/* ============================================================
+   SECTION: KLASEMEN
+============================================================ */
+function renderKlasemen(){
+  const grid = document.getElementById('mainContent');
+  let finalHTML = '';
 
-    return `
-      <div class="klasemen-group">
-        <div class="klasemen-heading">${key}</div>
-        <div class="table-responsive">
-          <table class="klasemen">
-            <thead>
-              <tr>
-                <th>#</th><th>Tim</th><th>M</th><th>M</th><th>S</th><th>K</th><th>Skor</th><th>Sel.</th><th>Poin</th>
-              </tr>
-            </thead>
-            <tbody>${tableRows}</tbody>
-          </table>
+  // 1. TAMBAHAN KHUSUS: Render Klasemen Grup Bola Otomatis di posisi teratas
+  if (state.cabang === 'Sepak Bola' || state.cabang === 'Semua') {
+    const autoData = calculateAutoKlasemenBola(state.matches);
+    if (autoData.length > 0) {
+      const autoGroups = {};
+      autoData.forEach(s => { (autoGroups[s.Grup] = autoGroups[s.Grup] || []).push(s); });
+
+      const autoBolaHTML = Object.keys(autoGroups).map(key => {
+        const rows = autoGroups[key]
+          .sort((a,b) => b.Poin - a.Poin || b.Selisih - a.Selisih || b.SkorMasuk - a.SkorMasuk)
+          .map((r, i) => `
+            <tr class="${i < 2 ? 'qualify' : ''}">
+              <td>${i+1}</td>
+              <td>${r.Tim}</td>
+              <td>${r.Main}</td>
+              <td>${r.Menang}</td>
+              <td>${r.Seri}</td>
+              <td>${r.Kalah}</td>
+              <td>${r.SkorMasuk}</td>
+              <td>${r.SkorKeluar}</td>
+              <td>${r.Selisih > 0 ? '+'+r.Selisih : r.Selisih}</td>
+              <td class="pts">${r.Poin}</td>
+            </tr>
+          `).join('');
+
+        return `
+          <div class="klasemen-group auto-klasemen">
+            <div class="klasemen-heading" style="color: #0369a1;"><i class="fas fa-robot"></i> ${key} (AUTO RIWAYAT)</div>
+            <div class="table-responsive">
+              <table class="klasemen klasemen-auto">
+                <thead>
+                  <tr>
+                    <th>#</th><th>Tim</th>
+                    <th title="Main">M</th><th title="Menang">M</th><th title="Seri">S</th><th title="Kalah">K</th>
+                    <th title="Gol Masuk">GM</th><th title="Gol Kemasukan">GK</th><th title="Selisih">Sel</th><th>Poin</th>
+                  </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      finalHTML += autoBolaHTML;
+    }
+  }
+
+  // TAMBAHAN KHUSUS: Render Klasemen Lari Estafet (Waktu Tercepat)
+  if (state.cabang === 'Lari Estafet' || state.cabang === 'Semua') {
+    const estafetList = state.standings.filter(s => norm(s.Cabang) === 'Lari Estafet');
+    if (estafetList.length > 0) {
+      const estafetGroups = {};
+      estafetList.forEach(s => { (estafetGroups[norm(s.Grup) || 'Klasemen'] = estafetGroups[norm(s.Grup) || 'Klasemen'] || []).push(s); });
+
+      finalHTML += Object.keys(estafetGroups).map(key => {
+        // Sorting berdasarkan waktu tercepat (Ascending). Menggunakan Waktu, CatatanWaktu, SkorMasuk, atau Poin
+        const rows = estafetGroups[key]
+          .sort((a,b) => {
+            const valA = norm(a.Waktu) || norm(a.CatatanWaktu) || norm(a.SkorMasuk) || norm(a.Poin) || '99:99:99';
+            const valB = norm(b.Waktu) || norm(b.CatatanWaktu) || norm(b.SkorMasuk) || norm(b.Poin) || '99:99:99';
+            return valA.localeCompare(valB);
+          })
+          .map((r, i) => `
+            <tr class="${i === 0 ? 'qualify' : ''}">
+              <td>${i+1}</td>
+              <td>${r.Tim}</td>
+              <td class="pts" style="text-align:center;">${norm(r.Waktu) || norm(r.CatatanWaktu) || norm(r.SkorMasuk) || norm(r.Poin) || '-'}</td>
+            </tr>
+          `).join('');
+
+        return `
+          <div class="klasemen-group auto-klasemen">
+            <div class="klasemen-heading" style="color: #9f1239;"><i class="fas fa-stopwatch"></i> ${key} (WAKTU TERCEPAT)</div>
+            <div class="table-responsive">
+              <table class="klasemen">
+                <thead>
+                  <tr>
+                    <th>Pos</th><th>Tim / Regu</th><th style="text-align:center;">Catatan Waktu</th>
+                  </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  // 2. Render Klasemen bawaan (dari sheet) untuk olahraga lain
+  // Pengecualian: jangan double-render sepak bola dan Lari Estafet jika mode 'Semua' karena sudah terwakili di Auto
+  const list = state.standings.filter(s => {
+      const isCorrectCabang = state.cabang === 'Semua' || norm(s.Cabang) === state.cabang;
+      const isNotBolaOrEstafet = norm(s.Cabang) !== 'Sepak Bola' && norm(s.Cabang) !== 'Lari Estafet';
+      return isCorrectCabang && isNotBolaOrEstafet;
+  });
+
+  if(list.length > 0){
+    const groups = {};
+    list.forEach(s => {
+      const key = (state.cabang === 'Semua' ? norm(s.Cabang) + ' — ' : '') + (norm(s.Grup) || 'Klasemen');
+      (groups[key] = groups[key] || []).push(s);
+    });
+
+    finalHTML += Object.keys(groups).map(key => {
+      const rows = groups[key].map(s => {
+        const main = Number(s.Main) || 0;
+        const menang = Number(s.Menang) || 0;
+        const seri = Number(s.Seri) || 0;
+        const kalah = Number(s.Kalah) || 0;
+        const sm = Number(s.SkorMasuk) || 0;
+        const sk = Number(s.SkorKeluar) || 0;
+        const poin = s.Poin !== undefined && s.Poin !== '' ? Number(s.Poin) : (menang*3 + seri);
+        return { ...s, main, menang, seri, kalah, sm, sk, poin, selisih: sm - sk };
+      }).sort((a,b) => b.poin - a.poin || b.selisih - a.selisih || b.sm - a.sm);
+
+      const tableRows = rows.map((r, i) => `
+        <tr class="${i < 2 ? 'qualify' : ''}">
+          <td>${i+1}</td>
+          <td>${r.Tim || '-'}</td>
+          <td>${r.main}</td>
+          <td>${r.menang}</td>
+          <td>${r.seri}</td>
+          <td>${r.kalah}</td>
+          <td>${r.sm}-${r.sk}</td>
+          <td>${r.selisih > 0 ? '+' + r.selisih : r.selisih}</td>
+          <td class="pts">${r.poin}</td>
+        </tr>
+      `).join('');
+
+      return `
+        <div class="klasemen-group">
+          <div class="klasemen-heading">${key}</div>
+          <div class="table-responsive">
+            <table class="klasemen">
+              <thead>
+                <tr>
+                  <th>#</th><th>Tim</th><th>M</th><th>M</th><th>S</th><th>K</th><th>Skor</th><th>Sel.</th><th>Poin</th>
+                </tr>
+              </thead>
+              <tbody>${tableRows}</tbody>
+            </table>
+          </div>
         </div>
-      </div>
-    `;
-  }).join('');
+      `;
+    }).join('');
+  }
+
+  if (finalHTML === '') {
+    grid.innerHTML = `<div class="empty-state"><i class="fas fa-clipboard-list" style="font-size:2em; margin-bottom:10px; display:block; color:#94a3b8;"></i>Belum ada data klasemen untuk kategori ini.</div>`;
+  } else {
+    grid.innerHTML = finalHTML;
+  }
 }
 
 /* ============================================================
    SECTION: SKUAD & FORMASI SPESIFIK
 ============================================================ */
-/* STREAMING_CHUNK:Rendering Custom Sport Pitches */
 function renderSkuad(){
   const grid = document.getElementById('mainContent');
 
@@ -655,19 +822,27 @@ function renderSkuad(){
   }
   if(!state.team || !teams.includes(state.team)) state.team = teams[0];
 
-  const players = state.squad.filter(p => norm(p.Cabang) === state.cabang && norm(p.Tim) === state.team);
+  // Filter pemain yang BELUM diferifikasi agar tidak muncul
+  const players = state.squad.filter(p => {
+    const isMatch = norm(p.Cabang) === state.cabang && norm(p.Tim) === state.team;
+    const isVerified = norm(p.Status).toUpperCase() !== 'BELUM DIFERIFIKASI' && norm(p.Status).toUpperCase() !== 'BELUM DIVERIFIKASI';
+    return isMatch && isVerified;
+  });
+  
   const starters = players.filter(p => truthy(p.Starter));
   const bench = players.filter(p => !truthy(p.Starter));
 
   let formasiHTML = '';
   if(!starters.length){
-    formasiHTML = `<div class="formasi-hint">Belum ada susunan pemain inti (formasi) untuk tim ini.</div>`;
+    formasiHTML = `<div class="formasi-hint">Belum ada susunan formasi untuk tim ini.</div>`;
   } else if(state.cabang === 'Sepak Bola'){
     formasiHTML = renderPitchSepakBola(starters);
   } else if(state.cabang === 'Basket'){
     formasiHTML = renderPitchBasket(starters);
   } else if(state.cabang === 'Voli'){
     formasiHTML = renderPitchVoli(starters);
+  } else if(state.cabang === 'Lari Estafet'){
+    formasiHTML = renderPitchEstafet(starters);
   } else {
     formasiHTML = renderLineupPanel(starters);
   }
@@ -683,9 +858,9 @@ function renderSkuad(){
             .map(p => `
               <tr>
                 <td class="num">${p.Nomor ?? '-'}</td>
-                <td class="name">${p.Nama || '-'} ${truthy(p.Kapten) ? '<span class="badge-mini badge-cap">C</span>' : ''}</td>
+                <td class="name">${p.Nama || '-'} ${truthy(p.Kapten) ? '<span class="badge-mini badge-cap">C</span>' : ''}${getPlayerCards(p.Status)}</td>
                 <td>${p.Posisi || '-'}</td>
-                <td>${truthy(p.Starter) ? '<span class="badge-mini badge-starter">INTI</span>' : '<span class="badge-mini badge-bench">CADANGAN</span>'}</td>
+                <td>${truthy(p.Starter) ? '<span class="badge-mini badge-starter">INTI / START</span>' : '<span class="badge-mini badge-bench">CADANGAN</span>'}</td>
               </tr>
             `).join('')}
         </tbody>
@@ -700,7 +875,7 @@ function groupByBaris(players){
   const order = [];
   const groups = {};
   players.forEach(p => {
-    const baris = norm(p.Baris) || 'Starting XI';
+    const baris = norm(p.Baris) || 'Starting Lineup';
     if(!groups[baris]){ groups[baris] = []; order.push(baris); }
     groups[baris].push(p);
   });
@@ -708,11 +883,19 @@ function groupByBaris(players){
   return { order, groups };
 }
 
+/* FUNGSI KARTU MERAH DAN KUNING */
+function getPlayerCards(statusStr) {
+  const s = norm(statusStr).toUpperCase();
+  if (s === 'KUNING') return `<span style="display:inline-block; width:12px; height:16px; background:#eab308; border-radius:3px; margin-left:8px; box-shadow:0 1px 3px rgba(0,0,0,0.3);" title="Kartu Kuning"></span>`;
+  if (s === 'MERAH') return `<span style="display:inline-block; width:12px; height:16px; background:#ef4444; border-radius:3px; margin-left:8px; box-shadow:0 1px 3px rgba(0,0,0,0.3);" title="Kartu Merah"></span>`;
+  return '';
+}
+
 function playerChip(p){
   return `
     <div class="player-chip">
       <div class="player-dot">${p.Nomor ?? '?'}${truthy(p.Kapten) ? '<span class="cap">C</span>' : ''}</div>
-      <div class="player-name">${p.Nama || ''}</div>
+      <div class="player-name" style="display:flex; justify-content:center; align-items:center;">${p.Nama || ''}${getPlayerCards(p.Status)}</div>
       <div class="player-pos">${p.Posisi || ''}</div>
     </div>
   `;
@@ -759,6 +942,32 @@ function renderPitchVoli(starters){
   `;
 }
 
+/* FUNGSI BARU: RENDER LINTASAN LARI ESTAFET */
+function renderPitchEstafet(starters){
+  // Diurutkan berdasarkan angka Urutan sebagai urutan pelari 1 sampai 4
+  const sorted = starters.sort((a,b) => (Number(a.Urutan)||0) - (Number(b.Urutan)||0));
+  
+  return `
+    <div class="formasi-tag tag-estafet"><i class="fas fa-running" style="margin-right:4px;"></i> Susunan Pelari Estafet</div>
+    <div class="pitch pitch-estafet">
+      <div class="track-lines">
+        <div class="lane-line"></div>
+        <div class="lane-line"></div>
+        <div class="lane-line"></div>
+        <div class="lane-line"></div>
+      </div>
+      <div class="relay-container">
+        ${sorted.map((p, i) => `
+          <div class="relay-runner-wrapper">
+            ${playerChip(p)}
+            ${i < sorted.length - 1 ? `<div class="baton-arrow"><i class="fas fa-angle-double-right"></i></div>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
 function renderLineupPanel(starters){
   const { order, groups } = groupByBaris(starters);
   return `
@@ -776,7 +985,6 @@ function renderLineupPanel(starters){
 /* ============================================================
    MASTER RENDER
 ============================================================ */
-/* STREAMING_CHUNK:Finalizing Render and API Calls */
 function renderMain(){
   if(state.section === 'live') return renderLive();
   if(state.section === 'riwayat') return renderRiwayat();
@@ -877,4 +1085,3 @@ setInterval(pollData, CONFIG.REFRESH_MS);
 </script>
 </body>
 </html>
-```eof
