@@ -15,6 +15,7 @@
         .transition-all { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .hidden-fade { opacity: 0; pointer-events: none; position: absolute; visibility: hidden; }
         .visible-fade { opacity: 1; pointer-events: auto; position: relative; visibility: visible; }
+        
         /* Radio button hide & style */
         input[type="radio"]:checked + div {
             background-color: #ecfdf5; border-color: #22c55e;
@@ -43,76 +44,91 @@
     </div>
 
     <!-- 2. LOGIN & OTP SCREEN -->
-    <div id="auth-screen" class="min-h-screen flex-col justify-center px-6 py-10 hidden-fade transition-all duration-500">
-        <div class="text-center mb-8">
-            <div class="w-20 h-20 bg-green-100 rounded-[2rem] flex items-center justify-center mx-auto mb-4 rotate-3 shadow-inner">
-                <i class="fas fa-envelope-open-text text-green-600 text-3xl -rotate-3"></i>
-            </div>
-            <h2 class="text-2xl font-bold text-gray-800">Login Koordinator</h2>
-            <p class="text-xs text-gray-500 mt-2">Masuk menggunakan alamat Email Anda.</p>
-        </div>
-
-        <!-- Request OTP Form -->
-        <div id="req-otp-section" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-4">
-            
-            <div>
-                <label id="label-auth" class="text-xs font-bold text-gray-700 block mb-1">Alamat Email</label>
-                <div class="relative">
-                    <i id="icon-auth" class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    <input type="email" id="input-contact-auth" required placeholder="email@contoh.com" class="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm focus:ring-2 focus:ring-green-400 outline-none transition-all">
+    <!-- Perbaikan: Dibuat memenuhi layar tanpa ruang kosong berlebih untuk scroll (no-scroll flex) -->
+    <div id="auth-screen" class="fixed inset-0 z-40 bg-white hidden-fade transition-all duration-500 overflow-hidden flex flex-col">
+        <div class="flex-1 flex flex-col justify-center px-6 max-w-md mx-auto w-full relative z-10">
+            <div class="text-center mb-8">
+                <div class="w-24 h-24 flex items-center justify-center mx-auto mb-4">
+                    <img src="https://lh3.googleusercontent.com/d/1RIT1Gm7ICdsZruNqS0EpEK2J3PIYws5E=s1100?authuser=0" alt="Logo PPMI" class="w-full h-full object-contain">
                 </div>
+                <h2 class="text-2xl font-bold text-gray-800">Login Koordinator</h2>
+                <p class="text-xs text-gray-500 mt-2">Gunakan email aktif untuk menerima OTP.</p>
             </div>
-            <button onclick="requestOTP()" id="btn-req-otp" class="w-full py-3.5 rounded-2xl bg-green-600 text-white font-bold text-sm shadow-lg active:scale-95 transition-all">
-                Kirim Kode OTP via Email
-            </button>
-        </div>
 
-        <!-- Verify OTP Form -->
-        <div id="verify-otp-section" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-4 hidden">
-            <div class="p-3 bg-green-50 border border-green-100 rounded-xl text-center mb-4">
-                <p class="text-xs text-green-700">OTP telah dikirim ke <b id="display-contact"></b></p>
-                <p class="text-[10px] text-green-600 mt-1">Periksa Inbox, Spam, atau pesan Anda.</p>
+            <!-- Request OTP Form -->
+            <div id="req-otp-section" class="bg-white p-6 rounded-3xl shadow-lg border border-gray-100 space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-700 block mb-1">Alamat Email</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="email" id="input-email-auth" required placeholder="email@contoh.com" class="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm focus:ring-2 focus:ring-green-400 outline-none transition-all">
+                    </div>
+                </div>
+                <button onclick="requestOTP()" id="btn-req-otp" class="w-full py-3.5 rounded-2xl bg-green-600 text-white font-bold text-sm shadow-lg active:scale-95 transition-all">
+                    Kirim Kode OTP via Email
+                </button>
             </div>
-            <div>
-                <label class="text-xs font-bold text-gray-700 block mb-1 text-center">Masukkan 6 Digit OTP</label>
-                <input type="text" id="input-otp" maxlength="6" inputmode="numeric" placeholder="••••••" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-4 text-2xl tracking-[1em] text-center font-bold focus:ring-2 focus:ring-green-400 outline-none">
+
+            <!-- Verify OTP Form -->
+            <div id="verify-otp-section" class="bg-white p-6 rounded-3xl shadow-lg border border-gray-100 space-y-4 hidden">
+                <div class="p-3 bg-green-50 border border-green-100 rounded-xl text-center mb-4">
+                    <p class="text-xs text-green-700">OTP telah dikirim ke Email <br><b id="display-email"></b></p>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-700 block mb-1 text-center">Masukkan 6 Digit OTP</label>
+                    <input type="text" id="input-otp" maxlength="6" inputmode="numeric" placeholder="••••••" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-4 text-2xl tracking-[1em] text-center font-bold focus:ring-2 focus:ring-green-400 outline-none transition-all">
+                </div>
+                <button onclick="verifyOTP()" id="btn-verify-otp" class="w-full py-3.5 rounded-2xl bg-gray-900 text-white font-bold text-sm shadow-lg active:scale-95 transition-all">
+                    Verifikasi & Masuk
+                </button>
+                <button onclick="resetAuth()" class="w-full py-2 text-xs text-gray-500 font-semibold mt-2">Batal / Ganti Email</button>
             </div>
-            <button onclick="verifyOTP()" id="btn-verify-otp" class="w-full py-3.5 rounded-2xl bg-gray-900 text-white font-bold text-sm shadow-lg active:scale-95 transition-all">
-                Verifikasi & Masuk
-            </button>
-            <button onclick="resetAuth()" class="w-full py-2 text-xs text-gray-500 font-semibold mt-2">Batal / Ganti Email</button>
         </div>
     </div>
 
     <!-- 3. MAIN DASHBOARD / FORM APP -->
-    <div id="main-app" class="hidden-fade min-h-screen pb-28 transition-all duration-500">
+    <div id="main-app" class="w-full top-0 left-0 hidden-fade min-h-screen pb-28 transition-all duration-500">
         
         <header class="sticky top-0 z-30 bg-green-600 px-5 py-4 flex items-center justify-between shadow-md">
             <div class="flex items-center gap-3 text-white">
-                <img src="https://lh3.googleusercontent.com/d/1H0tpVyWHHpp9PaHp9pnCP7fc9jcbErn5=s1100?authuser=0" alt="Logo Olimpiade" class="w-10 h-10 object-contain rounded-full bg-white p-0.5">
+                <img src="https://lh3.googleusercontent.com/d/1H0tpVyWHHpp9PaHp9pnCP7fc9jcbErn5=s1100?authuser=0" alt="Logo Olimpiade" class="w-10 h-10 object-contain bg-white rounded-full p-0.5 shadow-sm">
                 <div>
                     <h1 class="text-sm font-bold leading-tight">Olimpiade 2026</h1>
                     <p class="text-[10px] opacity-80 font-medium">Formulir Pendaftaran</p>
                 </div>
             </div>
             <div class="flex gap-2">
-                <button onclick="clearCacheAndReset()" class="w-8 h-8 bg-yellow-400 text-yellow-900 rounded-full flex items-center justify-center active:bg-yellow-500 transition-colors tooltip" title="Reset Form (Hapus Draft)">
+                <button onclick="confirmClearCache()" class="w-8 h-8 bg-yellow-400 text-yellow-900 rounded-full flex items-center justify-center active:bg-yellow-500 transition-colors tooltip" title="Reset Form (Hapus Draft)">
                     <i class="fas fa-undo text-xs"></i>
                 </button>
-                <button onclick="logout()" class="w-8 h-8 bg-white/20 text-white rounded-full flex items-center justify-center active:bg-white/30 transition-colors">
+                <button onclick="confirmLogout()" class="w-8 h-8 bg-white/20 text-white rounded-full flex items-center justify-center active:bg-white/30 transition-colors">
                     <i class="fas fa-sign-out-alt text-xs"></i>
                 </button>
             </div>
         </header>
 
         <div class="p-5 space-y-6">
+            <!-- Tombol Alih ke Menu Papan Skor -->
+            <a href="Papan%20Skor.html" class="flex items-center justify-between w-full bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-2xl active:bg-blue-100 transition-colors shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-chart-line text-blue-600"></i>
+                    </div>
+                    <div class="text-left">
+                        <h4 class="text-xs font-bold">Papan Skor Realtime</h4>
+                        <p class="text-[10px] text-blue-600/80">Pantau klasemen & tim terdaftar</p>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right text-xs text-blue-400"></i>
+            </a>
+
             <!-- Draft Indicator -->
             <div id="draft-indicator" class="hidden bg-blue-100 border border-blue-200 text-blue-800 text-[10px] px-3 py-2 rounded-xl flex items-center gap-2">
                 <i class="fas fa-save"></i> Terdapat data riwayat (draft) yang dimuat otomatis. Anda dapat melanjutkannya.
             </div>
 
             <!-- Form Identitas -->
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 space-y-4">
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 space-y-4 relative z-0">
                 <h3 class="text-sm font-bold text-gray-800 border-b pb-2"><i class="fas fa-user-edit text-green-500 mr-2"></i>Identitas Pengisi & Delegasi</h3>
                 
                 <div>
@@ -137,29 +153,43 @@
                 </div>
                 <div>
                     <label class="text-xs font-bold text-gray-700 block mb-1">Peran Anda <span class="text-red-500">*</span></label>
-                    <select id="f-peran" onchange="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                    <select id="f-peran" onchange="saveDraft(); renderKontingenProgress(); handleRoleChange();" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
                         <option value="" disabled selected>Pilih...</option>
                         <option value="Koordinator Cabor">Koordinator Cabor (1 Cabang)</option>
-                        <option value="Ketua Kontingen">Ketua Kontingen (Kolektif)</option>
+                        <option value="Ketua Kontingen">Ketua Kontingen (Kolektif/Semua Cabang)</option>
                     </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-700 block mb-1">Nama Tim / Kontingen</label>
+                    <input type="text" id="f-namatim" oninput="saveDraft()" placeholder="Contoh: Garuda FC (kosongkan jika ikut delegasi)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400">
+                    <p class="text-[10px] text-gray-400 mt-1">Nama ini yang akan tampil di papan skor. Jika dikosongkan, otomatis memakai nama delegasi.</p>
+                </div>
+
+                <!-- UPLOAD LOGO KLUB -->
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <label class="text-xs font-bold text-gray-700 block mb-1"><i class="fas fa-image text-green-500 mr-1"></i>Upload Logo Klub (Wajib) <span class="text-red-500">*</span></label>
+                    <input type="file" id="f-logo" accept="image/png, image/jpeg" onchange="handleLogoUpload(event)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs outline-none focus:ring-2 focus:ring-green-400">
+                    <p class="text-[10px] text-gray-500 mt-1">Format gambar (JPG/PNG). Maksimal ukuran file 2MB.</p>
+                    <input type="hidden" id="f-logo-base64">
+                    <input type="hidden" id="f-logo-mime">
+                    <input type="hidden" id="f-logo-name">
                 </div>
             </div>
 
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 relative">
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 relative z-0">
                 <!-- Overlay loading status check lock -->
-                <div id="lock-loading" class="absolute inset-0 bg-white/80 z-10 rounded-3xl flex flex-col items-center justify-center hidden">
-                    <i class="fas fa-spinner fa-spin text-green-500 text-2xl mb-2"></i>
-                    <span class="text-[10px] font-bold text-gray-600">Mengecek status cabor...</span>
+                <div id="lock-loading" class="absolute inset-0 bg-white/90 z-10 rounded-3xl flex flex-col items-center justify-center hidden">
+                    <i class="fas fa-spinner fa-spin text-green-500 text-3xl mb-3"></i>
+                    <span class="text-xs font-bold text-gray-600">Mengecek status ketersediaan cabor...</span>
                 </div>
 
                 <h3 class="text-sm font-bold text-gray-800 mb-1">Pilihan Cabang Olahraga <span class="text-red-500">*</span></h3>
-                <p class="text-[10px] text-gray-500 mb-4 pb-2 border-b">Ikon yang dikunci berarti sudah didaftarkan oleh Koordinator Cabor di angkatan Anda.</p>
+                <p class="text-[10px] text-gray-500 mb-4 pb-2 border-b">Ikon gembok berarti sudah didaftarkan sebelumnya oleh Koordinator di delegasi Anda.</p>
 
                 <div class="grid grid-cols-2 gap-3" id="cabor-grid">
-                    <!-- Javascript will handle locking -->
                     <label class="cursor-pointer relative block">
                         <input type="radio" name="cabor" value="Sepak Bola" class="hidden peer" onchange="renderCaborForm(); saveDraft()">
-                        <div class="border border-gray-200 bg-gray-50 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all peer-disabled:bg-gray-100 peer-disabled:opacity-50">
+                        <div class="border border-gray-200 bg-gray-50 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all peer-disabled:bg-gray-100 peer-disabled:opacity-40">
                             <i class="far fa-futbol text-2xl text-gray-400 transition-colors"></i>
                             <span class="text-[11px] text-gray-500 text-center transition-colors">Sepak Bola</span>
                         </div>
@@ -168,7 +198,7 @@
                     
                     <label class="cursor-pointer relative block">
                         <input type="radio" name="cabor" value="Bola Voli" class="hidden peer" onchange="renderCaborForm(); saveDraft()">
-                        <div class="border border-gray-200 bg-gray-50 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all peer-disabled:bg-gray-100 peer-disabled:opacity-50">
+                        <div class="border border-gray-200 bg-gray-50 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all peer-disabled:bg-gray-100 peer-disabled:opacity-40">
                             <i class="fas fa-volleyball-ball text-2xl text-gray-400 transition-colors"></i>
                             <span class="text-[11px] text-gray-500 text-center transition-colors">Bola Voli</span>
                         </div>
@@ -177,7 +207,7 @@
 
                     <label class="cursor-pointer relative block">
                         <input type="radio" name="cabor" value="Bola Basket" class="hidden peer" onchange="renderCaborForm(); saveDraft()">
-                        <div class="border border-gray-200 bg-gray-50 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all peer-disabled:bg-gray-100 peer-disabled:opacity-50">
+                        <div class="border border-gray-200 bg-gray-50 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all peer-disabled:bg-gray-100 peer-disabled:opacity-40">
                             <i class="fas fa-basketball-ball text-2xl text-gray-400 transition-colors"></i>
                             <span class="text-[11px] text-gray-500 text-center transition-colors">Bola Basket</span>
                         </div>
@@ -186,9 +216,17 @@
 
                     <label class="cursor-pointer relative block">
                         <input type="radio" name="cabor" value="Bulutangkis" class="hidden peer" onchange="renderCaborForm(); saveDraft()">
-                        <div class="border border-gray-200 bg-gray-50 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all peer-disabled:bg-gray-100 peer-disabled:opacity-50">
-                            <svg class="w-6 h-6 text-gray-400 transition-colors fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 2c-1.1 0-2 .9-2 2 0 .82.5 1.55 1.25 1.86l-1.07 2.14c-1.39-.42-2.92.1-3.69 1.34l-1.06 1.7L2 12l2.67 1.33L3.6 15l2.4 1.2-1.07 1.6 1.7 1.07L8 20.4l1.33 2.67L12 22l2.67 1.33L16 20.4l1.33-2.67 1.7-1.07-1.07-1.6 2.4-1.2-1.07-1.67L22 12l-3.43-1.1-.96-1.57c-.77-1.24-2.3-1.76-3.69-1.34l-1.07-2.14C13.5 5.55 14 4.82 14 4c0-1.1-.9-2-2-2zM12 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-3 5.09l1.6 3.2 2.8-1.4-1.6-3.2-2.8 1.4zm6 0l-2.8 1.4 1.6 3.2 2.8-1.4-1.6-3.2zm-4.4 2.2l-1.6 3.2H15l-1.6-3.2h-2.8zm-3.2 1.6L6 14.5l1.6 3.2 1.4-2.8-1.6-2.01zM16.6 12.9l1.6 2.01 1.4 2.8-1.6-3.2-1.4-1.61z"/>
+                        <div class="border border-gray-200 bg-gray-50 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all peer-disabled:bg-gray-100 peer-disabled:opacity-40">
+                            <svg class="w-6 h-6 text-gray-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="9" cy="9" r="6"></circle>
+                                <line x1="13.24" y1="13.24" x2="20" y2="20"></line>
+                                <line x1="6" y1="5" x2="6" y2="13"></line>
+                                <line x1="9" y1="3" x2="9" y2="14"></line>
+                                <line x1="12" y1="5" x2="12" y2="11"></line>
+                                <line x1="5" y1="6" x2="13" y2="6"></line>
+                                <line x1="3" y1="9" x2="14" y2="9"></line>
+                                <line x1="5" y1="12" x2="11" y2="12"></line>
+                                <line x1="17" y1="15" x2="22" y2="20"></line>
                             </svg>
                             <span class="text-[11px] text-gray-500 text-center transition-colors">Bulutangkis</span>
                         </div>
@@ -197,7 +235,7 @@
 
                     <label class="cursor-pointer relative block">
                         <input type="radio" name="cabor" value="Tenis Meja" class="hidden peer" onchange="renderCaborForm(); saveDraft()">
-                        <div class="border border-gray-200 bg-gray-50 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all peer-disabled:bg-gray-100 peer-disabled:opacity-50">
+                        <div class="border border-gray-200 bg-gray-50 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all peer-disabled:bg-gray-100 peer-disabled:opacity-40">
                             <i class="fas fa-table-tennis text-2xl text-gray-400 transition-colors"></i>
                             <span class="text-[11px] text-gray-500 text-center transition-colors">Tenis Meja</span>
                         </div>
@@ -206,7 +244,7 @@
 
                     <label class="cursor-pointer relative block">
                         <input type="radio" name="cabor" value="Lari Estafet" class="hidden peer" onchange="renderCaborForm(); saveDraft()">
-                        <div class="border border-gray-200 bg-gray-50 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all peer-disabled:bg-gray-100 peer-disabled:opacity-50">
+                        <div class="border border-gray-200 bg-gray-50 rounded-2xl p-4 flex flex-col items-center gap-2 transition-all peer-disabled:bg-gray-100 peer-disabled:opacity-40">
                             <i class="fas fa-running text-2xl text-gray-400 transition-colors"></i>
                             <span class="text-[11px] text-gray-500 text-center transition-colors">Lari Estafet</span>
                         </div>
@@ -215,40 +253,50 @@
                 </div>
             </div>
 
+            <!-- Panel Progres Ketua Kontingen (hanya tampil untuk peran Ketua Kontingen) -->
+            <div id="kontingen-progress" class="hidden bg-white rounded-3xl shadow-sm border border-gray-100 p-6 space-y-3 relative z-0">
+                <h3 class="text-sm font-bold text-gray-800 border-b pb-2"><i class="fas fa-list-check text-green-500 mr-2"></i>Progres Kolektif Kontingen</h3>
+                <p class="text-[10px] text-gray-500">Sebagai Ketua Kontingen, Anda wajib melengkapi pendaftaran untuk <b>seluruh cabang olahraga yang belum terkunci</b> sebelum dapat mengirimkan form akhir.</p>
+                <div id="kontingen-list" class="space-y-2 mt-3"></div>
+                
+                <div class="pt-4 border-t border-gray-100 mt-4">
+                    <button onclick="finalizeKontingenSubmit()" id="btn-submit-kontingen" disabled class="w-full py-3.5 rounded-2xl bg-gray-300 text-gray-500 font-bold text-sm shadow-lg transition-all cursor-not-allowed flex items-center justify-center gap-2">
+                        <i class="fas fa-paper-plane"></i> Kirim Semua Pendaftaran
+                    </button>
+                </div>
+            </div>
+
             <!-- Dynamic Form Area -->
-            <div id="dynamic-form-container" class="hidden bg-white rounded-3xl shadow-sm border border-gray-100 p-6 space-y-4">
+            <div id="dynamic-form-container" class="hidden bg-white rounded-3xl shadow-sm border border-gray-100 p-6 space-y-4 relative z-0">
                 <h3 id="cabor-title" class="text-sm font-bold text-gray-800 uppercase">CABANG OLAHRAGA</h3>
                 <div id="cabor-desc" class="text-[10px] text-gray-600 bg-gray-50 p-3 rounded-xl border border-gray-200"></div>
                 
-                <div id="static-inputs" class="space-y-3"></div> <!-- Tempat manajer dll -->
+                <div id="static-inputs" class="space-y-3"></div> 
                 
                 <!-- Dynamic Player List Container -->
-                <div class="mt-4 border-t pt-4">
-                    <div class="flex justify-between items-center mb-2">
+                <div class="mt-4 border-t border-gray-100 pt-4" id="players-section">
+                    <div class="flex justify-between items-center mb-3">
                         <label class="text-xs font-bold text-gray-700">Daftar Pemain</label>
                         <span id="player-count-badge" class="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-md font-bold"></span>
                     </div>
                     
-                    <div id="dynamic-players-list" class="space-y-3">
-                        <!-- Javascript injects inputs here -->
-                    </div>
+                    <div id="dynamic-players-list" class="space-y-2"></div>
 
-                    <div id="dynamic-controls" class="flex gap-2 mt-3 hidden">
-                        <button onclick="addPlayerField()" class="flex-1 bg-green-50 text-green-700 border border-green-200 py-2 rounded-xl text-xs font-bold active:bg-green-100 transition-colors">
-                            <i class="fas fa-plus"></i> Tambah
+                    <div id="dynamic-controls" class="flex gap-2 mt-4 hidden">
+                        <button onclick="addPlayerField()" class="flex-1 bg-green-50 text-green-700 border border-green-200 py-2.5 rounded-xl text-xs font-bold active:bg-green-100 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Tambah
                         </button>
-                        <button onclick="removePlayerField()" class="flex-1 bg-red-50 text-red-700 border border-red-200 py-2 rounded-xl text-xs font-bold active:bg-red-100 transition-colors">
-                            <i class="fas fa-minus"></i> Hapus
+                        <button onclick="removePlayerField()" class="flex-1 bg-red-50 text-red-700 border border-red-200 py-2.5 rounded-xl text-xs font-bold active:bg-red-100 transition-colors">
+                            <i class="fas fa-minus mr-1"></i> Hapus
                         </button>
                     </div>
                 </div>
-
             </div>
 
             <!-- Persetujuan Sekali Centang -->
-            <div class="bg-yellow-50 rounded-3xl shadow-sm border border-yellow-200 p-6 space-y-5">
+            <div class="bg-yellow-50 rounded-3xl shadow-sm border border-yellow-200 p-6 space-y-5 mb-6">
                 <div class="flex items-center gap-2 border-b border-yellow-200 pb-2">
-                    <i class="fas fa-shield-alt text-yellow-600"></i>
+                    <i class="fas fa-shield-alt text-yellow-600 text-lg"></i>
                     <h3 class="text-sm font-bold text-yellow-800">VALIDASI & PERSETUJUAN</h3>
                 </div>
                 
@@ -257,7 +305,7 @@
                         <input type="checkbox" id="check-1" onchange="saveDraft()" class="peer appearance-none w-5 h-5 border-2 border-yellow-400 rounded bg-white checked:bg-yellow-500 checked:border-yellow-500 transition-all">
                         <i class="fas fa-check absolute text-white text-[10px] opacity-0 peer-checked:opacity-100"></i>
                     </div>
-                    <span class="text-[10px] text-yellow-900 font-medium"><b>Deklarasi Keabsahan:</b> Saya bersaksi bahwa seluruh Nama dan NIM yang didaftarkan valid, akurat, dan mahasiswa aktif. Tim kami siap menerima sanksi diskualifikasi bila terbukti memalsukan identitas. <span class="text-red-500">*</span></span>
+                    <span class="text-[10px] text-yellow-900 font-medium leading-relaxed"><b>Deklarasi Keabsahan:</b> Saya bersaksi bahwa seluruh Nama dan NIM yang didaftarkan valid, akurat, dan mahasiswa aktif. Tim kami siap menerima sanksi diskualifikasi bila terbukti memalsukan identitas. <span class="text-red-500">*</span></span>
                 </label>
 
                 <label class="flex items-start gap-3 cursor-pointer group">
@@ -265,10 +313,9 @@
                         <input type="checkbox" id="check-2" onchange="saveDraft()" class="peer appearance-none w-5 h-5 border-2 border-yellow-400 rounded bg-white checked:bg-yellow-500 checked:border-yellow-500 transition-all">
                         <i class="fas fa-check absolute text-white text-[10px] opacity-0 peer-checked:opacity-100"></i>
                     </div>
-                    <span class="text-[10px] text-yellow-900 font-medium"><b>Komitmen Sportivitas:</b> Tim kami siap mematuhi jadwal (hadir 15 menit sebelum laga), sportivitas, menghormati wasit, serta siap didenda pemotongan uang jaminan jika Walk Out (WO) atau pelanggaran berat. <span class="text-red-500">*</span></span>
+                    <span class="text-[10px] text-yellow-900 font-medium leading-relaxed"><b>Komitmen Sportivitas:</b> Tim kami siap mematuhi jadwal (hadir 15 menit sebelum laga), sportivitas, menghormati wasit, serta siap didenda pemotongan uang jaminan jika Walk Out (WO) atau pelanggaran berat. <span class="text-red-500">*</span></span>
                 </label>
             </div>
-
         </div>
 
         <div class="fixed bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-gray-50 via-gray-50 to-transparent z-40 max-w-md mx-auto">
@@ -278,25 +325,43 @@
         </div>
     </div>
 
-    <!-- Success Modal Overlay -->
-    <div id="success-modal" class="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm hidden-fade flex items-center justify-center px-4 transition-all duration-300">
-        <div class="bg-white p-8 rounded-3xl text-center max-w-sm w-full shadow-2xl scale-95 transform transition-all duration-300" id="success-box">
-            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-check text-green-500 text-4xl"></i>
+    <!-- Custom Dialog / Alert / Confirm Modal -->
+    <div id="custom-dialog" class="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm hidden-fade flex items-center justify-center px-5 transition-all duration-300">
+        <div class="bg-white p-7 rounded-3xl text-center max-w-[320px] w-full shadow-2xl scale-95 transform transition-all duration-300" id="custom-dialog-box">
+            <div id="dialog-icon-container" class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i id="dialog-icon" class="fas fa-info-circle text-blue-500 text-3xl"></i>
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 mb-2" id="dialog-title">Perhatian</h2>
+            <p class="text-xs text-gray-500 mb-6 leading-relaxed" id="dialog-msg"></p>
+            <div id="dialog-actions" class="flex gap-3 w-full">
+                <!-- Buttons injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal Overlay Khusus Pendaftaran Berhasil -->
+    <div id="success-modal" class="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm hidden-fade flex items-center justify-center px-5 transition-all duration-300">
+        <div class="bg-white p-8 rounded-3xl text-center max-w-[320px] w-full shadow-2xl scale-95 transform transition-all duration-300" id="success-box">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 relative">
+                <div class="absolute inset-0 bg-green-200 rounded-full animate-ping opacity-50"></div>
+                <i class="fas fa-check text-green-600 text-4xl relative z-10"></i>
             </div>
             <h2 class="text-xl font-bold text-gray-800 mb-2">Pendaftaran Sukses!</h2>
-            <p class="text-xs text-gray-500 mb-6">Data kontingen telah tersimpan aman. Draft/Riwayat form Anda masih tersimpan di perangkat ini jika ingin mendaftar cabor lain dengan data serupa.</p>
-            <button onclick="closeSuccessModal()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold text-sm">Kembali ke Dashboard</button>
+            <p class="text-[11px] text-gray-500 mb-6 leading-relaxed">Data kontingen telah tersimpan aman. Draft formulir Anda masih tersimpan secara lokal jika ingin mendaftar cabang olahraga lain dengan data serupa.</p>
+            <button onclick="closeSuccessModal()" class="w-full bg-green-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-md active:bg-green-700 transition-colors">Kembali ke Dashboard</button>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // GANTI URL INI DENGAN WEB APP APPS SCRIPT ANDA
+        // KONFIGURASI URL & STATE GLOBAL
         // ==========================================
         const API_URL = "https://script.google.com/macros/s/AKfycbzRIQ5veOX9LOFOOGPK7DutJoN70myiMy-wmBNQWHEmH6yHIlCfJI5qmldd1cteeSE/exec"; 
 
-        // State & Config untuk Input Dinamis
+        // Konstanta Cabang Olahraga
+        const CABOR_ALL_LIST = ['Sepak Bola', 'Bola Voli', 'Bola Basket', 'Bulutangkis', 'Tenis Meja', 'Lari Estafet'];
+        const STRUCTURED_CABOR = ['Sepak Bola', 'Bola Basket', 'Bola Voli'];
+        
         let currentPlayerCount = 0;
         let configCabor = {
             'Sepak Bola': { min: 11, max: 20 },
@@ -304,12 +369,17 @@
             'Bola Basket': { min: 5, max: 10 },
             'Lari Estafet': { min: 4, max: 4 }
         };
-        const posOptions = {
+
+        const POSISI_MAP = {
             'Sepak Bola': ['Kiper', 'Bek', 'Gelandang', 'Penyerang'],
-            'Bola Voli': ['Setter', 'Libero', 'Middle Blocker', 'Outside Hitter', 'Opposite Hitter'],
             'Bola Basket': ['Point Guard', 'Shooting Guard', 'Small Forward', 'Power Forward', 'Center'],
-            'Lari Estafet': ['Pelari'] // Dummy agar tidak undefined
+            'Bola Voli': ['Setter', 'Libero', 'Middle Blocker', 'Outside Hitter', 'Opposite Hitter']
         };
+        const STARTER_DEFAULT_COUNT = { 'Sepak Bola': 11, 'Bola Basket': 5, 'Bola Voli': 6 };
+
+        // State Ketua Kontingen & Locks
+        let kontingenEntries = {}; 
+        let lastLockedSports = []; 
 
         // DOM Elements
         const elSplash = document.getElementById('splash-screen');
@@ -324,26 +394,70 @@
             }, 2000);
         };
 
-        // =======================
-        // AUTH LOGIC (EMAIL ONLY)
-        // =======================
+        // ==========================================
+        // SISTEM DIALOG KUSTOM (PENGGANTI ALERT/CONFIRM)
+        // ==========================================
+        function showDialog(msg, type = 'error', onConfirm = null) {
+            document.getElementById('dialog-msg').innerText = msg;
+            const titleEl = document.getElementById('dialog-title');
+            const iconContainer = document.getElementById('dialog-icon-container');
+            const iconEl = document.getElementById('dialog-icon');
+            const actions = document.getElementById('dialog-actions');
+            
+            // Konfigurasi Tema Modal
+            if (type === 'error' || type === 'alert') {
+                titleEl.innerText = type === 'error' ? 'Terjadi Kesalahan' : 'Perhatian';
+                titleEl.className = 'text-lg font-bold mb-2 text-red-700';
+                iconContainer.className = 'w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4';
+                iconEl.className = 'fas fa-exclamation-triangle text-red-500 text-3xl';
+                actions.innerHTML = `<button onclick="closeDialog()" class="w-full bg-red-50 text-red-700 py-3 rounded-xl font-bold text-sm border border-red-100 hover:bg-red-100 transition-colors">Tutup & Perbaiki</button>`;
+            } else if (type === 'confirm') {
+                titleEl.innerText = 'Konfirmasi Tindakan';
+                titleEl.className = 'text-lg font-bold mb-2 text-blue-800';
+                iconContainer.className = 'w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4';
+                iconEl.className = 'fas fa-question-circle text-blue-500 text-3xl';
+                actions.innerHTML = `
+                    <button onclick="closeDialog()" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold text-sm hover:bg-gray-200 transition-colors">Batal</button>
+                    <button onclick="execConfirm()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors shadow-md">Ya, Lanjutkan</button>
+                `;
+                window._pendingConfirmAction = onConfirm;
+            }
 
+            document.getElementById('custom-dialog').classList.replace('hidden-fade', 'visible-fade');
+            setTimeout(() => document.getElementById('custom-dialog-box').classList.replace('scale-95', 'scale-100'), 50);
+        }
+
+        function closeDialog() {
+            document.getElementById('custom-dialog-box').classList.replace('scale-100', 'scale-95');
+            setTimeout(() => document.getElementById('custom-dialog').classList.replace('visible-fade', 'hidden-fade'), 200);
+            window._pendingConfirmAction = null;
+        }
+
+        function execConfirm() {
+            if (typeof window._pendingConfirmAction === 'function') {
+                window._pendingConfirmAction();
+            }
+            closeDialog();
+        }
+
+        // ==========================================
+        // AUTHENTICATION LOGIC (EMAIL ONLY)
+        // ==========================================
         function checkCacheLogin() {
-            const cachedContact = localStorage.getItem('olimpiade_contact');
-            if(cachedContact) {
-                window.currentUserContact = cachedContact;
-                window.currentUserContactMethod = 'email';
+            const cachedEmail = localStorage.getItem('olimpiade_email');
+            if(cachedEmail) {
+                window.currentUserEmail = cachedEmail;
                 elApp.classList.replace('hidden-fade', 'visible-fade');
-                loadDraft(); // Load draft jika ada
+                loadDraft(); 
             } else {
                 elAuth.classList.replace('hidden-fade', 'visible-fade');
             }
         }
 
         async function requestOTP() {
-            const contact = document.getElementById('input-contact-auth').value.trim();
-            if(!contact || !contact.includes('@')) {
-                return alert("Masukkan alamat email yang valid.");
+            const email = document.getElementById('input-email-auth').value.trim();
+            if(!email || !email.includes('@') || !email.includes('.')) {
+                return showDialog("Masukkan alamat email yang valid dengan format yang benar.");
             }
 
             const btn = document.getElementById('btn-req-otp');
@@ -354,29 +468,28 @@
                 const res = await fetch(API_URL, {
                     method: 'POST', 
                     headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify({ action: "request_otp", contact: contact })
+                    body: JSON.stringify({ action: "request_otp", contact: email }) 
                 });
-                
                 const response = await res.json();
                 
                 if(response.status === 'success') {
-                    document.getElementById('display-contact').innerText = contact;
+                    document.getElementById('display-email').innerText = email;
                     document.getElementById('req-otp-section').classList.add('hidden');
                     document.getElementById('verify-otp-section').classList.remove('hidden');
                 } else {
-                    alert("Gagal: " + response.message);
+                    showDialog("Gagal mengirim OTP: " + response.message);
                 }
             } catch(e) { 
-                alert("Gagal menghubungi server: " + e.message); 
+                showDialog("Gagal menghubungi server. Periksa koneksi internet Anda."); 
             }
             btn.innerHTML = 'Kirim Kode OTP via Email'; 
             btn.disabled = false;
         }
 
         async function verifyOTP() {
-            const contact = document.getElementById('input-contact-auth').value.trim();
+            const email = document.getElementById('input-email-auth').value.trim();
             const otp = document.getElementById('input-otp').value.trim();
-            if(otp.length !== 6) return alert("OTP harus 6 digit angka.");
+            if(otp.length !== 6) return showDialog("Kode OTP harus terdiri dari 6 digit angka.");
 
             const btn = document.getElementById('btn-verify-otp');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifikasi...'; 
@@ -386,25 +499,23 @@
                 const res = await fetch(API_URL, {
                     method: 'POST', 
                     headers: { 'Content-Type': 'text/plain' },
-                    // PERBAIKAN BUG UTAMA: Menggunakan 'contact' agar terbaca sempurna di Backend
-                    body: JSON.stringify({ action: "verify_otp", contact: contact, otp: otp })
+                    body: JSON.stringify({ action: "verify_otp", contact: email, otp: otp })
                 });
                 const response = await res.json();
 
                 if(response.status === 'success') {
-                    localStorage.setItem('olimpiade_contact', contact);
-                    window.currentUserContact = contact;
-                    window.currentUserContactMethod = 'email';
+                    localStorage.setItem('olimpiade_email', email);
+                    window.currentUserEmail = email;
                     elAuth.classList.replace('visible-fade', 'hidden-fade');
                     setTimeout(() => {
                         elApp.classList.replace('hidden-fade', 'visible-fade');
                         loadDraft();
                     }, 300);
                 } else {
-                    alert(response.message);
+                    showDialog(response.message);
                 }
             } catch(e) { 
-                alert("Error Verifikasi OTP. Cek koneksi Anda."); 
+                showDialog("Terjadi kesalahan sistem saat memverifikasi OTP. Coba lagi nanti."); 
             }
             btn.innerHTML = 'Verifikasi & Masuk'; 
             btn.disabled = false;
@@ -416,26 +527,47 @@
             document.getElementById('req-otp-section').classList.remove('hidden');
         }
 
-        function logout() {
-            if(confirm("Yakin ingin keluar? Anda memerlukan OTP baru untuk masuk lagi.")){
-                localStorage.removeItem('olimpiade_contact');
+        function confirmLogout() {
+            showDialog("Yakin ingin keluar? Anda memerlukan pengiriman kode OTP baru melalui Email jika ingin masuk kembali.", "confirm", () => {
+                localStorage.removeItem('olimpiade_email');
                 resetAuth();
                 elApp.classList.replace('visible-fade', 'hidden-fade');
                 setTimeout(() => elAuth.classList.replace('hidden-fade', 'visible-fade'), 300);
-            }
+            });
         }
 
-        // =======================
-        // LOCKING & DRAFT LOGIC
-        // =======================
+        // ==========================================
+        // UPLOAD LOGO & DRAFT MANAGEMENT
+        // ==========================================
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) {
+                showDialog("Ukuran file gambar maksimal adalah 2MB.");
+                event.target.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64 = e.target.result.split(',')[1];
+                document.getElementById('f-logo-base64').value = base64;
+                document.getElementById('f-logo-mime').value = file.type;
+                document.getElementById('f-logo-name').value = file.name;
+            };
+            reader.readAsDataURL(file);
+        }
+
         async function handleDelegasiChange() {
             saveDraft();
             const delegasi = document.getElementById('f-delegasi').value;
             if(!delegasi) return;
 
+            // Reset pengumpulan jika delegasi berganti
+            kontingenEntries = {}; 
+            
             document.getElementById('lock-loading').classList.remove('hidden');
             
-            // Reset semua radio & lock icon
+            // Reset semua ketersediaan radio button
             const radios = document.querySelectorAll('input[name="cabor"]');
             radios.forEach(r => {
                 r.disabled = false;
@@ -451,34 +583,34 @@
                 const data = await res.json();
                 
                 if(data.status === 'success') {
-                    const lockedSports = data.lockedSports; // Array nama cabor
+                    lastLockedSports = data.lockedSports || [];
                     radios.forEach(r => {
-                        if(lockedSports.includes(r.value)) {
+                        if(lastLockedSports.includes(r.value)) {
                             r.disabled = true;
-                            r.checked = false; // Uncheck if selected
+                            r.checked = false; 
                             r.parentElement.querySelector('.lock-icon').classList.remove('hidden');
                         }
                     });
-                    // Jika cabor yg terpilih saat ini terkunci, reset form cabor
+                    
                     const checkedCabor = document.querySelector('input[name="cabor"]:checked');
                     if(!checkedCabor) {
                         document.getElementById('dynamic-form-container').classList.add('hidden');
                     }
                 }
             } catch(e) {
-                console.log("Error checking locks", e);
+                console.error("Gagal memeriksa status kunci cabang olahraga.", e);
             }
             document.getElementById('lock-loading').classList.add('hidden');
+            renderKontingenProgress();
         }
 
         function saveDraft() {
-            // Jangan save jika form kosong (mencegah overwriting dengan kosong)
             const delegasi = document.getElementById('f-delegasi').value;
             const nama = document.getElementById('f-nama').value;
             const peran = document.getElementById('f-peran').value;
             const caborEl = document.querySelector('input[name="cabor"]:checked');
             
-            let draftStr = localStorage.getItem('olimpiade_draft');
+            let draftStr = localStorage.getItem('olimpiade_draft_v2');
             let draft = draftStr ? JSON.parse(draftStr) : { caborData: {} };
             
             if(!draft.caborData) draft.caborData = {};
@@ -486,6 +618,7 @@
             draft.delegasi = delegasi;
             draft.nama = nama;
             draft.peran = peran;
+            draft.namatim = document.getElementById('f-namatim').value;
             draft.cabor = caborEl ? caborEl.value : null;
             draft.check1 = document.getElementById('check-1').checked;
             draft.check2 = document.getElementById('check-2').checked;
@@ -493,29 +626,26 @@
             if (draft.cabor) {
                 let currentCaborData = { staticFields: {}, players: [] };
                 
-                // Save static fields
                 document.querySelectorAll('#static-inputs input').forEach(inp => {
                     currentCaborData.staticFields[inp.id] = inp.value;
                 });
                 
-                // Save dynamic players (kompleks dengan posisi dll)
-                document.querySelectorAll('.player-input-row').forEach(row => {
-                    let playerData = {};
-                    const inputs = row.querySelectorAll('input, select');
-                    inputs.forEach(inp => {
-                        playerData[inp.dataset.field] = inp.type === 'checkbox' ? inp.checked : inp.value;
+                if (STRUCTURED_CABOR.includes(draft.cabor)) {
+                    currentCaborData.players = collectFootballPlayers();
+                } else {
+                    document.querySelectorAll('.player-input-row input').forEach(inp => {
+                        currentCaborData.players.push(inp.value);
                     });
-                    currentCaborData.players.push(playerData);
-                });
+                }
                 
                 draft.caborData[draft.cabor] = currentCaborData;
             }
 
-            localStorage.setItem('olimpiade_draft', JSON.stringify(draft));
+            localStorage.setItem('olimpiade_draft_v2', JSON.stringify(draft));
         }
 
         function loadDraft() {
-            const draftStr = localStorage.getItem('olimpiade_draft');
+            const draftStr = localStorage.getItem('olimpiade_draft_v2');
             if(draftStr) {
                 try {
                     const draft = JSON.parse(draftStr);
@@ -525,105 +655,125 @@
                     
                     if(draft.delegasi) {
                         document.getElementById('f-delegasi').value = draft.delegasi;
-                        handleDelegasiChange(); // Trigger lock check
+                        handleDelegasiChange(); 
                     }
                     if(draft.nama) document.getElementById('f-nama').value = draft.nama;
                     if(draft.peran) document.getElementById('f-peran').value = draft.peran;
+                    if(draft.namatim) document.getElementById('f-namatim').value = draft.namatim;
                     if(draft.check1) document.getElementById('check-1').checked = draft.check1;
                     if(draft.check2) document.getElementById('check-2').checked = draft.check2;
+
+                    // Update UI berdasarkan peran yang diload
+                    handleRoleChange();
 
                     if(draft.cabor) {
                         const radio = document.querySelector(`input[name="cabor"][value="${draft.cabor}"]`);
                         if(radio && !radio.disabled) {
                             radio.checked = true;
-                            renderCaborForm(); // Render akan otomatis mengambil dari memori per-cabor
+                            renderCaborForm();
                         }
                     }
-                } catch(e) { console.error("Error load draft", e); }
+                } catch(e) { console.error("Error memuat draft lokal", e); }
             }
         }
 
-        function clearCacheAndReset() {
-            if(confirm("Anda yakin ingin menghapus data draft form ini?")) {
-                localStorage.removeItem('olimpiade_draft');
+        function confirmClearCache() {
+            showDialog("Apakah Anda yakin ingin menghapus semua isian formulir ini? Semua progress yang belum dikirim akan hilang.", "confirm", () => {
+                localStorage.removeItem('olimpiade_draft_v2');
                 document.getElementById('f-delegasi').value = '';
                 document.getElementById('f-nama').value = '';
                 document.getElementById('f-peran').value = '';
+                document.getElementById('f-namatim').value = '';
                 document.getElementById('check-1').checked = false;
                 document.getElementById('check-2').checked = false;
+                document.getElementById('f-logo').value = '';
+                document.getElementById('f-logo-base64').value = '';
                 
                 const checked = document.querySelector('input[name="cabor"]:checked');
                 if(checked) checked.checked = false;
+                
                 document.getElementById('dynamic-form-container').classList.add('hidden');
                 document.getElementById('draft-indicator').classList.add('hidden');
-                handleDelegasiChange(); // Reset locks
+                kontingenEntries = {};
+                handleDelegasiChange();
+            });
+        }
+
+        // ==========================================
+        // DYNAMIC FORM RENDERING & ROLES
+        // ==========================================
+        function handleRoleChange() {
+            const peran = document.getElementById('f-peran').value;
+            const finalBtn = document.getElementById('btn-submit-final');
+            
+            if (peran === 'Ketua Kontingen') {
+                finalBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Draft Cabang Ini ke Kolektif';
+                finalBtn.classList.replace('bg-gray-900', 'bg-blue-700');
+            } else {
+                finalBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Pendaftaran Final';
+                finalBtn.classList.replace('bg-blue-700', 'bg-gray-900');
             }
+            renderKontingenProgress();
         }
 
         function renderCaborForm() {
-            const selected = document.querySelector('input[name="cabor"]:checked').value;
+            const selectedRadio = document.querySelector('input[name="cabor"]:checked');
+            if (!selectedRadio) return;
+            const selected = selectedRadio.value;
+            
             const container = document.getElementById('dynamic-form-container');
             const staticContainer = document.getElementById('static-inputs');
+            const playersSection = document.getElementById('players-section');
             const playersList = document.getElementById('dynamic-players-list');
             const controls = document.getElementById('dynamic-controls');
             
-            document.getElementById('cabor-title').innerText = `CABANG ${selected.toUpperCase()}`;
+            document.getElementById('cabor-title').innerText = `FORMULIR ${selected.toUpperCase()}`;
             container.classList.remove('hidden');
 
             let desc = '';
             let staticHtml = '';
             let isDynamic = false;
 
-            // Tambahan Static Form Input untuk Nama Tim di Cabor Beregu
-            if (['Sepak Bola', 'Bola Voli', 'Bola Basket'].includes(selected)) {
-                staticHtml += `
-                    <div>
-                        <label class="text-xs font-bold text-gray-700 block mb-1">Nama Tim / Skuad (Opsional)</label>
-                        <input type="text" id="db-namatim" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-400" placeholder="Contoh: Garuda 441">
-                    </div>`;
-            }
-
             if (selected === 'Sepak Bola') {
                 isDynamic = true;
-                desc = "(Aturan: Maksimal 22 orang. Boleh mengambil maksimal 5 pemain dari luar angkatan).";
-                staticHtml += `
+                desc = "(Aturan: Maksimal 22 orang. Boleh mengambil maks 5 pemain dari luar angkatan). Isi Nama, Nomor Punggung, Posisi, dan tandai Pemain Inti.";
+                staticHtml = `
                     <div><label class="text-xs font-bold text-gray-700">Nama Manajer & NIM</label>
-                    <input type="text" id="db-manajer" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm mt-1" placeholder="Ahmad Fulan - 4410123"></div>
+                    <input type="text" id="db-manajer" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm mt-1" placeholder="Ahmad Fulan - 4410123"></div>
                     <div><label class="text-xs font-bold text-gray-700">Nama Wakil Manajer & NIM</label>
-                    <input type="text" id="db-wakil" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm mt-1" placeholder="Budi - 4420124"></div>`;
+                    <input type="text" id="db-wakil" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm mt-1" placeholder="Budi - 4420124"></div>`;
             } 
             else if (selected === 'Bola Voli' || selected === 'Bola Basket') {
                 isDynamic = true;
-                desc = selected === 'Bola Voli' ? "(Maks 11 pemain dari angkatan yang sama)." : "(Maks 10 pemain dari angkatan yang sama).";
-                staticHtml += `
+                desc = (selected === 'Bola Voli' ? "(Maks 11 pemain 1 angkatan)." : "(Maks 10 pemain 1 angkatan).") + " Isi Nama, Nomor Punggung, Posisi, dan tandai Pemain Inti.";
+                staticHtml = `
                     <div><label class="text-xs font-bold text-gray-700">Nama Manajer/PJ & No. WA</label>
-                    <input type="text" id="db-manajer" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm mt-1" placeholder="Nama - 0812..."></div>`;
+                    <input type="text" id="db-manajer" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm mt-1" placeholder="Nama - 0812..."></div>`;
             }
             else if (selected === 'Lari Estafet') {
-                isDynamic = true; // Dinamis secara struktur UI, tapi akan kita lock limitnya min 4 max 4
+                isDynamic = true;
                 desc = "(Aturan: 1 tim terdiri dari 4 pelari. Urutan 1 = Start, 4 = Finish).";
+                staticHtml = ``; 
             }
             else {
-                // Raket (Bulutangkis & Tenis Meja) tetap statis
                 isDynamic = false;
-                desc = "(Silakan isi form pasangan/tunggal sesuai pemain yang turun).";
+                desc = "Silakan isi komposisi pemain tunggal dan ganda untuk cabang raket ini.";
                 if(selected === 'Bulutangkis') {
                     staticHtml = `
-                        <div class="mb-2"><label class="text-xs font-bold text-gray-700">Tunggal 1</label><input type="text" id="db-t1" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm mt-1"></div>
-                        <div class="mb-2"><label class="text-xs font-bold text-gray-700">Tunggal 2</label><input type="text" id="db-t2" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm mt-1"></div>
-                        <div class="mb-2"><label class="text-xs font-bold text-gray-700">Ganda 1</label><input type="text" id="db-g1" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm mt-1" placeholder="Nama(NIM) & Nama(NIM)"></div>
-                        <div class="mb-2"><label class="text-xs font-bold text-gray-700">Ganda 2</label><input type="text" id="db-g2" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm mt-1" placeholder="Nama(NIM) & Nama(NIM)"></div>`;
+                        <div class="mb-3"><label class="text-xs font-bold text-gray-700">Pemain Tunggal 1</label><input type="text" id="db-t1" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm mt-1"></div>
+                        <div class="mb-3"><label class="text-xs font-bold text-gray-700">Pemain Tunggal 2</label><input type="text" id="db-t2" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm mt-1"></div>
+                        <div class="mb-3"><label class="text-xs font-bold text-gray-700">Pasangan Ganda 1</label><input type="text" id="db-g1" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm mt-1" placeholder="Nama(NIM) & Nama(NIM)"></div>
+                        <div class="mb-3"><label class="text-xs font-bold text-gray-700">Pasangan Ganda 2</label><input type="text" id="db-g2" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm mt-1" placeholder="Nama(NIM) & Nama(NIM)"></div>`;
                 } else {
                     staticHtml = `
-                        <div class="mb-2"><label class="text-xs font-bold text-gray-700">Tunggal 1</label><input type="text" id="db-t1" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm mt-1"></div>
-                        <div class="mb-2"><label class="text-xs font-bold text-gray-700">Tunggal 2</label><input type="text" id="db-t2" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm mt-1"></div>
-                        <div class="mb-2"><label class="text-xs font-bold text-gray-700">Ganda</label><input type="text" id="db-g1" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm mt-1" placeholder="Nama(NIM) & Nama(NIM)"></div>`;
+                        <div class="mb-3"><label class="text-xs font-bold text-gray-700">Pemain Tunggal 1</label><input type="text" id="db-t1" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm mt-1"></div>
+                        <div class="mb-3"><label class="text-xs font-bold text-gray-700">Pemain Tunggal 2</label><input type="text" id="db-t2" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm mt-1"></div>
+                        <div class="mb-3"><label class="text-xs font-bold text-gray-700">Pasangan Ganda</label><input type="text" id="db-g1" oninput="saveDraft()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm mt-1" placeholder="Nama(NIM) & Nama(NIM)"></div>`;
                 }
             }
 
-            // AMBIL DATA DRAFT SPESIFIK UNTUK CABOR INI SAJA
             let draftData = null;
-            const draftStr = localStorage.getItem('olimpiade_draft');
+            const draftStr = localStorage.getItem('olimpiade_draft_v2');
             if(draftStr) {
                 const draft = JSON.parse(draftStr);
                 if(draft.caborData && draft.caborData[selected]) {
@@ -633,14 +783,13 @@
 
             document.getElementById('cabor-desc').innerText = desc;
             staticContainer.innerHTML = staticHtml;
-            playersList.innerHTML = ''; // Reset list
+            playersList.innerHTML = ''; 
             currentPlayerCount = 0;
 
             if(isDynamic) {
                 controls.classList.remove('hidden');
-                playersList.parentElement.classList.remove('hidden');
+                playersSection.classList.remove('hidden');
                 
-                // Set initial rows based on draft or minimum
                 const conf = configCabor[selected];
                 let rowsToCreate = conf.min;
                 
@@ -649,18 +798,17 @@
                 }
 
                 for(let i=0; i<rowsToCreate; i++) {
-                    addPlayerField(draftData ? draftData.players[i] : null);
+                    addPlayerField(draftData ? draftData.players[i] : '');
                 }
                 
                 if(conf.min === conf.max) {
-                    controls.classList.add('hidden'); // Estafet tidak butuh tombol tambah/hapus
+                    controls.classList.add('hidden'); 
                 }
             } else {
                 controls.classList.add('hidden');
-                playersList.parentElement.classList.add('hidden'); // Sembunyikan div daftar pemain
+                playersSection.classList.add('hidden'); 
             }
 
-            // Restore static draft values
             if(draftData && draftData.staticFields) {
                 for(let key in draftData.staticFields) {
                     if(document.getElementById(key)) document.getElementById(key).value = draftData.staticFields[key];
@@ -668,15 +816,25 @@
             }
 
             updatePlayerBadge();
-            if(!draftData) setTimeout(() => container.scrollIntoView({behavior: 'smooth', block: 'center'}), 100);
+            handleRoleChange();
+
+            if(!draftData) {
+                setTimeout(() => container.scrollIntoView({behavior: 'smooth', block: 'center'}), 150);
+            }
         }
 
-        function addPlayerField(playerDraftData = null) {
+        function addPlayerField(val = '') {
             const selected = document.querySelector('input[name="cabor"]:checked').value;
+
+            if (STRUCTURED_CABOR.includes(selected)) {
+                addFootballPlayerRow(val);
+                return;
+            }
+
             const max = configCabor[selected].max;
             
             if (currentPlayerCount >= max) {
-                alert(`Maksimal pendaftaran pemain untuk ${selected} adalah ${max} orang.`);
+                showDialog(`Maksimal kuota pendaftaran pemain untuk cabang ${selected} adalah ${max} orang.`);
                 return;
             }
 
@@ -684,48 +842,11 @@
             const list = document.getElementById('dynamic-players-list');
             
             const div = document.createElement('div');
-            div.className = "player-input-row bg-gray-50 border border-gray-200 rounded-xl p-3 mb-2";
-            
-            // Build Options Posisi
-            const positions = posOptions[selected] || [];
-            let posHtml = '';
-            if (positions.length > 0) {
-                posHtml = `<select data-field="posisi" onchange="saveDraft()" class="flex-1 bg-white border border-gray-300 rounded-lg px-2 py-1.5 text-[11px] outline-none">
-                               <option value="" disabled selected>Posisi...</option>
-                               ${positions.map(p => `<option value="${p}">${p}</option>`).join('')}
-                           </select>`;
-            }
-
-            const isEstafet = selected === 'Lari Estafet';
-            const htmlContent = `
-                <div class="flex gap-2 items-center mb-2">
-                    <span class="text-xs font-bold text-gray-500 w-5 text-center">${currentPlayerCount}.</span>
-                    <input type="text" data-field="nama" oninput="saveDraft()" class="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-green-400 outline-none" placeholder="Nama - NIM">
-                    ${!isEstafet ? `<input type="number" data-field="nomor" oninput="saveDraft()" class="w-16 bg-white border border-gray-300 rounded-lg px-2 py-1.5 text-sm outline-none text-center" placeholder="No.">` : ''}
-                </div>
-                ${!isEstafet ? `
-                <div class="flex gap-2 items-center pl-7">
-                    ${posHtml}
-                    <label class="flex items-center gap-1 text-[10px] text-gray-600 bg-white border border-gray-300 px-2 py-1.5 rounded-lg cursor-pointer">
-                        <input type="checkbox" data-field="starter" onchange="saveDraft()" class="accent-green-500" checked> Starter
-                    </label>
-                </div>` : ''}
+            div.className = "player-input-row flex gap-3 items-center bg-gray-50 p-2 rounded-xl border border-gray-100";
+            div.innerHTML = `
+                <span class="text-xs font-bold text-gray-400 w-5 text-right shrink-0">${currentPlayerCount}.</span>
+                <input type="text" oninput="saveDraft()" class="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 outline-none" placeholder="Nama Lengkap - NIM" value="${val}">
             `;
-            
-            div.innerHTML = htmlContent;
-
-            // Isi nilai dari draft jika ada
-            if (playerDraftData) {
-                const inputs = div.querySelectorAll('input, select');
-                inputs.forEach(inp => {
-                    const field = inp.dataset.field;
-                    if(playerDraftData[field] !== undefined) {
-                        if(inp.type === 'checkbox') inp.checked = playerDraftData[field];
-                        else inp.value = playerDraftData[field];
-                    }
-                });
-            }
-
             list.appendChild(div);
             updatePlayerBadge();
             saveDraft();
@@ -733,10 +854,16 @@
 
         function removePlayerField() {
             const selected = document.querySelector('input[name="cabor"]:checked').value;
+
+            if (STRUCTURED_CABOR.includes(selected)) {
+                removeFootballPlayerRow();
+                return;
+            }
+
             const min = configCabor[selected].min;
 
             if (currentPlayerCount <= min) {
-                alert(`Minimal pendaftaran pemain untuk ${selected} adalah ${min} orang.`);
+                showDialog(`Minimal wajib mendaftarkan ${min} orang untuk cabang ${selected}.`);
                 return;
             }
             
@@ -747,101 +874,277 @@
             saveDraft();
         }
 
+        function addFootballPlayerRow(playerData = null) {
+            const selected = document.querySelector('input[name="cabor"]:checked').value;
+            const max = configCabor[selected].max;
+            if (currentPlayerCount >= max) {
+                showDialog(`Batas kuota maksimal ${selected} adalah ${max} pemain.`);
+                return;
+            }
+
+            currentPlayerCount++;
+            const list = document.getElementById('dynamic-players-list');
+            const starterDefault = STARTER_DEFAULT_COUNT[selected] || 11;
+            const isStarter = playerData ? !!playerData.starter : (currentPlayerCount <= starterDefault);
+            const nama = playerData && playerData.nama ? playerData.nama : (typeof playerData === 'string' ? playerData : '');
+            const nomor = playerData && playerData.nomor ? playerData.nomor : '';
+            const posisi = playerData && playerData.posisi ? playerData.posisi : '';
+            const posisiOptions = POSISI_MAP[selected] || POSISI_MAP['Sepak Bola'];
+
+            const div = document.createElement('div');
+            div.className = "player-row-football bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-2 relative";
+            div.innerHTML = `
+                <div class="flex gap-2 items-center w-full">
+                    <span class="text-xs font-bold text-green-700 bg-green-100 rounded-full w-6 h-6 flex items-center justify-center shrink-0">${currentPlayerCount}</span>
+                    <input type="text" oninput="saveDraft()" class="fb-nama w-full min-w-0 flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 outline-none" placeholder="Nama Lengkap - NIM" value="${nama}">
+                    <input type="number" oninput="saveDraft()" class="fb-nomor w-14 shrink-0 bg-white border border-gray-200 rounded-lg px-2 py-2 text-sm text-center focus:ring-2 focus:ring-green-400 outline-none" placeholder="No." value="${nomor}">
+                </div>
+                <div class="flex gap-2 items-center pl-8 w-full">
+                    <select onchange="saveDraft()" class="fb-posisi w-full min-w-0 flex-1 bg-white border border-gray-200 rounded-lg px-2 py-2 text-xs focus:ring-2 focus:ring-green-400 outline-none">
+                        <option value="" ${posisi === '' ? 'selected' : ''} disabled>Pilih Peran/Posisi</option>
+                        ${posisiOptions.map(p => `<option value="${p}" ${p === posisi ? 'selected' : ''}>${p}</option>`).join('')}
+                    </select>
+                    <label class="flex items-center gap-2 text-[11px] font-bold text-gray-700 bg-white border border-gray-200 px-3 py-2 rounded-lg cursor-pointer shrink-0">
+                        <input type="checkbox" onchange="saveDraft()" class="fb-starter w-4 h-4 accent-green-600" ${isStarter ? 'checked' : ''}>
+                        Inti
+                    </label>
+                </div>
+            `;
+            list.appendChild(div);
+            updatePlayerBadge();
+            saveDraft();
+        }
+
+        function removeFootballPlayerRow() {
+            const selected = document.querySelector('input[name="cabor"]:checked').value;
+            const min = configCabor[selected].min;
+            if (currentPlayerCount <= min) {
+                showDialog(`Formulir ini membutuhkan setidaknya ${min} data pemain.`);
+                return;
+            }
+            const list = document.getElementById('dynamic-players-list');
+            list.removeChild(list.lastElementChild);
+            currentPlayerCount--;
+            updatePlayerBadge();
+            saveDraft();
+        }
+
+        function collectFootballPlayers() {
+            const rows = document.querySelectorAll('.player-row-football');
+            const players = [];
+            rows.forEach(row => {
+                players.push({
+                    nama: row.querySelector('.fb-nama').value.trim(),
+                    nomor: row.querySelector('.fb-nomor').value.trim(),
+                    posisi: row.querySelector('.fb-posisi').value,
+                    starter: row.querySelector('.fb-starter').checked
+                });
+            });
+            return players;
+        }
+
         function updatePlayerBadge() {
             const selected = document.querySelector('input[name="cabor"]:checked');
             if(!selected) return;
             const max = configCabor[selected.value].max;
-            document.getElementById('player-count-badge').innerText = `${currentPlayerCount} / ${max} Pemain`;
+            document.getElementById('player-count-badge').innerText = `Terisi: ${currentPlayerCount} / Maks: ${max}`;
         }
 
+        // ==========================================
+        // ALUR KETUA KONTINGEN (KOLEKTIF)
+        // ==========================================
+        function renderKontingenProgress() {
+            const panel = document.getElementById('kontingen-progress');
+            const peran = document.getElementById('f-peran').value;
+            const delegasi = document.getElementById('f-delegasi').value;
+
+            if (peran !== 'Ketua Kontingen' || !delegasi) {
+                panel.classList.add('hidden');
+                return;
+            }
+            panel.classList.remove('hidden');
+
+            const listEl = document.getElementById('kontingen-list');
+            let allUnlockedDone = true;
+            let reqCount = 0;
+
+            listEl.innerHTML = CABOR_ALL_LIST.map(cabor => {
+                let label, cls, icon;
+                if (lastLockedSports.includes(cabor)) {
+                    label = 'Terkunci (Sudah diwakilkan)';
+                    cls = 'bg-gray-100 text-gray-500 border-gray-200 opacity-70';
+                    icon = 'fa-lock';
+                } else {
+                    reqCount++;
+                    if (kontingenEntries[cabor]) {
+                        label = 'Tersimpan (Siap kirim)';
+                        cls = 'bg-green-50 text-green-700 border-green-200 shadow-sm';
+                        icon = 'fa-check-circle';
+                    } else {
+                        label = 'Belum diisi (Wajib)';
+                        cls = 'bg-yellow-50 text-yellow-700 border-yellow-200';
+                        icon = 'fa-circle-exclamation';
+                        allUnlockedDone = false;
+                    }
+                }
+                return `
+                    <div class="flex items-center justify-between px-4 py-2.5 rounded-xl border ${cls} transition-all">
+                        <span class="text-[11px] font-bold uppercase tracking-wide">${cabor}</span>
+                        <span class="text-[10px] flex items-center gap-1 font-medium"><i class="fas ${icon} mr-1"></i>${label}</span>
+                    </div>
+                `;
+            }).join('');
+
+            const btn = document.getElementById('btn-submit-kontingen');
+            // Hanya aktif jika semua yg TIDAK dikunci, SUDAH terisi (di `kontingenEntries`)
+            // dan pastikan ada setidaknya 1 cabor yg harus diisi (reqCount > 0)
+            const canSubmit = allUnlockedDone && reqCount > 0;
+            
+            btn.disabled = !canSubmit;
+            btn.className = canSubmit
+                ? "w-full py-4 rounded-2xl bg-blue-600 text-white font-bold text-sm shadow-xl active:bg-blue-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+                : "w-full py-4 rounded-2xl bg-gray-200 text-gray-400 font-bold text-sm border border-gray-300 transition-all cursor-not-allowed flex items-center justify-center gap-2";
+        }
+
+        // ==========================================
+        // MAIN SUBMISSION PROCESS
+        // ==========================================
         async function submitData() {
             const delegasi = document.getElementById('f-delegasi').value;
             const nama = document.getElementById('f-nama').value;
             const peran = document.getElementById('f-peran').value;
             const caborRadio = document.querySelector('input[name="cabor"]:checked');
-            
-            const contact = window.currentUserContact;
-            
+            const emailUser = window.currentUserEmail;
+
             if(!delegasi || !nama || !peran || !caborRadio) {
-                return alert("Mohon lengkapi seluruh isian Identitas dan Cabang Olahraga.");
+                return showDialog("Harap lengkapi Identitas Pengisi dan pastikan Anda telah memilih satu Cabang Olahraga.");
             }
 
             if(!document.getElementById('check-1').checked || !document.getElementById('check-2').checked) {
-                return alert("Anda WAJIB mencentang dua kotak Deklarasi & Komitmen sebelum mengirim data.");
+                return showDialog("Tindakan ditolak. Anda wajib memberikan persetujuan pada kedua kotak Deklarasi & Komitmen.");
+            }
+
+            const logoBase64 = document.getElementById('f-logo-base64').value;
+            if (!logoBase64) {
+                return showDialog("Dokumen tidak lengkap. Harap upload File Logo Klub kontingen Anda terlebih dahulu.");
             }
 
             const cabor = caborRadio.value;
             let detailData = {};
-            let namaTim = document.getElementById('db-namatim') ? document.getElementById('db-namatim').value : "";
 
-            // Collect Static Inputs (mengabaikan db-namatim karena sudah diambil di atas)
+            // Collect text inputs
             document.querySelectorAll('#static-inputs input').forEach(inp => {
-                if (inp.id !== 'db-namatim') {
-                    detailData[inp.id.replace('db-', '')] = inp.value;
-                }
+                detailData[inp.id.replace('db-', '')] = inp.value;
             });
 
-            // Collect & Combine Dynamic Player Inputs
             const isDynamic = ['Sepak Bola', 'Bola Voli', 'Bola Basket', 'Lari Estafet'].includes(cabor);
             if(isDynamic) {
-                let listPemain = [];
-                let p_detail = [];
+                if (STRUCTURED_CABOR.includes(cabor)) {
+                    const pemain = collectFootballPlayers();
 
-                document.querySelectorAll('.player-input-row').forEach((row, idx) => {
-                    const i_nama = row.querySelector('input[data-field="nama"]');
-                    const i_nomor = row.querySelector('input[data-field="nomor"]');
-                    const s_posisi = row.querySelector('select[data-field="posisi"]');
-                    const c_starter = row.querySelector('input[data-field="starter"]');
-
-                    let val_nama = i_nama ? i_nama.value.trim() : "";
-                    
-                    if(val_nama !== '') {
-                        let val_nomor = i_nomor ? i_nomor.value.trim() : "";
-                        let val_posisi = s_posisi ? s_posisi.value : "";
-                        let is_starter = c_starter ? c_starter.checked : true;
-                        
-                        let txt = `${idx+1}. ${val_nama}`;
-                        if(val_nomor) txt += ` (#${val_nomor})`;
-                        if(val_posisi) txt += ` [${val_posisi}]`;
-                        if(!is_starter) txt += ` (Cadangan)`;
-
-                        listPemain.push(txt);
-                        
-                        // Push ke object detail untuk Skuad di Backend
-                        p_detail.push({
-                            nama: val_nama,
-                            nomor: val_nomor,
-                            posisi: val_posisi,
-                            starter: is_starter
-                        });
+                    if(pemain.length < configCabor[cabor].min) {
+                        return showDialog(`Minimal dibutuhkan ${configCabor[cabor].min} data pemain untuk cabang ${cabor}.`);
                     }
-                });
-                
-                // Cek minimal pemain
-                if(listPemain.length < configCabor[cabor].min) {
-                    return alert(`Harap isi minimal ${configCabor[cabor].min} nama pemain untuk ${cabor}.`);
+                    if(pemain.some(p => !p.nama || !p.posisi)) {
+                        return showDialog(`Terdapat data kosong! Pastikan kolom Nama dan Posisi/Peran terisi untuk setiap baris pemain.`);
+                    }
+
+                    detailData.pemain_detail = pemain;
+                    detailData.daftar_pemain = pemain
+                        .map((p, idx) => `${idx+1}. [${p.posisi}${p.starter ? '' : ' - Cadangan'}] ${p.nama}${p.nomor ? ' (No.' + p.nomor + ')' : ''}`)
+                        .join('\n');
+                } else {
+                    let listPemain = [];
+                    document.querySelectorAll('.player-input-row input').forEach((inp, idx) => {
+                        if(inp.value.trim() !== '') {
+                            listPemain.push(`${idx+1}. ${inp.value.trim()}`);
+                        }
+                    });
+                    
+                    if(listPemain.length < configCabor[cabor].min) {
+                        return showDialog(`Harap isi minimal ${configCabor[cabor].min} nama pemain untuk ${cabor}.`);
+                    }
+                    detailData.daftar_pemain = listPemain.join('\n');
                 }
-                
-                // Gabungkan menjadi satu string untuk report/display mudah di Spreadsheet cell JSON
-                detailData.daftar_pemain = listPemain.join('\n');
-                detailData.pemain_detail = p_detail; // Object array untuk generate skuad
             }
 
+            const namatim = document.getElementById('f-namatim').value.trim();
+
+            // LOGIKA CABANG SEMENTARA: KETUA KONTINGEN
+            if (peran === 'Ketua Kontingen') {
+                kontingenEntries[cabor] = detailData;
+                caborRadio.checked = false;
+                document.getElementById('dynamic-form-container').classList.add('hidden');
+                saveDraft();
+                renderKontingenProgress();
+                
+                showDialog(`Data draf cabang ${cabor} berhasil ditambahkan secara lokal.\n\nSilakan lanjutkan mengisi formulir untuk cabang olahraga lain yang masih berstatus kuning, lalu klik tombol biru "Kirim Semua Pendaftaran" di panel atas.`, 'alert');
+                return;
+            }
+
+            // LOGIKA SUBMIT LANGSUNG: KOORDINATOR CABOR
             const payload = {
                 action: "submit_form",
-                // PERBAIKAN BUG UTAMA: Menyelaraskan key ini dengan backend
-                contact: contact, 
+                contact: emailUser, 
                 nama: nama,
                 peran: peran,
                 delegasi: delegasi,
-                namatim: namaTim,
+                namatim: namatim,
                 cabor: cabor,
-                detailForm: detailData
+                detailForm: detailData,
+                logoBase64: logoBase64,
+                logoMimeType: document.getElementById('f-logo-mime').value,
+                logoName: document.getElementById('f-logo-name').value
             };
 
-            const btn = document.getElementById('btn-submit-final');
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Menyimpan...';
-            btn.disabled = true;
+            executeServerPost(payload, document.getElementById('btn-submit-final'));
+        }
+
+        async function finalizeKontingenSubmit() {
+            const delegasi = document.getElementById('f-delegasi').value;
+            const nama = document.getElementById('f-nama').value;
+            const peran = document.getElementById('f-peran').value;
+            const namatim = document.getElementById('f-namatim').value.trim();
+            const emailUser = window.currentUserEmail;
+
+            if (!delegasi || !nama || !peran) {
+                return showDialog("Mohon lengkapi bagian Identitas terlebih dahulu.");
+            }
+            if(!document.getElementById('check-1').checked || !document.getElementById('check-2').checked) {
+                return showDialog("Anda wajib menyetujui dua kotak persetujuan deklarasi.");
+            }
+            const logoBase64 = document.getElementById('f-logo-base64').value;
+            if (!logoBase64) return showDialog("Logo belum diupload.");
+
+            const entries = Object.keys(kontingenEntries).map(cabor => ({ cabor, detailForm: kontingenEntries[cabor] }));
+            const totalRequired = CABOR_ALL_LIST.filter(c => !lastLockedSports.includes(c)).length;
+
+            if (entries.length < totalRequired) {
+                return showDialog("Masih ada cabang olahraga yang belum diisi. Anda wajib mengisi seluruh cabang yang tersedia (tidak terkunci) sebagai Ketua Kontingen.");
+            }
+
+            showDialog(`Anda akan mengirim ${entries.length} cabang olahraga sekaligus ke sistem pusat. Data yang terkirim tidak dapat diubah lagi. Apakah Anda yakin?`, "confirm", () => {
+                const payload = {
+                    action: "submit_form",
+                    contact: emailUser,
+                    nama: nama,
+                    peran: peran,
+                    delegasi: delegasi,
+                    namatim: namatim,
+                    entries: entries,
+                    logoBase64: logoBase64,
+                    logoMimeType: document.getElementById('f-logo-mime').value,
+                    logoName: document.getElementById('f-logo-name').value
+                };
+
+                executeServerPost(payload, document.getElementById('btn-submit-kontingen'));
+            });
+        }
+
+        async function executeServerPost(payload, btnElement) {
+            const originalText = btnElement.innerHTML;
+            btnElement.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Memproses ke Server...';
+            btnElement.disabled = true;
 
             try {
                 const res = await fetch(API_URL, {
@@ -852,26 +1155,34 @@
                 const response = await res.json();
                 
                 if(response.status === 'success') {
+                    // Tampilkan Success Modal Premium
                     document.getElementById('success-modal').classList.replace('hidden-fade', 'visible-fade');
                     const box = document.getElementById('success-box');
                     setTimeout(() => { box.classList.replace('scale-95', 'scale-100'); }, 50);
                     
-                    // Kita tidak menghapus history localStorage secara otomatis 
-                    // agar bisa mendaftar cabor lain dengan data serupa,
-                    // Tapi kita uncheck cabor yg barusan disubmit & reload lock state
-                    caborRadio.checked = false;
+                    // Reset State Sebagian & Kunci Langsung Secara Lokal
+                    const caborRadio = document.querySelector('input[name="cabor"]:checked');
+                    if(caborRadio) {
+                        lastLockedSports.push(caborRadio.value); // Mengunci instan di sisi klien
+                        caborRadio.checked = false;
+                    }
+                    if (payload.entries) {
+                        payload.entries.forEach(e => lastLockedSports.push(e.cabor));
+                    }
+
                     document.getElementById('dynamic-form-container').classList.add('hidden');
+                    kontingenEntries = {};
                     saveDraft();
                     handleDelegasiChange();
                 } else {
-                    alert("Error: " + response.message);
+                    showDialog("Server menolak pengiriman: " + response.message);
                 }
             } catch(e) {
-                alert("Gagal koneksi ke server. Pastikan internet stabil.");
+                showDialog("Jaringan bermasalah atau koneksi terputus. Pastikan internet stabil dan coba lagi.");
             }
 
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Pendaftaran';
-            btn.disabled = false;
+            btnElement.innerHTML = originalText;
+            btnElement.disabled = false;
         }
 
         function closeSuccessModal() {
