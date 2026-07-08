@@ -85,21 +85,19 @@
 
         <!-- Content Area -->
         <main id="content-area" class="flex-1 overflow-y-auto p-4 bg-gray-50 pb-20 scroll-smooth">
-            <!-- View Peminjaman -->
+            
+            <!-- View Peminjaman (Utuh) -->
             <div id="view-peminjaman" class="view-section slide-in">
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
                     <h2 class="text-lg font-bold text-green-700 border-b pb-2 mb-4"><i class="fas fa-hand-holding-hand mr-2"></i>Form Peminjaman</h2>
                     <form id="form-peminjaman" onsubmit="submitPeminjaman(event)" class="space-y-4">
-                        
-                        <!-- REVISI 1: PEMILIHAN BEBERAPA BARANG -->
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">Pilih Barang (Bisa lebih dari 1)</label>
                             <div id="pinjam-barang-container" class="w-full max-h-40 overflow-y-auto custom-scrollbar border rounded-lg bg-white shadow-inner focus-within:ring-2 focus-within:ring-green-500 space-y-0">
-                                <!-- Checkbox Barang akan dirender disini -->
+                                <!-- Checkbox Barang -->
                             </div>
                         </div>
 
-                        <!-- REVISI 4: KOLOM TANGGAL DAN WAKTU -->
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-sm text-gray-600 mb-1">Tgl & Waktu Pinjam</label>
@@ -119,13 +117,10 @@
                             <label class="block text-sm text-gray-600 mb-1">Penanggung Jawab</label>
                             <input type="text" id="pinjam-pj" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-500">
                         </div>
-                        
-                        <!-- REVISI 2: WA WAJIB ANGKA -->
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">No. WhatsApp</label>
                             <input type="tel" id="pinjam-wa" required placeholder="628... atau 9665..." oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-500">
                         </div>
-                        
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">Saksi (Opsional)</label>
                             <input type="text" id="pinjam-saksi" class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-500">
@@ -135,7 +130,7 @@
                 </div>
             </div>
 
-            <!-- View Kelola Barang -->
+            <!-- View Kelola Barang (Utuh) -->
             <div id="view-kelola" class="view-section hidden slide-in">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-bold text-gray-800">Daftar Barang</h2>
@@ -143,10 +138,9 @@
                 </div>
                 
                 <div id="list-barang" class="space-y-3">
-                    <!-- List barang akan dirender disini -->
+                    <!-- List barang -->
                 </div>
 
-                <!-- Form Tambah/Edit Barang (Modal-like) -->
                 <div id="modal-barang" class="hidden bg-white p-5 rounded-xl shadow-lg border border-gray-200 mt-4">
                     <h3 id="modal-barang-title" class="font-bold text-green-700 mb-4 border-b pb-2">Tambah Barang Baru</h3>
                     <form id="form-barang" onsubmit="submitBarang(event)" class="space-y-3">
@@ -189,7 +183,146 @@
                 </div>
             </div>
 
-            <!-- View Histori -->
+            <!-- View Obat (BARU) -->
+            <div id="view-obat" class="view-section hidden slide-in">
+                <!-- Navigasi Internal Obat -->
+                <div class="flex border-b mb-4">
+                    <button onclick="switchObatTab('form')" id="tab-obat-form" class="flex-1 py-3 text-sm font-bold text-green-600 border-b-2 border-green-600 transition">Ambil Obat</button>
+                    <button onclick="switchObatTab('data')" id="tab-obat-data" class="flex-1 py-3 text-sm font-bold text-gray-400 border-b-2 border-transparent transition">Persediaan</button>
+                    <button onclick="switchObatTab('histori')" id="tab-obat-histori" class="flex-1 py-3 text-sm font-bold text-gray-400 border-b-2 border-transparent transition">Riwayat</button>
+                </div>
+
+                <!-- 1. Tab Form Pengajuan Obat -->
+                <div id="obat-tab-form" class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <form id="form-ambil-obat" onsubmit="submitAmbilObat(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">Pilih Obat (Dari Stok)</label>
+                            <select id="ambil-obat-kode" onchange="updateSatuanObat()" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-500">
+                                <!-- Option Obat -->
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">Jumlah Diambil</label>
+                                <input type="number" id="ambil-obat-jumlah" min="1" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">Satuan</label>
+                                <input type="text" id="ambil-obat-satuan" disabled class="w-full p-2.5 border bg-gray-100 rounded-lg text-gray-500 font-semibold">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">Nama Pengambil</label>
+                            <input type="text" id="ambil-obat-nama" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">Asal Kampus</label>
+                            <input type="text" id="ambil-obat-kampus" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">Keluhan / Keperluan</label>
+                            <textarea id="ambil-obat-keluhan" required rows="2" class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-500"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">Petugas (Opsional)</label>
+                                <input type="text" id="ambil-obat-petugas" class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">Keterangan</label>
+                                <input type="text" id="ambil-obat-ket" class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-500">
+                            </div>
+                        </div>
+                        <button type="submit" id="btn-submit-ambil-obat" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition">Ajukan Pengambilan</button>
+                    </form>
+                </div>
+
+                <!-- 2. Tab Persediaan / Kelola Obat -->
+                <div id="obat-tab-data" class="hidden">
+                    <button onclick="openFormMed()" class="mb-4 bg-green-600 text-white px-4 py-3 rounded-lg text-sm font-semibold shadow w-full hover:bg-green-700 transition"><i class="fas fa-plus-circle mr-2"></i> Tambah Data Obat Baru</button>
+                    
+                    <div id="list-obat" class="space-y-3">
+                        <!-- List Persediaan Obat -->
+                    </div>
+
+                    <!-- Modal Tambah/Edit Obat -->
+                    <div id="modal-obat" class="hidden bg-white p-5 rounded-xl shadow-lg border border-gray-200 mt-4">
+                        <h3 id="modal-obat-title" class="font-bold text-green-700 mb-4 border-b pb-2">Tambah Data Obat</h3>
+                        <form id="form-obat" onsubmit="submitMed(event)" class="space-y-3">
+                            <input type="hidden" id="med-old-kode">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Kode Obat</label>
+                                    <input type="text" id="med-kode" required class="w-full p-2 border rounded focus:ring-1 focus:ring-green-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Nama Obat</label>
+                                    <input type="text" id="med-nama" required class="w-full p-2 border rounded focus:ring-1 focus:ring-green-500">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Kategori</label>
+                                    <input type="text" id="med-kategori" placeholder="Bebas/Resep" class="w-full p-2 border rounded focus:ring-1 focus:ring-green-500 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Bentuk</label>
+                                    <input type="text" id="med-bentuk" placeholder="Tablet/Sirup" class="w-full p-2 border rounded focus:ring-1 focus:ring-green-500 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Satuan</label>
+                                    <input type="text" id="med-satuan" required placeholder="Strip/Botol" class="w-full p-2 border rounded focus:ring-1 focus:ring-green-500 text-sm">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 bg-gray-50 p-2 rounded border">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-500 mb-1">Stok Awal</label>
+                                    <input type="number" id="med-stok-awal" required class="w-full p-1 border rounded focus:ring-1 focus:ring-green-500 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-blue-600 mb-1">Stok Saat Ini</label>
+                                    <input type="number" id="med-stok-saat-ini" required class="w-full p-1 border rounded focus:ring-1 focus:ring-blue-500 text-sm font-bold text-blue-700">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-red-500 mb-1">Stok Min</label>
+                                    <input type="number" id="med-stok-min" required class="w-full p-1 border rounded focus:ring-1 focus:ring-red-500 text-sm">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Tgl Kedaluwarsa</label>
+                                    <input type="date" id="med-tgl-exp" class="w-full p-2 border rounded focus:ring-1 focus:ring-green-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Lokasi Penyimpanan</label>
+                                    <input type="text" id="med-lokasi" class="w-full p-2 border rounded focus:ring-1 focus:ring-green-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">Keterangan Tambahan</label>
+                                <input type="text" id="med-ket" class="w-full p-2 border rounded focus:ring-1 focus:ring-green-500">
+                            </div>
+                            <div class="flex gap-2 pt-2">
+                                <button type="button" onclick="closeFormMed()" class="flex-1 bg-gray-200 text-gray-700 py-2 rounded font-semibold">Batal</button>
+                                <button type="submit" id="btn-submit-med" class="flex-1 bg-green-600 text-white py-2 rounded font-semibold">Simpan Data</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 3. Tab Histori Obat -->
+                <div id="obat-tab-histori" class="hidden">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3"><i class="fas fa-search text-gray-400"></i></div>
+                        <input type="text" id="search-histori-obat" onkeyup="renderMedHistory()" placeholder="Cari nama pengambil / obat..." class="w-full pl-10 pr-3 py-2 border rounded-lg mb-4 focus:ring-2 focus:ring-green-500 text-sm">
+                    </div>
+                    <div id="list-histori-obat" class="space-y-3">
+                        <!-- Histori Obat -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Histori (Pinjam Barang) Utuh -->
             <div id="view-histori" class="view-section hidden slide-in">
                 <h2 class="text-lg font-bold text-gray-800 mb-4">Histori Peminjaman</h2>
                 <div class="relative">
@@ -206,15 +339,24 @@
 
         <!-- Bottom Navigation -->
         <nav class="bg-white border-t border-gray-200 flex justify-around items-center h-16 shrink-0 z-10 absolute bottom-0 w-full shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
-            <button onclick="switchView('peminjaman')" id="nav-peminjaman" class="nav-btn flex flex-col items-center justify-center w-full h-full text-green-600">
+            <!-- Tab 1: Peminjaman -->
+            <button onclick="switchView('peminjaman')" id="nav-peminjaman" class="nav-btn flex flex-col items-center justify-center w-full h-full text-green-600 transition">
                 <i class="fas fa-hand-holding-hand text-xl mb-1"></i>
                 <span class="text-[10px] font-medium">Peminjaman</span>
             </button>
-            <button onclick="switchView('kelola')" id="nav-kelola" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-green-500">
+            <!-- Tab 2: Barang -->
+            <button onclick="switchView('kelola')" id="nav-kelola" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-green-500 transition">
                 <i class="fas fa-box text-xl mb-1"></i>
                 <span class="text-[10px] font-medium">Barang</span>
             </button>
-            <button onclick="switchView('histori')" id="nav-histori" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-green-500">
+            <!-- Tab 3 (BARU): Obat -->
+            <button onclick="switchView('obat')" id="nav-obat" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-green-500 transition relative">
+                <i class="fas fa-notes-medical text-xl mb-1"></i>
+                <span class="text-[10px] font-medium">Obat</span>
+                <span class="absolute top-1 right-3 flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span></span>
+            </button>
+            <!-- Tab 4: Histori -->
+            <button onclick="switchView('histori')" id="nav-histori" class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-green-500 transition">
                 <i class="fas fa-history text-xl mb-1"></i>
                 <span class="text-[10px] font-medium">Histori</span>
             </button>
@@ -229,6 +371,10 @@
         let globalItems = [];
         let globalHistory = [];
         let tempBase64Image = "";
+
+        // Global Obat
+        let globalMeds = [];
+        let globalMedHistory = [];
 
         // ----- INIT & SPLASH SCREEN -----
         window.onload = () => {
@@ -341,14 +487,15 @@
             document.getElementById(`nav-${viewName}`).classList.add('text-green-600');
 
             // Header title & Data reload
-            const titleMap = { peminjaman: 'Form Peminjaman', kelola: 'Kelola Barang', histori: 'Histori' };
+            const titleMap = { peminjaman: 'Form Peminjaman', kelola: 'Kelola Barang', histori: 'Histori Pinjam', obat: 'Klinik / Obat' };
             document.getElementById('header-title').innerText = titleMap[viewName];
 
             if(viewName === 'kelola') loadItems();
             if(viewName === 'histori') loadHistory();
+            if(viewName === 'obat') loadMeds(); // Load data obat
         }
 
-        // ----- DATA FETCHING & RENDERING -----
+        // ----- DATA FETCHING & API -----
         async function callAPI(action, payload = {}) {
             const formData = new URLSearchParams();
             formData.append("data", JSON.stringify({ action, ...payload }));
@@ -361,6 +508,7 @@
             return await response.json();
         }
 
+        // ----- LOGIKA BARANG INVENTARIS -----
         async function loadItems() {
             try {
                 const res = await callAPI('getItems');
@@ -427,7 +575,6 @@
             });
         }
 
-        // Format tanggal DateTime agar rapi tanpa timezone shift di frontend
         const formatUI_DateTime = (str) => {
             if(!str) return '-';
             if(!str.includes('T')) return new Date(str).toLocaleDateString('id-ID'); // fallback
@@ -504,7 +651,6 @@
             }
         }
 
-        // Image compression before upload
         document.getElementById('barang-foto').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if(!file) return;
@@ -551,7 +697,7 @@
                 if(res.success) {
                     Swal.fire('Berhasil!', res.message, 'success');
                     closeFormBarang();
-                    loadItems(); // refresh data
+                    loadItems(); 
                 } else {
                     Swal.fire('Gagal', res.message, 'error');
                 }
@@ -563,24 +709,17 @@
             }
         }
 
-        // ----- FORM PEMINJAMAN LOGIC -----
         async function submitPeminjaman(e) {
             e.preventDefault();
-            
-            // VALIDASI WA
             const waVal = document.getElementById('pinjam-wa').value;
             if (!/^(628|9665)[0-9]+$/.test(waVal)) {
                 return Swal.fire('Format Salah!', 'No. WhatsApp harus berupa angka dan wajib diawali dengan awalan kode 628 (Indonesia) atau 9665 (Arab Saudi).', 'error');
             }
-
-            // VALIDASI PILIHAN BARANG
             const checkboxes = document.querySelectorAll('input[name="pinjam_barang_check"]:checked');
             if(checkboxes.length === 0) {
                 return Swal.fire('Perhatian!', 'Mohon pilih minimal 1 barang yang ingin dipinjam!', 'warning');
             }
             const selectedBarang = Array.from(checkboxes).map(cb => cb.value).join(', ');
-
-            // VALIDASI TANGGAL/WAKTU
             const tglPinjam = document.getElementById('pinjam-tgl').value;
             const tglKembali = document.getElementById('kembali-tgl').value;
             if (new Date(tglPinjam).getTime() >= new Date(tglKembali).getTime()) {
@@ -605,15 +744,10 @@
             try {
                 const res = await callAPI('borrowItem', { borrowData: payload });
                 if(res.success) {
-                    Swal.fire({
-                        title: 'Berhasil!',
-                        text: 'Peminjaman dicatat & Bukti dikirim ke email!',
-                        icon: 'success',
-                        confirmButtonColor: '#16a34a'
-                    });
+                    Swal.fire({ title: 'Berhasil!', text: 'Peminjaman dicatat & Bukti dikirim ke email!', icon: 'success', confirmButtonColor: '#16a34a' });
                     document.getElementById('form-peminjaman').reset();
                 } else {
-                    Swal.fire('Mohon Maaf', res.message, 'warning'); // Menampilkan alasan jadwal bertabrakan
+                    Swal.fire('Mohon Maaf', res.message, 'warning'); 
                 }
             } catch (err) {
                 Swal.fire('Error', 'Terjadi kesalahan jaringan', 'error');
@@ -621,6 +755,268 @@
                 btn.innerHTML = 'Ajukan Peminjaman';
                 btn.disabled = false;
             }
+        }
+
+        // ----- LOGIKA KLINIK / OBAT (BARU) -----
+        function switchObatTab(tab) {
+            document.getElementById('obat-tab-form').classList.add('hidden');
+            document.getElementById('obat-tab-data').classList.add('hidden');
+            document.getElementById('obat-tab-histori').classList.add('hidden');
+
+            document.getElementById('tab-obat-form').className = "flex-1 py-3 text-sm font-bold text-gray-400 border-b-2 border-transparent transition";
+            document.getElementById('tab-obat-data').className = "flex-1 py-3 text-sm font-bold text-gray-400 border-b-2 border-transparent transition";
+            document.getElementById('tab-obat-histori').className = "flex-1 py-3 text-sm font-bold text-gray-400 border-b-2 border-transparent transition";
+
+            document.getElementById(`obat-tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-obat-${tab}`).className = "flex-1 py-3 text-sm font-bold text-green-600 border-b-2 border-green-600 transition";
+
+            if(tab === 'data' || tab === 'form') loadMeds();
+            if(tab === 'histori') loadMedHistory();
+        }
+
+        async function loadMeds() {
+            try {
+                const res = await callAPI('getMeds');
+                if(res.success) {
+                    globalMeds = res.data;
+                    renderSelectMeds();
+                    renderListMeds();
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function renderSelectMeds() {
+            const select = document.getElementById('ambil-obat-kode');
+            select.innerHTML = '<option value="">-- Pilih Obat --</option>';
+            globalMeds.forEach(m => {
+                const stokNumber = parseInt(m.stokSaatIni);
+                if (stokNumber > 0) {
+                    select.innerHTML += `<option value="${m.kodeObat}">${m.namaObat} (Stok: ${stokNumber} ${m.satuan})</option>`;
+                } else {
+                    select.innerHTML += `<option value="${m.kodeObat}" disabled class="text-red-400">${m.namaObat} (Stok Habis)</option>`;
+                }
+            });
+        }
+
+        function updateSatuanObat() {
+            const kode = document.getElementById('ambil-obat-kode').value;
+            const med = globalMeds.find(m => m.kodeObat === kode);
+            document.getElementById('ambil-obat-satuan').value = med ? med.satuan : '';
+            if (med) {
+                document.getElementById('ambil-obat-jumlah').max = med.stokSaatIni; // Batasi max input berdasarkan stok
+            }
+        }
+
+        function renderListMeds() {
+            const list = document.getElementById('list-obat');
+            list.innerHTML = '';
+            if(globalMeds.length === 0) {
+                list.innerHTML = '<p class="text-center text-sm text-gray-500 py-4">Belum ada data obat.</p>';
+                return;
+            }
+            
+            globalMeds.forEach(item => {
+                const isLowStock = parseInt(item.stokSaatIni) <= parseInt(item.stokMinimum);
+                const stockColor = isLowStock ? 'text-red-600 bg-red-50' : 'text-blue-600 bg-blue-50';
+                
+                list.innerHTML += `
+                    <div class="bg-white p-3 rounded-xl border shadow-sm flex items-center relative overflow-hidden">
+                        ${isLowStock ? '<div class="absolute left-0 top-0 w-1 h-full bg-red-500"></div>' : ''}
+                        <div class="w-12 h-12 bg-green-50 rounded-lg mr-3 flex items-center justify-center text-green-500 flex-shrink-0">
+                            <i class="fas fa-pills text-lg"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-gray-800 text-sm">${item.namaObat} <span class="text-[10px] font-normal text-gray-400">(${item.kodeObat})</span></h4>
+                            <p class="text-xs text-gray-500 mb-1"><i class="fas fa-boxes mr-1"></i>Rak: ${item.lokasi}</p>
+                            <span class="text-xs px-2 py-0.5 rounded font-bold border ${stockColor}">Sisa Stok: ${item.stokSaatIni} ${item.satuan}</span>
+                        </div>
+                        <button onclick='editMed(${JSON.stringify(item)})' class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 shrink-0 ml-2"><i class="fas fa-pen text-xs"></i></button>
+                    </div>
+                `;
+            });
+        }
+
+        // Form Pengelolaan Obat
+        function openFormMed() {
+            document.getElementById('form-obat').reset();
+            document.getElementById('med-old-kode').value = "";
+            document.getElementById('modal-obat-title').innerText = "Tambah Data Obat";
+            document.getElementById('list-obat').classList.add('hidden');
+            document.getElementById('modal-obat').classList.remove('hidden');
+        }
+
+        function closeFormMed() {
+            document.getElementById('list-obat').classList.remove('hidden');
+            document.getElementById('modal-obat').classList.add('hidden');
+        }
+
+        function editMed(item) {
+            openFormMed();
+            document.getElementById('modal-obat-title').innerText = "Edit Data Obat";
+            document.getElementById('med-old-kode').value = item.kodeObat;
+            document.getElementById('med-kode').value = item.kodeObat;
+            document.getElementById('med-nama').value = item.namaObat;
+            document.getElementById('med-kategori').value = item.kategori;
+            document.getElementById('med-bentuk').value = item.bentuk;
+            document.getElementById('med-satuan').value = item.satuan;
+            document.getElementById('med-stok-awal').value = item.stokAwal;
+            document.getElementById('med-stok-saat-ini').value = item.stokSaatIni;
+            document.getElementById('med-stok-min').value = item.stokMinimum;
+            document.getElementById('med-tgl-exp').value = item.tglExp; // date format yyyy-MM-dd is compatible
+            document.getElementById('med-lokasi').value = item.lokasi;
+            document.getElementById('med-ket').value = item.keterangan;
+        }
+
+        async function submitMed(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-med');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            const payload = {
+                oldKodeObat: document.getElementById('med-old-kode').value,
+                kodeObat: document.getElementById('med-kode').value,
+                namaObat: document.getElementById('med-nama').value,
+                kategori: document.getElementById('med-kategori').value,
+                bentuk: document.getElementById('med-bentuk').value,
+                satuan: document.getElementById('med-satuan').value,
+                stokAwal: document.getElementById('med-stok-awal').value,
+                stokSaatIni: document.getElementById('med-stok-saat-ini').value,
+                stokMinimum: document.getElementById('med-stok-min').value,
+                tglExp: document.getElementById('med-tgl-exp').value,
+                lokasi: document.getElementById('med-lokasi').value,
+                keterangan: document.getElementById('med-ket').value
+            };
+
+            try {
+                const res = await callAPI('saveMed', { item: payload });
+                if(res.success) {
+                    Swal.fire('Berhasil!', res.message, 'success');
+                    closeFormMed();
+                    loadMeds(); 
+                } else {
+                    Swal.fire('Gagal', res.message, 'error');
+                }
+            } catch (err) {
+                Swal.fire('Error', 'Terjadi kesalahan jaringan', 'error');
+            } finally {
+                btn.innerHTML = 'Simpan Data';
+                btn.disabled = false;
+            }
+        }
+
+        // Pengajuan Ambil Obat
+        async function submitAmbilObat(e) {
+            e.preventDefault();
+            const kode = document.getElementById('ambil-obat-kode').value;
+            const med = globalMeds.find(m => m.kodeObat === kode);
+            if(!med) return Swal.fire('Error', 'Pilih obat yang valid!', 'error');
+
+            const jumlah = parseInt(document.getElementById('ambil-obat-jumlah').value);
+            if (jumlah > parseInt(med.stokSaatIni)) {
+                return Swal.fire('Stok Kurang', `Stok ${med.namaObat} hanya tersisa ${med.stokSaatIni} ${med.satuan}.`, 'warning');
+            }
+
+            const btn = document.getElementById('btn-submit-ambil-obat');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Proses...';
+            btn.disabled = true;
+
+            const payload = {
+                email: localStorage.getItem('ppmi_email'), 
+                kodeObat: med.kodeObat,
+                namaObat: med.namaObat,
+                jumlah: jumlah,
+                satuan: med.satuan,
+                namaPengambil: document.getElementById('ambil-obat-nama').value,
+                kampus: document.getElementById('ambil-obat-kampus').value,
+                keluhan: document.getElementById('ambil-obat-keluhan').value,
+                petugas: document.getElementById('ambil-obat-petugas').value,
+                keterangan: document.getElementById('ambil-obat-ket').value
+            };
+
+            try {
+                const res = await callAPI('requestMed', { reqData: payload });
+                if(res.success) {
+                    Swal.fire({ title: 'Berhasil!', text: res.message, icon: 'success', confirmButtonColor: '#16a34a' });
+                    document.getElementById('form-ambil-obat').reset();
+                    document.getElementById('ambil-obat-satuan').value = "";
+                    loadMeds(); // Refresh stok di background
+                } else {
+                    Swal.fire('Gagal', res.message, 'error');
+                }
+            } catch (err) {
+                Swal.fire('Error', 'Terjadi kesalahan jaringan', 'error');
+            } finally {
+                btn.innerHTML = 'Ajukan Pengambilan';
+                btn.disabled = false;
+            }
+        }
+
+        // Histori Obat & Fungsi Enkripsi (Masking)
+        async function loadMedHistory() {
+            try {
+                const res = await callAPI('getMedHistory');
+                if(res.success) {
+                    globalMedHistory = res.data;
+                    renderMedHistory();
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function maskString(str) {
+            if(!str) return "";
+            let s = str.toString();
+            if(s.length <= 2) return s + "***";
+            return s.substring(0, 2) + "***"; // Tampilkan 2 huruf awal saja
+        }
+
+        function maskEmail(email) {
+            if(!email) return "";
+            let e = email.toString();
+            let parts = e.split('@');
+            if(parts.length < 2) return maskString(e);
+            return maskString(parts[0]) + "@" + parts[1]; // misal bu***@gmail.com
+        }
+
+        function renderMedHistory() {
+            const keyword = document.getElementById('search-histori-obat').value.toLowerCase();
+            const list = document.getElementById('list-histori-obat');
+            list.innerHTML = '';
+            
+            const filtered = globalMedHistory.filter(h => 
+                h.namaObat.toLowerCase().includes(keyword) || 
+                h.namaPengambil.toLowerCase().includes(keyword)
+            );
+
+            if(filtered.length === 0) {
+                list.innerHTML = '<p class="text-center text-sm text-gray-500 py-4">Belum ada riwayat pengambilan.</p>';
+                return;
+            }
+
+            filtered.forEach(item => {
+                list.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl border shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                        <div class="flex justify-between items-start mb-1">
+                            <h4 class="font-bold text-gray-800 text-sm leading-tight">${item.namaObat}</h4>
+                            <span class="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded shadow-sm shrink-0 ml-2">
+                                - ${item.jumlah} ${item.satuan}
+                            </span>
+                        </div>
+                        <div class="flex items-center text-xs text-gray-600 mb-1">
+                            <i class="fas fa-user-circle mr-1 text-gray-400"></i> ${maskString(item.namaPengambil)} 
+                            <span class="text-[10px] text-gray-400 ml-1">(${maskEmail(item.email)})</span>
+                        </div>
+                        <div class="text-[10px] text-gray-500 mb-2">
+                            <i class="fas fa-building mr-1"></i> ${item.kampus} | <i class="fas fa-user-md mr-1"></i> ${item.petugas || 'Mandiri'}
+                        </div>
+                        <div class="grid grid-cols-1 gap-1 text-xs bg-gray-50 p-2 rounded">
+                            <div class="flex justify-between items-center"><span class="text-gray-400 text-[10px]">Waktu Pengambilan</span><span class="font-medium">${item.tanggal}</span></div>
+                            <div><span class="text-gray-400 block text-[10px] mt-1">Keluhan / Catatan</span>${item.keluhan}</div>
+                        </div>
+                    </div>
+                `;
+            });
         }
     </script>
 </body>
