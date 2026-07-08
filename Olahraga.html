@@ -311,8 +311,6 @@
             'Lari Estafet': ['Pelari'] // Dummy agar tidak undefined
         };
 
-        let authMethod = 'email'; // Fix method to email only
-
         // DOM Elements
         const elSplash = document.getElementById('splash-screen');
         const elAuth = document.getElementById('auth-screen');
@@ -388,7 +386,8 @@
                 const res = await fetch(API_URL, {
                     method: 'POST', 
                     headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify({ action: "verify_otp", wa: contact, otp: otp })
+                    // PERBAIKAN BUG UTAMA: Menggunakan 'contact' agar terbaca sempurna di Backend
+                    body: JSON.stringify({ action: "verify_otp", contact: contact, otp: otp })
                 });
                 const response = await res.json();
 
@@ -830,7 +829,8 @@
 
             const payload = {
                 action: "submit_form",
-                wa: contact, // Menyesuaikan dengan backend (mengirim lewat key 'wa')
+                // PERBAIKAN BUG UTAMA: Menyelaraskan key ini dengan backend
+                contact: contact, 
                 nama: nama,
                 peran: peran,
                 delegasi: delegasi,
