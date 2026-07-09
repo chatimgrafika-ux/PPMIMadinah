@@ -830,7 +830,7 @@
 
         // Cek Login Lokal
         function checkLocalLogin() {
-            const savedEmail = localStorage.getItem('online_email');
+            const savedEmail = localStorage.getItem('ppmi_email');
             const savedThalib = localStorage.getItem('online_thalib');
 
             if (savedEmail && savedThalib) {
@@ -881,7 +881,7 @@
                         return; // Hentikan eksekusi, akses ditolak
                     }
                     
-                    localStorage.setItem('online_email', currentUserEmail);
+                    localStorage.setItem('ppmi_email', currentUserEmail);
                     localStorage.setItem('online_thalib', currentThalib);
                     
                     populateForm(data);
@@ -936,7 +936,7 @@
                 document.getElementById('dash-last-updated').textContent = "Status: Pengguna Baru";
                 document.getElementById('f-thalib').value = currentThalib; 
                 
-                localStorage.setItem('online_email', currentUserEmail);
+                localStorage.setItem('ppmi_email', currentUserEmail);
                 localStorage.setItem('online_thalib', currentThalib);
                 
                 showDynamicIsland('Verifikasi Berhasil!', 'success');
@@ -1010,7 +1010,7 @@
                 
                 currentUserEmail = nEmail;
                 currentThalib = nThalib;
-                localStorage.setItem('online_email', nEmail);
+                localStorage.setItem('ppmi_email', nEmail);
                 localStorage.setItem('online_thalib', nThalib);
                 
                 document.getElementById('f-thalib').value = nThalib;
@@ -1203,7 +1203,7 @@
 
         function logout() { 
             toggleMenu(); 
-            localStorage.removeItem('online_email');
+            localStorage.removeItem('ppmi_email');
             localStorage.removeItem('online_thalib');
             currentUserEmail = ''; 
             currentThalib = '';
