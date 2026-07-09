@@ -813,7 +813,7 @@
         }
 
         function checkLocalLogin() {
-            const savedEmail = localStorage.getItem('Taibah_email');
+            const savedEmail = localStorage.getItem('ppmi_email');
             const savedIdVal = localStorage.getItem('Taibah_idval');
             const savedIdType = localStorage.getItem('Taibah_idtype');
 
@@ -1005,7 +1005,7 @@
                     if (!isValid) {
                         showDynamicIsland('Nomor Identitas tidak cocok dengan Email ini!', 'error');
                         // Hapus penyimpanan lokal jika kredensial salah / diubah di perangkat lain
-                        localStorage.removeItem('Taibah_email'); 
+                        localStorage.removeItem('ppmi_email'); 
                         localStorage.removeItem('Taibah_idval');
                         return;
                     }
@@ -1017,7 +1017,7 @@
                     document.getElementById('dash-id').textContent = "ID: " + currentEmail;
                     
                     // Simpan ke Local Storage untuk Auto-Login selanjutnya
-                    localStorage.setItem('Taibah_email', currentEmail);
+                    localStorage.setItem('ppmi_email', currentEmail);
                     localStorage.setItem('Taibah_idval', idVal);
                     localStorage.setItem('Taibah_idtype', idType);
                     
@@ -1101,7 +1101,7 @@
                 document.getElementById('dash-id').textContent = "ID: " + currentEmail;
                 
                 // Simpan ke Local Storage
-                localStorage.setItem('Taibah_email', currentEmail);
+                localStorage.setItem('ppmi_email', currentEmail);
                 const idType = document.getElementById('login-id-type').value;
                 const idVal = document.getElementById('login-id-val').value.trim();
                 if(idVal) {
@@ -1289,7 +1289,7 @@
                 currentEmail = nEmail; currentIdVal = nThalib;
                 
                 // Update Local Storage
-                localStorage.setItem('Taibah_email', nEmail); 
+                localStorage.setItem('ppmi_email', nEmail); 
                 localStorage.setItem('Taibah_idval', nThalib);
                 localStorage.setItem('Taibah_idtype', 'thalib'); // Default ke Raqm Thalib
                 
@@ -1346,7 +1346,7 @@
             toggleMenu(); 
             
             // Hapus Kredensial dari Memori Browser saat Keluar
-            localStorage.removeItem('Taibah_email'); 
+            localStorage.removeItem('ppmi_email'); 
             localStorage.removeItem('Taibah_idval');
             localStorage.removeItem('Taibah_idtype');
             
