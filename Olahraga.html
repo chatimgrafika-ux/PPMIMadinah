@@ -444,7 +444,7 @@
         // AUTHENTICATION LOGIC (EMAIL ONLY)
         // ==========================================
         function checkCacheLogin() {
-            const cachedEmail = localStorage.getItem('olimpiade_email');
+            const cachedEmail = localStorage.getItem('ppmi_email');
             if(cachedEmail) {
                 window.currentUserEmail = cachedEmail;
                 elApp.classList.replace('hidden-fade', 'visible-fade');
@@ -504,7 +504,7 @@
                 const response = await res.json();
 
                 if(response.status === 'success') {
-                    localStorage.setItem('olimpiade_email', email);
+                    localStorage.setItem('ppmi_email', email);
                     window.currentUserEmail = email;
                     elAuth.classList.replace('visible-fade', 'hidden-fade');
                     setTimeout(() => {
@@ -529,7 +529,7 @@
 
         function confirmLogout() {
             showDialog("Yakin ingin keluar? Anda memerlukan pengiriman kode OTP baru melalui Email jika ingin masuk kembali.", "confirm", () => {
-                localStorage.removeItem('olimpiade_email');
+                localStorage.removeItem('ppmi_email');
                 resetAuth();
                 elApp.classList.replace('visible-fade', 'hidden-fade');
                 setTimeout(() => elAuth.classList.replace('hidden-fade', 'visible-fade'), 300);
