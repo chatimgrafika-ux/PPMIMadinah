@@ -228,14 +228,6 @@
             }
         }
 
-        // SPLASH SCREEN LOGIC
-        window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('splash-screen').style.opacity = '0';
-                setTimeout(() => document.getElementById('splash-screen').classList.add('hidden'), 500);
-            }, 1500);
-        };
-
         // ENKRIPSI SHA-256
         async function sha256(message) {
             const msgBuffer = new TextEncoder().encode(message);
@@ -244,7 +236,55 @@
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // FUNGSI LOGIN & AMBIL DATA
+        // FUNGSI UNTUK MERENDER HALAMAN SETELAH LOGIN SUKSES
+        function processLoginSuccess(data) {
+            appState.contacts = data.map(c => ({
+                ...c,
+                sendWa1: !!c.wa1, // Aktifkan checkbox by default jika ada
+                sendWa2: !!c.wa2
+            }));
+            
+            document.getElementById('loginView').classList.add('hidden');
+            document.getElementById('main-header').classList.remove('hidden');
+            document.getElementById('selectContactsView').classList.remove('hidden');
+            document.getElementById('headerSubtitle').innerText = `${appState.contacts.length} Kontak Database`;
+            
+            document.body.classList.replace('bg-transparent', 'bg-gray-50');
+            
+            renderContacts();
+        }
+
+        // SPLASH SCREEN & AUTO LOGIN LOGIC
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.opacity = '0';
+                setTimeout(() => document.getElementById('splash-screen').classList.add('hidden'), 500);
+            }, 1500);
+
+            // LOGIKA PENGECEKAN LOCAL STORAGE (Auto Login & Cache)
+            const savedPassword = localStorage.getItem("sandihumas");
+            const cachedData = localStorage.getItem("humas_contacts_cache");
+
+            if (savedPassword) {
+                document.getElementById('password').value = savedPassword; // Isi kolom password
+                
+                if (cachedData) {
+                    try {
+                        const parsedData = JSON.parse(cachedData);
+                        processLoginSuccess(parsedData); // Langsung render tanpa API
+                        setTimeout(() => {
+                            showDynamicIsland("Sesi dilanjutkan dari memori lokal.", "success");
+                        }, 1600); // Munculkan notifikasi setelah splash screen hilang
+                    } catch (e) {
+                        handleLogin(); // Jika cache error, panggil API
+                    }
+                } else {
+                    handleLogin(); // Jika belum ada cache, panggil API
+                }
+            }
+        };
+
+        // FUNGSI LOGIN & AMBIL DATA (Dengan Sistem Simpan ke Local Storage)
         async function handleLogin() {
             const encodedApi = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6LWFPdlBwUFdzNms5cTlVdy1LTk5VOGxiOVRGV3laN3FpN2d0cFBYOE85UnFFOXdrWEI2OU9TOGR0TmNkbkhMQzU2Zy9leGVj";
             const apiUrl = atob(encodedApi); 
@@ -267,22 +307,16 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    appState.contacts = result.data.map(c => ({
-                        ...c,
-                        sendWa1: !!c.wa1, // Aktifkan checkbox by default jika ada
-                        sendWa2: !!c.wa2
-                    }));
-                    
-                    document.getElementById('loginView').classList.add('hidden');
-                    document.getElementById('main-header').classList.remove('hidden');
-                    document.getElementById('selectContactsView').classList.remove('hidden');
-                    document.getElementById('headerSubtitle').innerText = `${appState.contacts.length} Kontak Database`;
-                    
-                    document.body.classList.replace('bg-transparent', 'bg-gray-50');
-                    
-                    renderContacts();
-                    showDynamicIsland("Data berhasil dimuat.", "success");
+                    // SIMPAN DATA LOGIN & CACHE KE LOCAL STORAGE
+                    localStorage.setItem("sandihumas", password);
+                    localStorage.setItem("humas_contacts_cache", JSON.stringify(result.data));
+
+                    processLoginSuccess(result.data);
+                    showDynamicIsland("Data berhasil dimuat dari server.", "success");
                 } else {
+                    // JIKA PASSWORD SALAH, HAPUS DATA LAMA DARI LOCAL STORAGE
+                    localStorage.removeItem("sandihumas");
+                    localStorage.removeItem("humas_contacts_cache");
                     showDynamicIsland("Akses Ditolak: " + result.message, "error");
                 }
             } catch (error) {
