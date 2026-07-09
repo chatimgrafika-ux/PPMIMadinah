@@ -206,7 +206,7 @@
 
         // FUNGSI CEK DATA DARI LOCAL STORAGE
         function checkLocalLogin() {
-            const savedEmail = localStorage.getItem('ticket_email');
+            const savedEmail = localStorage.getItem('ppmi_email');
             const savedThalib = localStorage.getItem('ticket_thalib');
             const savedLastName = localStorage.getItem('ticket_lastname');
             const savedPnr = localStorage.getItem('ticket_pnr'); // Mengambil PNR tersimpan
@@ -264,7 +264,7 @@
                 }
 
                 // Simpan sesi
-                localStorage.setItem('ticket_email', emailInput);
+                localStorage.setItem('ppmi_email', emailInput);
                 localStorage.setItem('ticket_thalib', thalibInput);
                 localStorage.setItem('ticket_lastname', lastNameData);
 
@@ -321,7 +321,7 @@
         // FUNGSI LOGOUT DAN MENGHAPUS SELURUH SESI
         function logout() { 
             // Menghapus data dari memori browser
-            localStorage.removeItem('ticket_email');
+            localStorage.removeItem('ppmi_email');
             localStorage.removeItem('ticket_thalib');
             localStorage.removeItem('ticket_lastname');
             localStorage.removeItem('ticket_pnr'); // Menghapus memori PNR
