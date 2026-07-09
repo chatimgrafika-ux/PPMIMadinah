@@ -63,7 +63,7 @@
 </head>
 <body class="text-slate-800 antialiased min-h-screen pb-10 flex flex-col">
   
-  <!-- Modal Edit -->
+  <!-- Modal Edit / Tambah -->
   <div id="editModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center px-4 bg-slate-900/40 backdrop-blur-sm">
     <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
       <h3 class="text-lg font-bold mb-4" id="modalTitle">Edit Data</h3>
@@ -80,6 +80,19 @@
       <div class="flex gap-2">
         <button onclick="document.getElementById('editModal').classList.add('hidden')" class="flex-1 py-2 border rounded-lg text-sm">Batal</button>
         <button onclick="saveEdit()" class="flex-1 py-2 bg-emerald-600 text-white rounded-lg text-sm font-semibold">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Paste / Drop Data -->
+  <div id="pasteModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center px-4 bg-slate-900/40 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+      <h3 class="text-lg font-bold mb-2 text-slate-800">Paste / Drop Data</h3>
+      <p class="text-xs text-slate-500 mb-4">Paste teks JSON di sini, atau <strong>Drag & Drop</strong> file <code>.json</code> ke dalam kotak di bawah ini.</p>
+      <textarea id="pasteVal" class="w-full border border-slate-200 rounded-lg p-3 text-xs font-mono h-32 mb-4 bg-slate-50 focus:bg-white transition-colors" placeholder='{"localStorage": {...}, "sessionStorage": {...}, "cookies": {...}}'></textarea>
+      <div class="flex gap-2">
+        <button onclick="document.getElementById('pasteModal').classList.add('hidden')" class="flex-1 py-2 border rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50">Batal</button>
+        <button onclick="processPaste()" class="flex-1 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold shadow-sm shadow-purple-200">Import Data</button>
       </div>
     </div>
   </div>
@@ -164,6 +177,37 @@
          </div>
       </div>
 
+      <!-- Bagian Backup & Restore -->
+      <div class="border-t border-slate-100 pt-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+              <i class="ph-fill ph-export text-purple-500"></i> Backup & Restore
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">Download, Upload, atau Copy & Paste seluruh penyimpanan (Storage & Cookies).</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <button onclick="downloadJSON()" class="flex flex-col items-center justify-center p-3 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl transition-colors border border-purple-200">
+            <i class="ph ph-download-simple text-2xl mb-1"></i>
+            <span class="text-xs font-semibold">Download</span>
+          </button>
+          <button onclick="document.getElementById('fileUpload').click()" class="flex flex-col items-center justify-center p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl transition-colors border border-blue-200">
+            <i class="ph ph-upload-simple text-2xl mb-1"></i>
+            <span class="text-xs font-semibold">Upload</span>
+          </button>
+          <button onclick="copyToClipboard()" class="flex flex-col items-center justify-center p-3 bg-teal-50 hover:bg-teal-100 text-teal-700 rounded-xl transition-colors border border-teal-200">
+            <i class="ph ph-copy text-2xl mb-1"></i>
+            <span class="text-xs font-semibold">Salin JSON</span>
+          </button>
+          <button onclick="openPasteModal()" class="flex flex-col items-center justify-center p-3 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-xl transition-colors border border-orange-200">
+            <i class="ph ph-clipboard-text text-2xl mb-1"></i>
+            <span class="text-xs font-semibold">Paste/Drop</span>
+          </button>
+        </div>
+        <input type="file" id="fileUpload" accept=".json" class="hidden" onchange="uploadJSON(event)">
+      </div>
+
       <div class="mt-6 pt-6 border-t border-red-100">
         <button onclick="openConfirmModal()" class="w-full py-3 px-4 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-semibold rounded-xl text-sm transition-all flex items-center justify-center gap-2">
           <i class="ph-fill ph-warning-circle text-lg"></i>
@@ -206,6 +250,33 @@
       checkServiceWorkerStatus();
       loadCaches();
       loadLocalData();
+
+      // Inisialisasi Event Drag & Drop untuk Modal Paste
+      const pasteArea = document.getElementById('pasteVal');
+      if (pasteArea) {
+        pasteArea.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          pasteArea.classList.add('border-purple-500', 'bg-purple-50');
+        });
+        pasteArea.addEventListener('dragleave', (e) => {
+          e.preventDefault();
+          pasteArea.classList.remove('border-purple-500', 'bg-purple-50');
+        });
+        pasteArea.addEventListener('drop', (e) => {
+          e.preventDefault();
+          pasteArea.classList.remove('border-purple-500', 'bg-purple-50');
+          if(e.dataTransfer.files.length > 0) {
+             const file = e.dataTransfer.files[0];
+             const reader = new FileReader();
+             reader.onload = function(evt) {
+               pasteArea.value = evt.target.result;
+             };
+             reader.readAsText(file);
+          } else {
+             pasteArea.value = e.dataTransfer.getData('text');
+          }
+        });
+      }
     });
 
     async function checkServiceWorkerStatus() {
@@ -268,12 +339,6 @@
       setTimeout(() => icon.classList.remove('animate-spin'), 500);
     }
 
-    async function deleteSpecificCache(cacheName) {
-      await caches.delete(cacheName);
-      showToast('Cache dihapus', 'success');
-      loadCaches();
-    }
-
     async function loadLocalData() {
       const icon = document.getElementById('refreshDataIcon');
       icon.classList.add('animate-spin');
@@ -281,46 +346,71 @@
       container.innerHTML = '';
 
       // --- Local Storage ---
-      if (localStorage.length > 0) {
-        let listHtml = '<ul class="space-y-2 mt-2">';
-        for (let i = 0; i < localStorage.length; i++) {
-          let k = localStorage.key(i);
-          let v = localStorage.getItem(k);
-          listHtml += `<li class="flex justify-between items-center bg-white p-2 rounded border text-xs">
-                         <span class="truncate w-1/2">${k}</span>
-                         <button onclick="openEditModal('${k}', '${(v||'').replace(/'/g, "\\'")}', 'localStorage')" class="text-blue-600 font-bold">Edit</button>
-                       </li>`;
-        }
-        container.insertAdjacentHTML('beforeend', `<div class="p-3 bg-blue-50 rounded-xl"><h4 class="font-bold text-xs">Local Storage</h4>${listHtml}</ul></div>`);
+      let lsHtml = '<ul class="space-y-2 mt-2">';
+      for (let i = 0; i < localStorage.length; i++) {
+        let k = localStorage.key(i);
+        let v = localStorage.getItem(k);
+        lsHtml += `<li class="flex justify-between items-center bg-white p-2 rounded border text-xs">
+                     <span class="truncate w-1/2">${k}</span>
+                     <button onclick="openEditModal('${k}', '${(v||'').replace(/'/g, "\\'")}', 'localStorage')" class="text-blue-600 font-bold">Edit</button>
+                   </li>`;
       }
+      lsHtml += '</ul>';
+      container.insertAdjacentHTML('beforeend', `
+        <div class="p-3 bg-blue-50 rounded-xl mb-3">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-xs">Local Storage</h4>
+            <button onclick="openAddModal('localStorage')" class="text-blue-600 bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded text-xs font-semibold flex items-center gap-1"><i class="ph ph-plus"></i> Tambah</button>
+          </div>
+          ${localStorage.length > 0 ? lsHtml : '<p class="text-xs text-slate-400 mt-2">Belum ada data.</p>'}
+        </div>
+      `);
 
       // --- Session Storage ---
-      if (sessionStorage.length > 0) {
-        let listHtml = '<ul class="space-y-2 mt-2">';
-        for (let i = 0; i < sessionStorage.length; i++) {
-          let k = sessionStorage.key(i);
-          let v = sessionStorage.getItem(k);
-          listHtml += `<li class="flex justify-between items-center bg-white p-2 rounded border text-xs">
-                         <span class="truncate w-1/2">${k}</span>
-                         <button onclick="openEditModal('${k}', '${(v||'').replace(/'/g, "\\'")}', 'sessionStorage')" class="text-blue-600 font-bold">Edit</button>
-                       </li>`;
-        }
-        container.insertAdjacentHTML('beforeend', `<div class="p-3 bg-blue-50 rounded-xl"><h4 class="font-bold text-xs">Session Storage</h4>${listHtml}</ul></div>`);
+      let ssHtml = '<ul class="space-y-2 mt-2">';
+      for (let i = 0; i < sessionStorage.length; i++) {
+        let k = sessionStorage.key(i);
+        let v = sessionStorage.getItem(k);
+        ssHtml += `<li class="flex justify-between items-center bg-white p-2 rounded border text-xs">
+                     <span class="truncate w-1/2">${k}</span>
+                     <button onclick="openEditModal('${k}', '${(v||'').replace(/'/g, "\\'")}', 'sessionStorage')" class="text-blue-600 font-bold">Edit</button>
+                   </li>`;
       }
+      ssHtml += '</ul>';
+      container.insertAdjacentHTML('beforeend', `
+        <div class="p-3 bg-blue-50 rounded-xl mb-3">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-xs">Session Storage</h4>
+            <button onclick="openAddModal('sessionStorage')" class="text-blue-600 bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded text-xs font-semibold flex items-center gap-1"><i class="ph ph-plus"></i> Tambah</button>
+          </div>
+          ${sessionStorage.length > 0 ? ssHtml : '<p class="text-xs text-slate-400 mt-2">Belum ada data.</p>'}
+        </div>
+      `);
 
       // --- Cookies ---
-      const cookies = document.cookie.split(';');
-      if (document.cookie) {
-        let listHtml = '<ul class="space-y-2 mt-2">';
-        cookies.forEach(c => {
-          let [k, v] = c.split('=');
-          if(k) listHtml += `<li class="flex justify-between items-center bg-white p-2 rounded border text-xs">
+      const cookies = document.cookie ? document.cookie.split(';') : [];
+      let cookieHtml = '<ul class="space-y-2 mt-2">';
+      let hasCookies = false;
+      cookies.forEach(c => {
+        let [k, v] = c.split('=');
+        if(k && k.trim() !== "") {
+          hasCookies = true;
+          cookieHtml += `<li class="flex justify-between items-center bg-white p-2 rounded border text-xs">
                          <span class="truncate w-1/2">${k.trim()}</span>
                          <button onclick="openEditModal('${k.trim()}', '${(v||'').replace(/'/g, "\\'")}', 'cookies')" class="text-blue-600 font-bold">Edit</button>
                        </li>`;
-        });
-        container.insertAdjacentHTML('beforeend', `<div class="p-3 bg-blue-50 rounded-xl"><h4 class="font-bold text-xs">Cookies</h4>${listHtml}</ul></div>`);
-      }
+        }
+      });
+      cookieHtml += '</ul>';
+      container.insertAdjacentHTML('beforeend', `
+        <div class="p-3 bg-blue-50 rounded-xl mb-3">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-xs">Cookies</h4>
+            <button onclick="openAddModal('cookies')" class="text-blue-600 bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded text-xs font-semibold flex items-center gap-1"><i class="ph ph-plus"></i> Tambah</button>
+          </div>
+          ${hasCookies ? cookieHtml : '<p class="text-xs text-slate-400 mt-2">Belum ada data.</p>'}
+        </div>
+      `);
 
       setTimeout(() => icon.classList.remove('animate-spin'), 500);
     }
@@ -334,25 +424,44 @@
       document.getElementById('editModal').classList.remove('hidden');
     }
 
+    // Fungsi baru untuk modal Tambah Data
+    function openAddModal(type) {
+      document.getElementById('editOldKey').value = '';
+      document.getElementById('editKey').value = '';
+      document.getElementById('editVal').value = '';
+      document.getElementById('editType').value = type;
+      document.getElementById('modalTitle').innerText = 'Tambah Data (' + type + ')';
+      document.getElementById('editModal').classList.remove('hidden');
+    }
+
     function saveEdit() {
       const oldKey = document.getElementById('editOldKey').value;
       const newKey = document.getElementById('editKey').value;
       const newVal = document.getElementById('editVal').value;
       const type = document.getElementById('editType').value;
 
+      if (!newKey.trim()) {
+        showToast('Nama key tidak boleh kosong', 'error');
+        return;
+      }
+
       if(type === 'localStorage') {
-        if(oldKey !== newKey) localStorage.removeItem(oldKey);
+        if(oldKey && oldKey !== newKey) localStorage.removeItem(oldKey);
         localStorage.setItem(newKey, newVal);
       } else if(type === 'sessionStorage') {
-        if(oldKey !== newKey) sessionStorage.removeItem(oldKey);
+        if(oldKey && oldKey !== newKey) sessionStorage.removeItem(oldKey);
         sessionStorage.setItem(newKey, newVal);
       } else if(type === 'cookies') {
+        if(oldKey && oldKey !== newKey) {
+          // Hapus cookie lama jika nama key diganti
+          document.cookie = oldKey + "=;expires=" + new Date(0).toUTCString() + ";path=/";
+        }
         document.cookie = newKey + "=" + newVal + ";path=/";
       }
       
       document.getElementById('editModal').classList.add('hidden');
       loadLocalData();
-      showToast('Data berhasil diperbarui', 'success');
+      showToast('Data berhasil disimpan', 'success');
     }
 
     async function executeTotalReset() {
@@ -367,9 +476,119 @@
     function openConfirmModal() { document.getElementById('confirmModal').classList.remove('hidden'); }
     function closeConfirmModal() { document.getElementById('confirmModal').classList.add('hidden'); }
 
+    // --- FUNGSI BACKUP & RESTORE DATA ---
+    function getExportData() {
+      const data = { localStorage: {}, sessionStorage: {}, cookies: {} };
+      
+      for (let i = 0; i < localStorage.length; i++) {
+        let k = localStorage.key(i);
+        data.localStorage[k] = localStorage.getItem(k);
+      }
+      for (let i = 0; i < sessionStorage.length; i++) {
+        let k = sessionStorage.key(i);
+        data.sessionStorage[k] = sessionStorage.getItem(k);
+      }
+      const cookies = document.cookie ? document.cookie.split(';') : [];
+      cookies.forEach(c => {
+        let [k, v] = c.split('=');
+        if(k && k.trim() !== "") data.cookies[k.trim()] = v;
+      });
+      
+      return JSON.stringify(data, null, 2);
+    }
+
+    function importDataFromJSON(jsonString) {
+      try {
+        const data = JSON.parse(jsonString);
+        
+        if(data.localStorage) {
+          Object.keys(data.localStorage).forEach(k => localStorage.setItem(k, data.localStorage[k]));
+        }
+        if(data.sessionStorage) {
+          Object.keys(data.sessionStorage).forEach(k => sessionStorage.setItem(k, data.sessionStorage[k]));
+        }
+        if(data.cookies) {
+          Object.keys(data.cookies).forEach(k => {
+             document.cookie = k + "=" + data.cookies[k] + ";path=/";
+          });
+        }
+        
+        loadLocalData();
+        showToast('Data berhasil di-restore!', 'success');
+      } catch (e) {
+        showToast('Format JSON tidak valid!', 'error');
+      }
+    }
+
+    function downloadJSON() {
+      const dataStr = getExportData();
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'pwa_backup_' + new Date().getTime() + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('File backup didownload', 'success');
+    }
+
+    function uploadJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        importDataFromJSON(e.target.result);
+      };
+      reader.readAsText(file);
+      event.target.value = ''; // Reset input agar bisa upload file yang sama
+    }
+
+    function copyToClipboard() {
+      const dataStr = getExportData();
+      // Gunakan document.execCommand sebagai metode paling kompatibel (aman di iFrame)
+      let textArea = document.createElement("textarea");
+      textArea.value = dataStr;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+          document.execCommand('copy');
+          showToast('Data JSON berhasil disalin', 'success');
+      } catch (err) {
+          showToast('Gagal menyalin data', 'error');
+      }
+      textArea.remove();
+    }
+
+    function openPasteModal() {
+      document.getElementById('pasteVal').value = '';
+      document.getElementById('pasteModal').classList.remove('hidden');
+    }
+
+    function processPaste() {
+      const val = document.getElementById('pasteVal').value;
+      if(!val.trim()) {
+         showToast('Teks JSON kosong!', 'error');
+         return;
+      }
+      importDataFromJSON(val);
+      document.getElementById('pasteModal').classList.add('hidden');
+    }
+    // --- AKHIR FUNGSI BACKUP & RESTORE ---
+
     function showToast(msg, type) {
       const toast = document.getElementById('toast');
       document.getElementById('toastMsg').innerText = msg;
+      
+      // Ganti icon/warna berdasarkan tipe toast jika diperlukan (opsional), saat ini default
+      if(type === 'error') {
+        document.getElementById('toastIcon').className = 'ph-fill ph-warning-circle text-xl text-red-400';
+      } else {
+        document.getElementById('toastIcon').className = 'ph-fill ph-check-circle text-xl text-emerald-400';
+      }
+
       toast.classList.remove('-translate-y-24', 'opacity-0');
       toast.classList.add('translate-y-0', 'opacity-100');
       setTimeout(() => {
