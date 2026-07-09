@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manajemen Sistem & Cache PWA</title>
+  <title>Manajemen Sistem Local Browser & Cache PWA PPMI Madinah</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -21,10 +21,16 @@
     }
     
     /* Custom Scrollbar */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #f0fdf4; }
-    ::-webkit-scrollbar-thumb { background: #86efac; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #4ade80; }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #f0fdf4; }
+      ::-webkit-scrollbar-thumb { background: #86efac; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: #4ade80; }
+
+      /* Custom Scrollbar for inner lists */
+      .list-scroll::-webkit-scrollbar { width: 4px; }
+      .list-scroll::-webkit-scrollbar-track { background: transparent; }
+      .list-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+      .list-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
     /* Loader Animation */
     .loader-sm {
@@ -114,12 +120,33 @@
       </div>
 
       <!-- Container untuk daftar Cache -->
-      <div id="cacheListContainer" class="space-y-3 min-h-[100px] flex flex-col justify-center">
+      <div id="cacheListContainer" class="space-y-3 min-h-[100px] flex flex-col justify-center mb-6">
         <!-- Skeleton Loading -->
         <div class="text-center py-6 text-slate-400 space-y-3">
            <div class="loader-sm text-green-500 mx-auto w-6 h-6 border-2"></div>
            <p class="text-sm">Memuat data cache...</p>
         </div>
+      </div>
+
+      <div class="border-t border-slate-100 pt-6 mb-6">
+         <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <i class="ph-fill ph-hard-drives text-blue-500"></i> Penyimpanan Data Lokal
+              </h2>
+              <p class="text-sm text-slate-500 mt-1">Data Storage, Cookies, dan Database domain & subdomain ini.</p>
+            </div>
+            <button onclick="loadLocalData()" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Muat Ulang Data">
+              <i class="ph ph-arrows-clockwise text-xl" id="refreshDataIcon"></i>
+            </button>
+         </div>
+         <div id="localDataContainer" class="space-y-3 flex flex-col justify-center">
+            <!-- Skeleton Loading -->
+            <div class="text-center py-6 text-slate-400 space-y-3">
+               <div class="loader-sm text-blue-500 mx-auto w-6 h-6 border-2"></div>
+               <p class="text-sm">Memeriksa data lokal...</p>
+            </div>
+         </div>
       </div>
 
       <!-- Danger Zone -->
@@ -145,7 +172,7 @@
         </div>
         <h3 class="text-xl font-bold text-slate-800">Reset Total PWA?</h3>
         <p class="text-sm text-slate-500 leading-relaxed">
-          Tindakan ini akan menghapus <strong>seluruh Cache</strong> dan <strong>Service Worker</strong>. Aplikasi akan dimuat ulang dari server (membutuhkan internet).
+          Tindakan ini akan menghapus <strong>seluruh Cache</strong>, <strong>Data Storage (Cookies, Local, dll)</strong>, dan <strong>Service Worker</strong>. Aplikasi akan dimuat ulang dari server.
         </p>
       </div>
       <div class="p-4 bg-slate-50 border-t border-slate-100 flex gap-3">
@@ -168,6 +195,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       checkServiceWorkerStatus();
       loadCaches();
+      loadLocalData();
     });
 
     // 1. Cek Status Service Worker
@@ -238,19 +266,86 @@
           const cache = await caches.open(name);
           const requests = await cache.keys();
           const itemCount = requests.length;
+          
+          // --- ANALISIS DETAIL CACHE ---
+          let domains = new Set();
+          let contentTypes = new Set();
+          let latestDate = 0;
+
+          // Mengambil semua header response dari request untuk dianalisis
+          const responses = await Promise.all(requests.map(req => cache.match(req)));
+          
+          responses.forEach((res, index) => {
+            if (!res) return;
+            const req = requests[index];
+
+            // 1. Ekstrak Domain
+            try {
+              const urlObj = new URL(req.url);
+              domains.add(urlObj.hostname);
+            } catch(e) {}
+
+            // 2. Ekstrak Jenis Konten (Isi)
+            const cType = res.headers.get('content-type');
+            if (cType) {
+              if (cType.includes('text/html')) contentTypes.add('Halaman HTML');
+              else if (cType.includes('application/json')) contentTypes.add('Data JSON');
+              else if (cType.includes('javascript')) contentTypes.add('Script JS');
+              else if (cType.includes('text/css')) contentTypes.add('Gaya CSS');
+              else if (cType.includes('image/')) contentTypes.add('Gambar');
+              else if (cType.includes('font/')) contentTypes.add('Font');
+              else contentTypes.add('Berkas Lainnya');
+            }
+
+            // 3. Ekstrak Waktu Terakhir Tersimpan/Terpakai
+            const dateHeader = res.headers.get('date') || res.headers.get('last-modified');
+            if (dateHeader) {
+              const timeNum = new Date(dateHeader).getTime();
+              if (!isNaN(timeNum) && timeNum > latestDate) {
+                latestDate = timeNum;
+              }
+            }
+          });
+
+          // Format Teks
+          const domainStr = Array.from(domains).join(', ') || 'Lokal/Unknown';
+          const typeStr = Array.from(contentTypes).join(', ') || 'Campuran';
+          let dateStr = 'Tidak diketahui';
+          
+          if (latestDate > 0) {
+            dateStr = new Date(latestDate).toLocaleString('id-ID', {
+              day: '2-digit', month: 'short', year: 'numeric',
+              hour: '2-digit', minute: '2-digit'
+            });
+          }
 
           const itemHTML = `
-            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-emerald-300 transition-colors group">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+            <div class="flex items-start justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-emerald-300 transition-colors group">
+              <div class="flex items-start gap-3 w-full overflow-hidden">
+                <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-1">
                   <i class="ph-fill ph-folder text-xl"></i>
                 </div>
-                <div>
-                  <h4 class="font-semibold text-slate-700 text-sm truncate max-w-[150px] sm:max-w-xs" title="${name}">${name}</h4>
-                  <p class="text-xs text-slate-500 mt-0.5">${itemCount} file cache</p>
+                <div class="flex-1 min-w-0 pr-2">
+                  <h4 class="font-semibold text-slate-700 text-sm truncate" title="${name}">${name}</h4>
+                  
+                  <div class="mt-2 space-y-1.5">
+                    <p class="text-xs text-slate-500 flex items-center gap-1.5">
+                      <i class="ph-fill ph-files text-slate-400 text-sm"></i> ${itemCount} file tersimpan
+                    </p>
+                    <p class="text-xs text-slate-500 flex items-center gap-1.5 truncate" title="${domainStr}">
+                      <i class="ph-fill ph-globe text-slate-400 text-sm"></i> ${domainStr}
+                    </p>
+                    <p class="text-xs text-slate-500 flex items-center gap-1.5 truncate" title="${typeStr}">
+                      <i class="ph-fill ph-file-text text-slate-400 text-sm"></i> ${typeStr}
+                    </p>
+                    <p class="text-xs text-slate-500 flex items-center gap-1.5">
+                      <i class="ph-fill ph-clock-counter-clockwise text-slate-400 text-sm"></i> ${dateStr}
+                    </p>
+                  </div>
+                  
                 </div>
               </div>
-              <button onclick="deleteSpecificCache('${name}')" title="Hapus Cache Ini" class="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2.5 rounded-xl transition-all">
+              <button onclick="deleteSpecificCache('${name}')" title="Hapus Cache Ini" class="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2.5 rounded-xl transition-all shrink-0">
                 <i class="ph-fill ph-trash text-lg"></i>
               </button>
             </div>
@@ -266,7 +361,6 @@
 
     // 4. Hapus Cache Spesifik
     async function deleteSpecificCache(cacheName) {
-      // Kita pakai manipulasi DOM untuk bikin tombol jadi loading visual (opsional)
       try {
         const success = await caches.delete(cacheName);
         if (success) {
@@ -280,16 +374,225 @@
       }
     }
 
-    // 5. Eksekusi Reset Total (Hapus semua cache & SW)
+    // --- FITUR BARU: BACA DATA PENYIMPANAN LOKAL (LocalStorage, SessionStorage, Cookies, IndexedDB) ---
+    async function loadLocalData() {
+      const icon = document.getElementById('refreshDataIcon');
+      icon.classList.add('animate-spin');
+      const container = document.getElementById('localDataContainer');
+      container.innerHTML = '';
+
+      let dataFound = false;
+      const currentDomain = window.location.hostname;
+
+      // 1. Local Storage Detail
+      if (localStorage.length > 0) {
+        dataFound = true;
+        let size = JSON.stringify(localStorage).length;
+        let sizeStr = (size / 1024).toFixed(2) + ' KB';
+        
+        let listHtml = '<ul class="mt-1 space-y-1.5 max-h-48 overflow-y-auto pr-2 list-scroll text-xs text-slate-500">';
+        for (let i = 0; i < localStorage.length; i++) {
+            let key = localStorage.key(i);
+            let val = localStorage.getItem(key);
+            let displayVal = (val && val.length > 70) ? val.substring(0, 70) + '...' : val;
+            listHtml += `<li class="border-b border-slate-100 pb-1.5 last:border-0">
+                           <strong class="text-slate-700 break-all font-semibold">${key}</strong> <br/>
+                           <span class="break-all text-slate-400">${displayVal}</span>
+                         </li>`;
+        }
+        listHtml += '</ul>';
+        
+        container.insertAdjacentHTML('beforeend', createDataHTML(
+            'Local Storage', 
+            `${localStorage.length} item`, 
+            `${sizeStr} • Domain: ${currentDomain}`, 
+            'localStorage', 
+            'ph-database',
+            listHtml
+        ));
+      }
+
+      // 2. Session Storage Detail
+      if (sessionStorage.length > 0) {
+        dataFound = true;
+        let size = JSON.stringify(sessionStorage).length;
+        let sizeStr = (size / 1024).toFixed(2) + ' KB';
+        
+        let listHtml = '<ul class="mt-1 space-y-1.5 max-h-48 overflow-y-auto pr-2 list-scroll text-xs text-slate-500">';
+        for (let i = 0; i < sessionStorage.length; i++) {
+            let key = sessionStorage.key(i);
+            let val = sessionStorage.getItem(key);
+            let displayVal = (val && val.length > 70) ? val.substring(0, 70) + '...' : val;
+            listHtml += `<li class="border-b border-slate-100 pb-1.5 last:border-0">
+                           <strong class="text-slate-700 break-all font-semibold">${key}</strong> <br/>
+                           <span class="break-all text-slate-400">${displayVal}</span>
+                         </li>`;
+        }
+        listHtml += '</ul>';
+
+        container.insertAdjacentHTML('beforeend', createDataHTML(
+            'Session Storage', 
+            `${sessionStorage.length} item`, 
+            `${sizeStr} • Terhapus saat tab ditutup`, 
+            'sessionStorage', 
+            'ph-clock',
+            listHtml
+        ));
+      }
+
+      // 3. Cookies Detail
+      const cookies = document.cookie;
+      if (cookies) {
+        dataFound = true;
+        const cookieArray = cookies.split(';');
+        const cookieCount = cookieArray.length;
+        let size = new TextEncoder().encode(cookies).length;
+        let sizeStr = (size / 1024).toFixed(2) + ' KB';
+        
+        let listHtml = '<ul class="mt-1 space-y-1.5 max-h-48 overflow-y-auto pr-2 list-scroll text-xs text-slate-500">';
+        cookieArray.forEach(c => {
+            const eqPos = c.indexOf('=');
+            let key = eqPos > -1 ? c.substr(0, eqPos).trim() : c.trim();
+            let val = eqPos > -1 ? c.substr(eqPos + 1).trim() : '';
+            let displayVal = (val && val.length > 70) ? val.substring(0, 70) + '...' : val;
+            listHtml += `<li class="border-b border-slate-100 pb-1.5 last:border-0">
+                           <strong class="text-slate-700 break-all font-semibold">${key}</strong> <br/>
+                           <span class="break-all text-slate-400">${displayVal}</span>
+                         </li>`;
+        });
+        listHtml += '</ul>';
+
+        container.insertAdjacentHTML('beforeend', createDataHTML(
+            'Cookies (Subdomain Shared)', 
+            `${cookieCount} cookie`, 
+            `${sizeStr} • Domain: .${currentDomain.replace(/^www\./, '')}`, 
+            'cookies', 
+            'ph-cookie',
+            listHtml
+        ));
+      }
+
+      // 4. IndexedDB Detail
+      if ('indexedDB' in window && 'databases' in indexedDB) {
+        try {
+          const dbs = await indexedDB.databases();
+          if (dbs.length > 0) {
+            dataFound = true;
+            
+            let listHtml = '<ul class="mt-1 space-y-1.5 max-h-48 overflow-y-auto pr-2 list-scroll text-xs text-slate-500">';
+            dbs.forEach(db => {
+                listHtml += `<li class="border-b border-slate-100 pb-1.5 last:border-0 flex justify-between items-center">
+                               <strong class="text-slate-700 break-all font-semibold">${db.name}</strong> 
+                               <span class="bg-slate-100 px-1.5 py-0.5 rounded text-[10px] text-slate-500">v${db.version || 1}</span>
+                             </li>`;
+            });
+            listHtml += '</ul>';
+
+            container.insertAdjacentHTML('beforeend', createDataHTML(
+                'IndexedDB (Database)', 
+                `${dbs.length} DB`, 
+                `Ukuran dinamis • Domain: ${currentDomain}`, 
+                'indexedDB', 
+                'ph-cube',
+                listHtml
+            ));
+          }
+        } catch(e) {}
+      }
+
+      if (!dataFound) {
+        container.innerHTML = `
+            <div class="text-center py-6 bg-slate-50 border border-slate-100 border-dashed rounded-xl">
+              <i class="ph ph-hard-drives text-3xl text-slate-300 mb-2"></i>
+              <p class="text-sm text-slate-500 font-medium">Tidak ada data lokal yang tersimpan.</p>
+            </div>`;
+      }
+
+      setTimeout(() => icon.classList.remove('animate-spin'), 500);
+    }
+
+    function createDataHTML(title, countText, size, type, iconClass, detailListHtml) {
+      return `
+        <div class="flex items-start justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 transition-colors group">
+          <div class="flex items-start gap-3 w-full overflow-hidden">
+            <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 mt-1">
+              <i class="ph-fill ${iconClass} text-xl"></i>
+            </div>
+            <div class="flex-1 min-w-0 pr-2">
+              <h4 class="font-semibold text-slate-700 text-sm flex items-center gap-2">
+                ${title} 
+                <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] whitespace-nowrap">${countText}</span>
+              </h4>
+              <p class="text-xs text-slate-400 mt-1 mb-2.5"><i class="ph-fill ph-info text-[10px]"></i> ${size}</p>
+              
+              <div class="bg-white border border-slate-100 rounded-lg p-3 shadow-sm">
+                ${detailListHtml}
+              </div>
+            </div>
+          </div>
+          <button onclick="deleteLocalData('${type}')" title="Hapus Data Ini" class="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2.5 rounded-xl transition-all shrink-0">
+            <i class="ph-fill ph-trash text-lg"></i>
+          </button>
+        </div>
+      `;
+    }
+    async function deleteLocalData(type) {
+      try {
+        if (type === 'localStorage') {
+          localStorage.clear();
+        } else if (type === 'sessionStorage') {
+          sessionStorage.clear();
+        } else if (type === 'cookies') {
+          // Menghapus semua cookie yg bisa diakses
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i];
+            const eqPos = cookie.indexOf("=");
+            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            // Coba hapus juga untuk subdomain
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=" + window.location.hostname;
+          }
+        } else if (type === 'indexedDB') {
+          if ('indexedDB' in window && 'databases' in indexedDB) {
+            const dbs = await indexedDB.databases();
+            dbs.forEach(db => {
+               window.indexedDB.deleteDatabase(db.name);
+            });
+          }
+        }
+        showToast(`Data ${type} berhasil dihapus`, 'success');
+        loadLocalData(); // Refresh list
+      } catch (err) {
+        showToast(`Gagal menghapus ${type}`, 'error');
+      }
+    }
+
+    // 5. Eksekusi Reset Total (Hapus semua cache, data lokal & SW)
     async function executeTotalReset() {
       const btn = document.getElementById('btnConfirmReset');
       btn.innerHTML = `<div class="loader-sm"></div> Menghapus...`;
       btn.disabled = true;
 
       try {
-        // Hapus semua cache
+        // Hapus semua cache API
         const cacheNames = await caches.keys();
         await Promise.all(cacheNames.map(name => caches.delete(name)));
+
+        // Hapus Data Lokal
+        localStorage.clear();
+        sessionStorage.clear();
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i];
+          const eqPos = cookie.indexOf("=");
+          const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+        }
+        if ('indexedDB' in window && 'databases' in indexedDB) {
+            const dbs = await indexedDB.databases();
+            dbs.forEach(db => window.indexedDB.deleteDatabase(db.name));
+        }
 
         // Unregister SW
         if ('serviceWorker' in navigator) {
@@ -299,7 +602,7 @@
           }
         }
 
-        showToast('Seluruh data direset. Memuat ulang...', 'success');
+        showToast('Seluruh data situs dan cache direset. Memuat ulang...', 'success');
         
         // Hard reload setelah 1.5 detik agar melihat efek
         setTimeout(() => {
