@@ -1066,7 +1066,7 @@
             showDynamicIsland('Membuat kode verifikasi...', 'process');
             try {
                 const res = await serverCall('generateWaVerifyCode', { email: currentUserEmail });
-                applyWaVerifyResult(JSON.parse(res));
+                applyWaVerifyResult(res.data);
                 showDynamicIsland('Kode siap, silakan kirim via WhatsApp', 'success');
             } catch (err) { showDynamicIsland(err.message || 'Gagal membuat kode', 'error'); }
         }
@@ -1128,7 +1128,7 @@
             showDynamicIsland("Membuat kode baru...", "process");
             try {
                 const res = await serverCall('generateWaVerifyCode', { email: currentUserEmail });
-                applyWaVerifyResult(JSON.parse(res));
+                applyWaVerifyResult(res.data);
                 showDynamicIsland("Kode baru siap!", "success");
             } catch (err) { showDynamicIsland(err.message, "error"); }
         }
